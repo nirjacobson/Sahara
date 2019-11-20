@@ -31,6 +31,9 @@ SOURCES += \
     scene/asset/mesh.cpp \
     scene/asset/pointlight.cpp \
     scene/asset/surface.cpp \
+    scene/instance/controllerinstance.cpp \
+    scene/instance/instance.cpp \
+    scene/instance/meshinstance.cpp \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
     scene/node/volume.cpp
@@ -51,6 +54,9 @@ HEADERS += \
     scene/asset/mesh.h \
     scene/asset/pointlight.h \
     scene/asset/surface.h \
+    scene/instance/controllerinstance.h \
+    scene/instance/instance.h \
+    scene/instance/meshinstance.h \
     scene/node/node.h \
     scene/node/nodeitem.h \
     scene/node/volume.h
