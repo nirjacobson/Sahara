@@ -1,0 +1,51 @@
+#ifndef SAHARA_SCENE_H
+#define SAHARA_SCENE_H
+
+#include <functional>
+
+#include "asset/camera.h"
+#include "asset/perspectivecamera.h"
+#include "asset/light.h"
+#include "model.h"
+#include "node/node.h"
+#include "node/nodeitem.h"
+
+namespace Sahara {
+
+  class Scene
+  {
+    public:
+      Scene();
+      ~Scene();
+
+      const Node& root() const;
+      Node& root();
+
+      const QMap<QString, Camera*>& cameras() const;
+      const QMap<QString, Light*>& lights() const;
+      const QMap<QString, Model*>& models() const;
+
+      void addCamera(const QString& id, Camera* const camera);
+      void addLight(const QString& id, Light* const light);
+      void addModel(const QString& id, Model* const model);
+
+      void setCameraNode(Sahara::Node* node);
+      Node& cameraNode();
+      const Node& cameraNode() const;
+      Camera& camera();
+      const Camera& camera() const;
+      Node* focusNode();
+
+    private:
+      Node* _root;
+
+      Node* _cameraNode;
+
+      QMap<QString, Camera*> _cameras;
+      QMap<QString, Light*> _lights;
+      QMap<QString, Model*> _models;
+  };
+
+}
+
+#endif // SAHARA_SCENE_H

@@ -1,4 +1,4 @@
-QT += gui
+QT += gui xml opengl
 
 TEMPLATE = lib
 DEFINES += SAHARA_LIBRARY
@@ -34,9 +34,11 @@ SOURCES += \
     scene/instance/controllerinstance.cpp \
     scene/instance/instance.cpp \
     scene/instance/meshinstance.cpp \
+    scene/model.cpp \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
-    scene/node/volume.cpp
+    scene/node/volume.cpp \
+    scene/scene.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -57,9 +59,14 @@ HEADERS += \
     scene/instance/controllerinstance.h \
     scene/instance/instance.h \
     scene/instance/meshinstance.h \
+    scene/model.h \
     scene/node/node.h \
     scene/node/nodeitem.h \
-    scene/node/volume.h
+    scene/node/volume.h \
+    scene/scene.h
+
+INCLUDEPATH += \
+    ../QCollada
 
 # Default rules for deployment.
 unix {
