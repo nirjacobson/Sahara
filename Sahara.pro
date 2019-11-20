@@ -3,7 +3,7 @@ QT += gui
 TEMPLATE = lib
 DEFINES += SAHARA_LIBRARY
 
-CONFIG += c++11
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -18,11 +18,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     scene/asset/asset.cpp \
+    scene/node/node.cpp \
+    scene/node/nodeitem.cpp \
     scene/node/volume.cpp
 
 HEADERS += \
     Sahara_global.h \
     scene/asset/asset.h \
+    scene/node/node.h \
+    scene/node/nodeitem.h \
     scene/node/volume.h
 
 # Default rules for deployment.
