@@ -17,14 +17,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    gl/vertexbuffer.cpp \
+    scene/asset/animation.cpp \
+    scene/asset/animationclip.cpp \
+    scene/asset/armature.cpp \
     scene/asset/asset.cpp \
+    scene/asset/bone.cpp \
+    scene/asset/camera.cpp \
+    scene/asset/controller.cpp \
+    scene/asset/image.cpp \
+    scene/asset/light.cpp \
+    scene/asset/material.cpp \
+    scene/asset/mesh.cpp \
+    scene/asset/pointlight.cpp \
+    scene/asset/surface.cpp \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
     scene/node/volume.cpp
 
 HEADERS += \
     Sahara_global.h \
+    gl/vertexbuffer.h \
+    scene/asset/animation.h \
+    scene/asset/animationclip.h \
+    scene/asset/armature.h \
     scene/asset/asset.h \
+    scene/asset/bone.h \
+    scene/asset/camera.h \
+    scene/asset/controller.h \
+    scene/asset/image.h \
+    scene/asset/light.h \
+    scene/asset/material.h \
+    scene/asset/mesh.h \
+    scene/asset/pointlight.h \
+    scene/asset/surface.h \
     scene/node/node.h \
     scene/node/nodeitem.h \
     scene/node/volume.h

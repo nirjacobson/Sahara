@@ -1,7 +1,7 @@
 #include "node.h"
 
 
-Sahara::Node::Node(const QString& name, Sahara::NodeItem* nodeItem, const QMatrix4x4& transform)
+Sahara::Node::Node(const QString& name, NodeItem* const nodeItem, const QMatrix4x4& transform)
     : _parent(nullptr)
     , _name(name)
     , _item(nodeItem)

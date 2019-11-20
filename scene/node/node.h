@@ -14,10 +14,10 @@ namespace Sahara
         private:
             typedef std::function<void(void)> NodeVisitorStopFn;
             typedef std::function<void(Node&, const NodeVisitorStopFn&)> NodeVisitor;
-            typedef std::function<void(const Node&, const NodeVisitorStopFn)> NodeVisitorConst;
+            typedef std::function<void(const Node&, const NodeVisitorStopFn&)> NodeVisitorConst;
 
         public:
-            Node(const QString& name, NodeItem* nodeItem, const QMatrix4x4& transform);
+            Node(const QString& name, NodeItem* const nodeItem, const QMatrix4x4& transform);
             ~Node();
 
             Node& parent();
