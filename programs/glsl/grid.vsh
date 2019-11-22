@@ -3,8 +3,8 @@
 attribute vec3 position;
 
 struct Render {
-    mat4 projection;
     mat4 inverseCamera;
+    mat4 projection;
 };
 
 uniform Render uRender;

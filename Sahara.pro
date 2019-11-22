@@ -20,6 +20,7 @@ SOURCES += \
     gl/vertexbuffer.cpp \
     programs/displayprogram.cpp \
     programs/gridprogram.cpp \
+    programs/program.cpp \
     programs/sceneprogram.cpp \
     scene/asset/animation.cpp \
     scene/asset/animationclip.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     gl/vertexbuffer.h \
     programs/displayprogram.h \
     programs/gridprogram.h \
+    programs/program.h \
     programs/sceneprogram.h \
     scene/asset/animation.h \
     scene/asset/animationclip.h \

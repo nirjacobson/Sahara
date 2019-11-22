@@ -1,6 +1,6 @@
 #include "material.h"
 
-Sahara::Material::Material(const QVector4D& emission, const QVector4D& ambient, const QVector4D& diffuse, const QVector4D& specular, const float shininess)
+Sahara::Material::Material(const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
     : _emission(emission)
     , _ambient(ambient)
     , _diffuse(diffuse)
@@ -10,7 +10,7 @@ Sahara::Material::Material(const QVector4D& emission, const QVector4D& ambient, 
 
 }
 
-Sahara::Material::Material(const QVector4D& emission, const QVector4D& ambient, Sahara::Image* const image, const QVector4D& specular, const float shininess)
+Sahara::Material::Material(const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
     : _emission(emission)
     , _ambient(ambient)
     , _image(image)
@@ -20,22 +20,22 @@ Sahara::Material::Material(const QVector4D& emission, const QVector4D& ambient, 
 
 }
 
-const QVector4D& Sahara::Material::emission() const
+const QColor& Sahara::Material::emission() const
 {
     return _emission;
 }
 
-const QVector4D& Sahara::Material::ambient() const
+const QColor& Sahara::Material::ambient() const
 {
     return _ambient;
 }
 
-const QVector4D& Sahara::Material::diffuse() const
+const QColor& Sahara::Material::diffuse() const
 {
     return _diffuse;
 }
 
-const QVector4D& Sahara::Material::specular() const
+const QColor& Sahara::Material::specular() const
 {
     return _specular;
 }

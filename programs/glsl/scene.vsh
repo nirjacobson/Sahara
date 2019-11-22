@@ -14,8 +14,8 @@ varying vec2 vertTexcoord;
 
 struct Render {
     mat4 modelView;
-    mat4 projection;
     mat4 inverseCamera;
+    mat4 projection;
     int boned;
     int focus;
 };
