@@ -12,6 +12,11 @@ Sahara::Armature::~Armature()
     delete _root;
 }
 
+const Sahara::Bone& Sahara::Armature::root() const
+{
+    return *_root;
+}
+
 Sahara::Bone* Sahara::Armature::getBoneById(const QString& id)
 {
     Bone* bone = nullptr;

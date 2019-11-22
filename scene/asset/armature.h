@@ -13,6 +13,8 @@ namespace Sahara
             Armature(Bone* const root);
             ~Armature();
 
+            const Bone& root() const;
+
             Bone* getBoneById(const QString& id);
             const Bone* getBoneByName(const QString& name) const;
 

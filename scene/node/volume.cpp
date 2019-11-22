@@ -12,6 +12,16 @@ Sahara::Volume::Volume(const QVector3D& lowerVertex, const QVector3D& upperVerte
 
 }
 
+const QVector3D& Sahara::Volume::lowerVertex() const
+{
+    return _lowerVertex;
+}
+
+const QVector3D& Sahara::Volume::upperVertex() const
+{
+    return _upperVertex;
+}
+
 float Sahara::Volume::width()
 {
     return _upperVertex.x() - _lowerVertex.x();

@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>programs/glsl/display.fsh</file>
+        <file>programs/glsl/display.vsh</file>
+        <file>programs/glsl/grid.fsh</file>
+        <file>programs/glsl/grid.vsh</file>
+        <file>programs/glsl/scene.fsh</file>
+        <file>programs/glsl/scene.vsh</file>
+    </qresource>
+</RCC>

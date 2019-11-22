@@ -18,6 +18,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     gl/vertexbuffer.cpp \
+    programs/displayprogram.cpp \
+    programs/gridprogram.cpp \
+    programs/sceneprogram.cpp \
     scene/asset/animation.cpp \
     scene/asset/animationclip.cpp \
     scene/asset/armature.cpp \
@@ -43,6 +46,9 @@ SOURCES += \
 HEADERS += \
     Sahara_global.h \
     gl/vertexbuffer.h \
+    programs/displayprogram.h \
+    programs/gridprogram.h \
+    programs/sceneprogram.h \
     scene/asset/animation.h \
     scene/asset/animationclip.h \
     scene/asset/armature.h \
@@ -73,3 +79,14 @@ unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    programs/glsl/display.fsh \
+    programs/glsl/display.vsh \
+    programs/glsl/grid.fsh \
+    programs/glsl/grid.vsh \
+    programs/glsl/scene.fsh \
+    programs/glsl/scene.vsh
+
+RESOURCES += \
+    shaders.qrc

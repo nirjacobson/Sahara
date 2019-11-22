@@ -63,6 +63,7 @@ namespace Sahara {
       static ImageDict parseColladaModelImages(const QCollada::Collada& collada, const QString& path);
       static MaterialDict parseColladaModelMaterials(const QCollada::Collada& collada, const ImageDict& images);
       static MeshDict parseColladaModelGeometries(const QCollada::Collada& collada, Volume& volume);
+      static QList<QPair<int, float>> reduceBones(const QList<QPair<int, float>>& bones, const int max);
       static ControllerDict parseColladaModelControllers(const QCollada::Collada& collada, MeshDict& meshes);
       static QList<Instance*> parseColladaVisualScene(const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr);
       static Armature* parseColladaArmatureNode(const QCollada::Node& rootNode);

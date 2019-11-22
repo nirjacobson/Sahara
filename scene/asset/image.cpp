@@ -1,7 +1,7 @@
 #include "image.h"
 
 Sahara::Image::Image(const QString& uri)
-    : _texture(QOpenGLTexture(QImage(uri)))
+    : _texture(QOpenGLTexture(QImage(uri).mirrored()))
 {
 
 }
