@@ -16,6 +16,11 @@ Sahara::Bone::~Bone()
     }
 }
 
+const Sahara::Bone& Sahara::Bone::parent() const
+{
+    return *_parent;
+}
+
 Sahara::Bone& Sahara::Bone::parent()
 {
     return *_parent;
@@ -31,6 +36,12 @@ QString Sahara::Bone::name() const
     return _name;
 }
 
+void Sahara::Bone::addChild(Sahara::Bone* const child)
+{
+    child->_parent = this;
+    _children.append(child);
+}
+
 const QMatrix4x4& Sahara::Bone::transform() const
 {
     return _transform;
@@ -39,12 +50,6 @@ const QMatrix4x4& Sahara::Bone::transform() const
 void Sahara::Bone::setTransform(const QMatrix4x4& transform)
 {
     _transform = transform;
-}
-
-void Sahara::Bone::addChild(Sahara::Bone* const child)
-{
-    child->_parent = this;
-    _children.append(child);
 }
 
 void Sahara::Bone::depthFirst(const Sahara::Bone::BoneVisitor& visitor)

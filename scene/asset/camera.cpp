@@ -12,6 +12,67 @@ Sahara::Camera::Camera(const Sahara::Camera::Mode mode, const float xfov, const 
 
 }
 
+Sahara::Camera::Mode Sahara::Camera::mode() const
+{
+    return _mode;
+}
+
+float Sahara::Camera::xfov() const
+{
+    return _xfov;
+}
+
+float Sahara::Camera::xmag() const
+{
+    return _xmag;
+}
+
+float Sahara::Camera::aspect() const
+{
+    return _aspect;
+}
+
+float Sahara::Camera::znear() const
+{
+    return _znear;
+}
+
+float Sahara::Camera::zfar() const
+{
+    return _zfar;
+}
+
+void Sahara::Camera::setMode(const Sahara::Camera::Mode mode)
+{
+    _mode = mode;
+}
+
+void Sahara::Camera::setXfov(const float xfov)
+{
+    _xfov = xfov;
+}
+
+void Sahara::Camera::setXmag(const float xmag)
+{
+    _xmag = xmag;
+}
+
+void Sahara::Camera::setAspect(const float aspect)
+{
+    _aspect = aspect;
+}
+
+void Sahara::Camera::setZnear(const float znear)
+{
+    _znear = znear;
+}
+
+void Sahara::Camera::setZfar(const float zfar)
+{
+    _zfar = zfar;
+}
+
+
 QMatrix4x4 Sahara::Camera::projection()
 {
     QMatrix4x4 projection;

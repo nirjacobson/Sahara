@@ -8,6 +8,7 @@
 #include "scene/asset/bone.h"
 #include "scene/asset/pointlight.h"
 #include "scene/asset/material.h"
+#include "scene/asset/surface.h"
 
 namespace Sahara
 {
@@ -16,14 +17,13 @@ namespace Sahara
     {
         public:
             static constexpr int MAX_BONES = 74;
-            static constexpr int MAX_POINT_LIGHTS = 12;
+            static constexpr int MAX_POINT_LIGHTS = 6;
 
             struct RenderUniforms {
                 GLint modelView;
                 GLint inverseCamera;
                 GLint projection;
                 GLint boned;
-                GLint focus;
             };
 
             struct BoneUniforms {
@@ -64,24 +64,20 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setPosition(const int stride, const void* offset);
-            void setNormal(const int stride, const void* offset);
-            void setTexcoord(const int stride, const void* offset);
-            void setBones1(const int stride, const void* offset);
-            void setBones2(const int stride, const void* offset);
-            void setWeights1(const int stride, const void* offset);
-            void setWeights2(const int stride, const void* offset);
+            void setSurfaceLayout(Surface& surface);
+            void clearSurfaceLayout(Surface& surface);
 
             void setModelView(const QMatrix4x4& modelView);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
             void setProjection(const QMatrix4x4& projection);
             void setBoned(const bool boned);
             void setFocus(const bool focus);
-            void setBone(const int index, const Bone& bone);
+            void setBone(const int index, const QMatrix4x4& transform);
 
             void addPointLight(const PointLight& pointLight, const QVector3D& position);
             void clearPointLights();
             void setMaterial(const Material& material);
+            void setCameraPosition(const QVector3D& position);
 
         private:
             QOpenGLShader* _vertexShader;
@@ -101,6 +97,8 @@ namespace Sahara
             LightingUniforms _lighting;
             MaterialUniforms _material;
 
+            GLint _focus;
+            GLint _cameraPosition;
             GLint _sampler;
 
             int _pointLights;

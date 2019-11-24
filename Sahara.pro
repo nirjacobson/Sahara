@@ -17,7 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    gl/vertexbuffer.cpp \
+    render/renderer.cpp \
+    render/vertexbuffer.cpp \
     programs/displayprogram.cpp \
     programs/gridprogram.cpp \
     programs/program.cpp \
@@ -46,7 +47,8 @@ SOURCES += \
 
 HEADERS += \
     Sahara_global.h \
-    gl/vertexbuffer.h \
+    render/renderer.h \
+    render/vertexbuffer.h \
     programs/displayprogram.h \
     programs/gridprogram.h \
     programs/program.h \

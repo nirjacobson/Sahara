@@ -3,7 +3,7 @@
 
 #include <QMap>
 
-#include "../../gl/vertexbuffer.h"
+#include "../../render/vertexbuffer.h"
 
 namespace Sahara
 {
@@ -16,7 +16,8 @@ namespace Sahara
 
             void addVertexBuffer(const QString& name, const GLenum type, const char* const data, const int size, const int stride);
 
-            const VertexBufferDict& vertexBuffers();
+            const VertexBufferDict& vertexBuffers() const;
+            VertexBufferDict& vertexBuffers();
             QString material() const;
 
         private:

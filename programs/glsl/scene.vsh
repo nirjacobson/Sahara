@@ -3,21 +3,20 @@
 attribute vec3 position;
 attribute vec3 normal;
 attribute vec2 texcoord;
-attribute vec4 bones1;
-attribute vec4 bones2;
-attribute vec4 weights1;
-attribute vec4 weights2;
+attribute vec4 bones;
+attribute vec4 weights;
 
 varying vec3 vertPosition;
 varying vec3 vertNormal;
 varying vec2 vertTexcoord;
+
+uniform int uFocus;
 
 struct Render {
     mat4 modelView;
     mat4 inverseCamera;
     mat4 projection;
     int boned;
-    int focus;
 };
 
 struct Bone {
@@ -61,32 +60,22 @@ vec3 transform(Bone bone, vec3 vertex) {
     return rotatedAndTranslated;
 }
 
-
 void main() {
     vec3 vertPositionResult;
 
     if (uRender.boned == 1) {
-        int stop = 0;
         for (int i = 0; i < 4; i++) {
-            if (bones1[i] > 0.0) {
-                vertPositionResult += transform(uArmature.bones[int(bones1[i])], position) * weights1[i];
+            if (bones[i] > 0.0) {
+                vertPositionResult += transform(uArmature.bones[int(bones[i])], position) * weights[i];
             } else {
-                stop = 1;
                 break;
-            }
-        }
-        if (stop == 0) {
-            for (int i = 0; i < 4; i++) {
-                if (bones2[i] > 0.0) {
-                    vertPositionResult += transform(uArmature.bones[int(bones2[i])], position) * weights2[i];
-                }
             }
         }
     } else {
         vertPositionResult = position;
     }
 
-    if (uRender.focus == 1) {
+    if (uFocus == 1) {
         vertPositionResult *= 1.01;
     }
 

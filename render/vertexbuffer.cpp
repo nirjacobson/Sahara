@@ -60,6 +60,8 @@ void Sahara::VertexBuffer::write(const char* const data, const int size)
     _buffer.write(0, data, size);
     _buffer.release();
 
+    assert(glGetError() == GL_NO_ERROR);
+
     _size = size;
 }
 

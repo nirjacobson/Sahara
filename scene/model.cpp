@@ -312,62 +312,39 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
 
       int elemsPerBuffer = triangles.count() * 3;
       int bonesDataSize = elemsPerBuffer * 4 * static_cast<int>(sizeof(GLfloat));
-      char* bones1Data = new char[static_cast<unsigned long>(bonesDataSize)];
-      char* bones2Data = new char[static_cast<unsigned long>(bonesDataSize)];
+      char* bonesData = new char[static_cast<unsigned long>(bonesDataSize)];
       int weightsDataSize = elemsPerBuffer * 4 * static_cast<int>(sizeof(GLfloat));
-      char* weights1Data = new char[static_cast<unsigned long>(weightsDataSize)];
-      char* weights2Data = new char[static_cast<unsigned long>(weightsDataSize)];
-      int bones1DataIndex = 0;
-      int bones2DataIndex = 0;
-      int weights1DataIndex = 0;
-      int weights2DataIndex = 0;
+      char* weightsData = new char[static_cast<unsigned long>(weightsDataSize)];
+      int bonesDataIndex = 0;
+      int weightsDataIndex = 0;
 
       int pOffset = triangles.inputs()[QCollada::Triangles::Semantic::VERTEX].second;
       int pStride = triangles.inputs().size();
       for (int j = 0; j < triangles.p().size(); j += pStride) {
         int vertex = triangles.p()[j + pOffset];
-        const QList<QPair<int, float>>& vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(vertex), 8);
+        const QList<QPair<int, float>>& vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(vertex), 4);
 
-        for (int k = 0; k < 8; k++) {
+        for (int k = 0; k < 4; k++) {
           if (k < vertexBonesAndWeights.size()) {
             const QPair<int, float>& boneAndWeight = vertexBonesAndWeights.at(k);
 
-            if (k < 4) {
-                reinterpret_cast<GLfloat*>(bones1Data)[bones1DataIndex] = boneAndWeight.first;
-                reinterpret_cast<GLfloat*>(weights1Data)[weights1DataIndex] = boneAndWeight.second;
-            } else {
-                reinterpret_cast<GLfloat*>(bones2Data)[bones2DataIndex] = boneAndWeight.first;
-                reinterpret_cast<GLfloat*>(weights2Data)[weights2DataIndex] = boneAndWeight.second;
-            }
+            reinterpret_cast<GLfloat*>(bonesData)[bonesDataIndex] = boneAndWeight.first;
+            reinterpret_cast<GLfloat*>(weightsData)[weightsDataIndex] = boneAndWeight.second;
           } else {
-              if (k < 4) {
-                  reinterpret_cast<GLfloat*>(bones1Data)[bones1DataIndex] = -1;
-                  reinterpret_cast<GLfloat*>(weights1Data)[weights1DataIndex] = -1;
-              } else {
-                  reinterpret_cast<GLfloat*>(bones2Data)[bones2DataIndex] = -1;
-                  reinterpret_cast<GLfloat*>(weights2Data)[weights2DataIndex] = -1;
-              }
+            reinterpret_cast<GLfloat*>(bonesData)[bonesDataIndex] = -1;
+            reinterpret_cast<GLfloat*>(weightsData)[weightsDataIndex] = -1;
           }
 
-          if (k < 4) {
-              bones1DataIndex++;
-              weights1DataIndex++;
-          } else {
-              bones2DataIndex++;
-              weights2DataIndex++;
-          }
+          bonesDataIndex++;
+          weightsDataIndex++;
         }
       }
 
-      surface.addVertexBuffer("bones1", GL_FLOAT, bones1Data, bonesDataSize, 4);
-      surface.addVertexBuffer("bones2", GL_FLOAT, bones2Data, bonesDataSize, 4);
-      surface.addVertexBuffer("weights1", GL_FLOAT, weights1Data, weightsDataSize, 4);
-      surface.addVertexBuffer("weights2", GL_FLOAT, weights2Data, weightsDataSize, 4);
+      surface.addVertexBuffer("bones", GL_FLOAT, bonesData, bonesDataSize, 4);
+      surface.addVertexBuffer("weights", GL_FLOAT, weightsData, weightsDataSize, 4);
 
-      delete [] bones1Data;
-      delete [] bones2Data;
-      delete [] weights1Data;
-      delete [] weights2Data;
+      delete [] bonesData;
+      delete [] weightsData;
     }
 
 

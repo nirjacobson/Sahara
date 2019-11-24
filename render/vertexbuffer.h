@@ -2,6 +2,8 @@
 #define SAHARA_VERTEXBUFFER_H
 
 #include <QOpenGLBuffer>
+#include <QOpenGLFunctions>
+#include <QtDebug>
 
 namespace Sahara
 {

@@ -16,7 +16,7 @@ struct PointLight {
 };
 
 struct Lighting {
-    PointLight pointLights[12];
+    PointLight pointLights[6];
     int pointLightCount;
 };
 
@@ -40,7 +40,7 @@ void main() {
     if (uFocus == 0) {
         outputColor = vec4(0, 0, 0, 1);
 
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 6; i++) {
             if (i == uLighting.pointLightCount) {
                 break;
             }

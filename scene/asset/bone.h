@@ -17,13 +17,13 @@ namespace Sahara {
             Bone(Bone* const parent, const QString& id, const QString& name, const QMatrix4x4& transform);
             ~Bone();
 
+            const Bone& parent() const;
             Bone& parent();
             QString id() const;
             QString name() const;
+            void addChild(Bone* const child);
             const QMatrix4x4& transform() const;
             void setTransform(const QMatrix4x4& transform);
-
-            void addChild(Bone* const child);
 
             void depthFirst(const BoneVisitor& visitor);
             void depthFirst(const BoneVisitorConst& visitor) const;

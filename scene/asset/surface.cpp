@@ -15,7 +15,12 @@ void Sahara::Surface::addVertexBuffer(const QString& name, const GLenum type, co
     _vertexBuffers.insert(name, buffer);
 }
 
-const Sahara::VertexBufferDict& Sahara::Surface::vertexBuffers()
+Sahara::VertexBufferDict& Sahara::Surface::vertexBuffers()
+{
+    return _vertexBuffers;
+}
+
+const Sahara::VertexBufferDict& Sahara::Surface::vertexBuffers() const
 {
     return _vertexBuffers;
 }
