@@ -16,7 +16,7 @@ namespace Sahara
     class SceneProgram : public Program
     {
         public:
-            static constexpr int MAX_BONES = 74;
+            static constexpr int MAX_BONES = 67;
             static constexpr int MAX_POINT_LIGHTS = 6;
 
             struct RenderUniforms {
@@ -64,8 +64,8 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setSurfaceLayout(Surface& surface);
-            void clearSurfaceLayout(Surface& surface);
+            void setSurface(Surface& surface);
+            void clearSurface(Surface& surface);
 
             void setModelView(const QMatrix4x4& modelView);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
@@ -83,14 +83,6 @@ namespace Sahara
             QOpenGLShader* _vertexShader;
             QOpenGLShader* _fragmentShader;
             QOpenGLShaderProgram* _program;
-
-            GLint _position;
-            GLint _normal;
-            GLint _texcoord;
-            GLint _bones1;
-            GLint _bones2;
-            GLint _weights1;
-            GLint _weights2;
 
             RenderUniforms _render;
             ArmatureUniforms _armature;

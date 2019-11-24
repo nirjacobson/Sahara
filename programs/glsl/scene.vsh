@@ -19,17 +19,9 @@ struct Render {
     int boned;
 };
 
-struct Bone {
-    vec4 rotation;
-    vec3 translation;
-};
-
-struct Armature {
-    Bone bones[74];
-};
-
 uniform Render uRender;
-uniform Armature uArmature;
+uniform vec4 uRotation[67];
+uniform vec3 uTranslation[67];
 
 vec4 hamilton(vec4 q1, vec4 q2) {
     vec4 product;
@@ -42,34 +34,32 @@ vec4 hamilton(vec4 q1, vec4 q2) {
     return product;
 }
 
-vec4 conjugate(vec4 q) {
+vec4 inverse(vec4 q) {
     return vec4(-q.xyz, q.w);
 }
 
 vec3 rotate(vec4 q, vec3 p) {
     vec4 temp = hamilton(q, vec4(p.xyz, 0));
-    vec3 rotated = hamilton(temp, conjugate(q)).xyz;
+    vec3 rotated = hamilton(temp, inverse(q)).xyz;
 
     return rotated;
-}
-
-vec3 transform(Bone bone, vec3 vertex) {
-    vec3 rotated = rotate(bone.rotation, vertex);
-    vec3 rotatedAndTranslated = rotated + bone.translation;
-
-    return rotatedAndTranslated;
 }
 
 void main() {
     vec3 vertPositionResult;
 
     if (uRender.boned == 1) {
+        float sum = 0.0;
         for (int i = 0; i < 4; i++) {
-            if (bones[i] > 0.0) {
-                vertPositionResult += transform(uArmature.bones[int(bones[i])], position) * weights[i];
-            } else {
+            sum += weights[i];
+        }
+        for (int i = 0; i < 4; i++) {
+            int index = int(bones[i]);
+            if (index == -1) {
                 break;
             }
+            vec3 rotatedAndTranslated = rotate(uRotation[index], position) + uTranslation[index];
+            vertPositionResult += rotatedAndTranslated * (weights[i]/sum);
         }
     } else {
         vertPositionResult = position;

@@ -260,16 +260,7 @@ QList<QPair<int, float>> Sahara::Model::reduceBones(const QList<QPair<int, float
     QList<QPair<int, float>> sortedBones = bones;
     std::sort(sortedBones.begin(), sortedBones.end(), sortBones);
 
-
     QList<QPair<int, float>> reducedBones = sortedBones.mid(0, max);
-
-    float totalWeight = 0;
-    for (const QPair<int, float>& bone : reducedBones) {
-        totalWeight += bone.second;
-    }
-    for (QPair<int, float>& bone : reducedBones) {
-        bone.second /= totalWeight;
-    }
 
     return reducedBones;
 }

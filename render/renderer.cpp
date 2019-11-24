@@ -68,9 +68,9 @@ void Sahara::Renderer::renderModel(Sahara::Model& model, const float time)
                 renderSurface(surface, *meshInstance);
             }
         } else if ((controllerInstance = dynamic_cast<ControllerInstance*>(instance))) {
-            _sceneProgram.setBoned(false);
+            _sceneProgram.setBoned(true);
 
-//            processControllerInstanceArmature(*controllerInstance);
+            processControllerInstanceArmature(*controllerInstance);
 
             for (Surface& surface : controllerInstance->controller().mesh().surfaces()) {
                 renderSurface(surface, *controllerInstance);
@@ -87,9 +87,9 @@ void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instanc
         (*material.image())->bind();
     }
 
-   _sceneProgram.setSurfaceLayout(surface);
+   _sceneProgram.setSurface(surface);
    glDrawArrays(GL_TRIANGLES, 0, surface.vertexBuffers().first().count());
-   _sceneProgram.clearSurfaceLayout(surface);
+   _sceneProgram.clearSurface(surface);
 
    assert(glGetError() == GL_NO_ERROR);
 }

@@ -14,22 +14,15 @@ Sahara::SceneProgram::SceneProgram()
     _program->addShader(_fragmentShader);
     _program->link();
 
-    _position = _program->attributeLocation("position");
-    _normal = _program->attributeLocation("normal");
-    _texcoord = _program->attributeLocation("texcoord");
-    _bones1 = _program->attributeLocation("bones1");
-    _bones2 = _program->attributeLocation("bones2");
-    _weights1 = _program->attributeLocation("weights1");
-    _weights2 = _program->attributeLocation("weights2");
-
     _render.modelView = _program->uniformLocation("uRender.modelView");
     _render.inverseCamera = _program->uniformLocation("uRender.inverseCamera");
     _render.projection = _program->uniformLocation("uRender.projection");
     _render.boned = _program->uniformLocation("uRender.boned");
 
     for (int i = 0; i < MAX_BONES; i++) {
-        _armature.bones[i].rotation = _program->uniformLocation("uArmature.bones["+QString::number(i)+"].rotation");
-        _armature.bones[i].translation = _program->uniformLocation("uArmature.bones["+QString::number(i)+"].translation");
+        _armature.bones[i].rotation = _program->uniformLocation("uRotation["+QString::number(i)+"]");
+        _armature.bones[i].translation = _program->uniformLocation("uTranslation["+QString::number(i)+"]");
+
     }
 
     for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
@@ -170,7 +163,7 @@ void Sahara::SceneProgram::release()
     _program->release();
 }
 
-void Sahara::SceneProgram::setSurfaceLayout(Sahara::Surface& surface)
+void Sahara::SceneProgram::setSurface(Sahara::Surface& surface)
 {
     for (VertexBufferDict::iterator i = surface.vertexBuffers().begin(); i != surface.vertexBuffers().end(); i++) {
         i.value().bind();
@@ -183,7 +176,7 @@ void Sahara::SceneProgram::setSurfaceLayout(Sahara::Surface& surface)
     }
 }
 
-void Sahara::SceneProgram::clearSurfaceLayout(Sahara::Surface& surface)
+void Sahara::SceneProgram::clearSurface(Sahara::Surface& surface)
 {
     for (VertexBufferDict::iterator i = surface.vertexBuffers().begin(); i != surface.vertexBuffers().end(); i++) {
         GLint location = _program->attributeLocation(i.key());
