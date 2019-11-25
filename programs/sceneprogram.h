@@ -27,15 +27,6 @@ namespace Sahara
                 GLint boned;
             };
 
-            struct BoneUniforms {
-                GLint rotation;
-                GLint translation;
-            };
-
-            struct ArmatureUniforms {
-                BoneUniforms bones[MAX_BONES];
-            };
-
             struct PointLightUniforms {
                 GLint position;
                 GLint color;
@@ -73,7 +64,7 @@ namespace Sahara
             void setProjection(const QMatrix4x4& projection);
             void setBoned(const bool boned);
             void setFocus(const bool focus);
-            void setBone(const int index, const Transform& transform);
+            void setBoneTransforms(const QList<Transform>& transforms);
 
             void addPointLight(const PointLight& pointLight, const QVector3D& position);
             void clearPointLights();
@@ -86,7 +77,10 @@ namespace Sahara
             QOpenGLShaderProgram* _program;
 
             RenderUniforms _render;
-            ArmatureUniforms _armature;
+
+            GLint _boneRotations;
+            GLint _boneTranslations;
+
             LightingUniforms _lighting;
             MaterialUniforms _material;
 

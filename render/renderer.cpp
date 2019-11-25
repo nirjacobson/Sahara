@@ -109,6 +109,7 @@ void Sahara::Renderer::processControllerInstanceArmature(Sahara::ControllerInsta
 {
     const Controller& controller = controllerInstance.controller();
 
+    QList<Transform> boneTransforms;
     for (int i = 0; i < controller.bones().size(); i++) {
         QString boneName = controller.bones().at(i);
         const Bone* bone = controllerInstance.armature().getBoneByName(boneName);
@@ -122,6 +123,8 @@ void Sahara::Renderer::processControllerInstanceArmature(Sahara::ControllerInsta
             bone = &bone->parent();
         }
 
-        _sceneProgram.setBone(i, transform);
+        boneTransforms.push_back(transform);
     }
+
+    _sceneProgram.setBoneTransforms(boneTransforms);
 }

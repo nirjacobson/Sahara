@@ -19,11 +19,8 @@ Sahara::SceneProgram::SceneProgram()
     _render.projection = _program->uniformLocation("uRender.projection");
     _render.boned = _program->uniformLocation("uRender.boned");
 
-    for (int i = 0; i < MAX_BONES; i++) {
-        _armature.bones[i].rotation = _program->uniformLocation("uRotation["+QString::number(i)+"]");
-        _armature.bones[i].translation = _program->uniformLocation("uTranslation["+QString::number(i)+"]");
-
-    }
+    _boneRotations = _program->uniformLocation("uBoneRotations");
+    _boneTranslations = _program->uniformLocation("uBoneTranslations");
 
     for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
         _lighting.pointLights[i].position = _program->uniformLocation("uLighting.pointLights["+QString::number(i)+"].position");
@@ -88,10 +85,17 @@ void Sahara::SceneProgram::setFocus(const bool focus)
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void Sahara::SceneProgram::setBone(const int index, const Transform& transform)
+void Sahara::SceneProgram::setBoneTransforms(const QList<Sahara::Transform>& transforms)
 {
-    _program->setUniformValue(_armature.bones[index].rotation, transform.rotation().toVector4D());
-    _program->setUniformValue(_armature.bones[index].translation, transform.translation());
+    QVector<QVector4D> rotations;
+    QVector<QVector3D> translations;
+    std::for_each(transforms.begin(), transforms.end(), [&](const Transform& transform) {
+       rotations.append(transform.rotation().toVector4D());
+       translations.append(transform.translation());
+    });
+
+    _program->setUniformValueArray(_boneRotations, rotations.data(), rotations.size());
+    _program->setUniformValueArray(_boneTranslations, translations.data(), translations.size());
 
     assert(glGetError() == GL_NO_ERROR);
 }

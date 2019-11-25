@@ -20,8 +20,8 @@ struct Render {
 };
 
 uniform Render uRender;
-uniform vec4 uRotation[67];
-uniform vec3 uTranslation[67];
+uniform vec4 uBoneRotations[67];
+uniform vec3 uBoneTranslations[67];
 
 vec4 hamilton(vec4 q1, vec4 q2) {
     vec4 product;
@@ -58,7 +58,7 @@ void main() {
             if (index == -1) {
                 break;
             }
-            vec3 rotatedAndTranslated = rotate(uRotation[index], position) + uTranslation[index];
+            vec3 rotatedAndTranslated = rotate(uBoneRotations[index], position) + uBoneTranslations[index];
             vertPositionResult += rotatedAndTranslated * (weights[i]/sum);
         }
     } else {
