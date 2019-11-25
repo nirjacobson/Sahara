@@ -88,19 +88,10 @@ void Sahara::SceneProgram::setFocus(const bool focus)
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void Sahara::SceneProgram::setBone(const int index, const QMatrix4x4& transform)
+void Sahara::SceneProgram::setBone(const int index, const Transform& transform)
 {
-    GLfloat rotationValues[] = {
-        transform.row(0).x(), transform.row(0).y(), transform.row(0).z(),
-        transform.row(1).x(), transform.row(1).y(), transform.row(1).z(),
-        transform.row(2).x(), transform.row(2).y(), transform.row(2).z()
-    };
-    QMatrix3x3 rotationMatrix(rotationValues);
-    QQuaternion rotation = QQuaternion::fromRotationMatrix(rotationMatrix);
-    QVector3D translation = QVector3D(transform.column(3));
-
-    _program->setUniformValue(_armature.bones[index].rotation, rotation.toVector4D());
-    _program->setUniformValue(_armature.bones[index].translation, translation);
+    _program->setUniformValue(_armature.bones[index].rotation, transform.rotation().toVector4D());
+    _program->setUniformValue(_armature.bones[index].translation, transform.translation());
 
     assert(glGetError() == GL_NO_ERROR);
 }

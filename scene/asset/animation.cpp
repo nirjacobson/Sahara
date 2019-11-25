@@ -26,11 +26,6 @@ void Sahara::Animation::apply(const float time)
     Animation::Keyframe toFrame = i == _keyframes.size() ? _keyframes.first() : _keyframes.at(i);
 
     float t = (animationTime - fromFrame.time) / (toFrame.time - fromFrame.time);
-    QQuaternion rotationInterp = QQuaternion::slerp(fromFrame.rotation, toFrame.rotation, t);
-    QVector3D translationInterp = fromFrame.translation + ((toFrame.translation - fromFrame.translation) * t);
 
-    QMatrix4x4 transform( rotationInterp.toRotationMatrix() );
-    transform.setColumn(3, QVector4D( translationInterp, 1.0f ));
-
-    _bone->setTransform(transform);
+    _bone->setTransform(Transform::interpolate(fromFrame.transform, toFrame.transform, t));
 }

@@ -2,11 +2,11 @@
 #define SAHARA_ANIMATION_H
 
 #include <QList>
-#include <QMatrix4x3>
 #include <cmath>
 
 #include "asset.h"
 #include "bone.h"
+#include "../../common/transform.h"
 
 namespace Sahara
 {
@@ -19,8 +19,7 @@ namespace Sahara
             {
                 public:
                     float time;
-                    QQuaternion rotation;
-                    QVector3D translation;
+                    Transform transform;
             };
 
             Animation(Bone* const bone, const QList<Keyframe>& keyframes);

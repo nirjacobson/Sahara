@@ -114,11 +114,14 @@ void Sahara::Renderer::processControllerInstanceArmature(Sahara::ControllerInsta
         const Bone* bone = controllerInstance.armature().getBoneByName(boneName);
         QMatrix4x4 inverseBindMatrix = controller.inverseBindMatrices().at(i);
         QMatrix4x4 matrix = inverseBindMatrix * controller.bindShapeMatrix();
+
+        Transform transform = Transform(matrix);
+
         while (bone) {
-            matrix = bone->transform() * matrix;
+            transform = bone->transform() * transform;
             bone = &bone->parent();
         }
 
-        _sceneProgram.setBone(i, matrix);
+        _sceneProgram.setBone(i, transform);
     }
 }

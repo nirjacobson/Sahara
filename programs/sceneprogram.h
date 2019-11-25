@@ -9,6 +9,7 @@
 #include "scene/asset/pointlight.h"
 #include "scene/asset/material.h"
 #include "scene/asset/surface.h"
+#include "common/transform.h"
 
 namespace Sahara
 {
@@ -72,7 +73,7 @@ namespace Sahara
             void setProjection(const QMatrix4x4& projection);
             void setBoned(const bool boned);
             void setFocus(const bool focus);
-            void setBone(const int index, const QMatrix4x4& transform);
+            void setBone(const int index, const Transform& transform);
 
             void addPointLight(const PointLight& pointLight, const QVector3D& position);
             void clearPointLights();

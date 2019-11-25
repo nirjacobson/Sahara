@@ -427,7 +427,7 @@ Sahara::Armature* Sahara::Model::parseColladaArmatureNode(const QCollada::Node& 
 
 Sahara::Bone* Sahara::Model::parseColladaBoneNode(const QCollada::Node& boneNode)
 {
-  Sahara::Bone* bone = new Sahara::Bone(nullptr, boneNode.id(), boneNode.sid(), boneNode.transform());
+  Sahara::Bone* bone = new Sahara::Bone(nullptr, boneNode.id(), boneNode.sid(), Transform(boneNode.transform()));
 
   for (const QCollada::Node* node : boneNode.children()) {
     bone->addChild( parseColladaBoneNode(*node) );
@@ -490,24 +490,17 @@ Sahara::Animation* Sahara::Model::parseColladaModelAnimation(const QCollada::Ani
     keyframe.time = inputFloatSource.data()[i];
 
     QList<float> transformComponents = outputFloatSource.data().mid(i * outputSource.accessor().stride(), outputSource.accessor().stride());
-    QMatrix4x4 transform;
+    QMatrix4x4 transformMatrix;
     for (int j = 0; j < transformComponents.size(); j+= 4) {
       QVector4D row;
       row.setX(transformComponents[j + 0]);
       row.setY(transformComponents[j + 1]);
       row.setZ(transformComponents[j + 2]);
       row.setW(transformComponents[j + 3]);
-      transform.setRow(j / 4, row);
+      transformMatrix.setRow(j / 4, row);
     }
 
-    float rotationValues[] = {
-      transform.row(0).x(), transform.row(0).y(), transform.row(0).z(),
-      transform.row(1).x(), transform.row(1).y(), transform.row(1).z(),
-      transform.row(2).x(), transform.row(2).y(), transform.row(2).z(),
-    };
-
-    keyframe.rotation = QQuaternion::fromRotationMatrix(QMatrix3x3(rotationValues));
-    keyframe.translation = QVector3D(transform.column(3));
+    keyframe.transform = Transform(transformMatrix);
 
     keyframes.append(keyframe);
   }

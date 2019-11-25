@@ -13,6 +13,7 @@
 #include "instance/meshinstance.h"
 #include "collada/collada.h"
 #include "node/volume.h"
+#include "common/transform.h"
 
 namespace Sahara {
 

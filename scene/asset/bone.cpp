@@ -1,6 +1,6 @@
 #include "bone.h"
 
-Sahara::Bone::Bone(Sahara::Bone* const parent, const QString& id, const QString& name, const QMatrix4x4& transform)
+Sahara::Bone::Bone(Sahara::Bone* const parent, const QString& id, const QString& name, const Transform& transform)
     : _parent(parent)
     , _id(id)
     , _name(name)
@@ -42,12 +42,12 @@ void Sahara::Bone::addChild(Sahara::Bone* const child)
     _children.append(child);
 }
 
-const QMatrix4x4& Sahara::Bone::transform() const
+const Sahara::Transform& Sahara::Bone::transform() const
 {
     return _transform;
 }
 
-void Sahara::Bone::setTransform(const QMatrix4x4& transform)
+void Sahara::Bone::setTransform(const Sahara::Transform& transform)
 {
     _transform = transform;
 }

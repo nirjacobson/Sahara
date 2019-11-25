@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     render/renderer.cpp \
+    common/transform.cpp \
     render/vertexbuffer.cpp \
     programs/displayprogram.cpp \
     programs/gridprogram.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
 HEADERS += \
     Sahara_global.h \
     render/renderer.h \
+    common/transform.h \
     render/vertexbuffer.h \
     programs/displayprogram.h \
     programs/gridprogram.h \

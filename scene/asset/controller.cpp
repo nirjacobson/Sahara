@@ -1,7 +1,5 @@
 #include "controller.h"
 
-
-
 Sahara::Controller::Controller(Sahara::Mesh* const mesh, const QMatrix4x4& bindShapeMatrix, const QStringList& bones, const QList<QMatrix4x4>& inverseBindMatrices)
     : _mesh(mesh)
     , _bindShapeMatrix(bindShapeMatrix)

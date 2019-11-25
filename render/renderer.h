@@ -7,7 +7,8 @@
 #include "../programs/sceneprogram.h"
 #include "../scene/scene.h"
 #include "../scene/model.h"
-#include "../render/vertexbuffer.h"
+#include "vertexbuffer.h"
+#include "../common/transform.h"
 
 namespace Sahara {
 

@@ -2,7 +2,8 @@
 #define SAHARA_BONE_H
 
 #include <QList>
-#include <QMatrix4x4>
+
+#include "../../common/transform.h"
 
 namespace Sahara {
 
@@ -14,7 +15,7 @@ namespace Sahara {
             typedef std::function<void(const Bone&, const BoneVisitorStopFn&)> BoneVisitorConst;
 
         public:
-            Bone(Bone* const parent, const QString& id, const QString& name, const QMatrix4x4& transform);
+            Bone(Bone* const parent, const QString& id, const QString& name, const Transform& transform);
             ~Bone();
 
             const Bone& parent() const;
@@ -22,8 +23,8 @@ namespace Sahara {
             QString id() const;
             QString name() const;
             void addChild(Bone* const child);
-            const QMatrix4x4& transform() const;
-            void setTransform(const QMatrix4x4& transform);
+            const Transform& transform() const;
+            void setTransform(const Transform& transform);
 
             void depthFirst(const BoneVisitor& visitor);
             void depthFirst(const BoneVisitorConst& visitor) const;
@@ -32,7 +33,7 @@ namespace Sahara {
             Bone* _parent;
             QString _id;
             QString _name;
-            QMatrix4x4 _transform;
+            Transform _transform;
             QList<Bone*> _children;
 
             void depthFirstOnBone(const BoneVisitor& visitor, Bone& bone, const BoneVisitorStopFn& stopFn, const bool& stop);
