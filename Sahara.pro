@@ -44,7 +44,9 @@ SOURCES += \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
     scene/node/volume.cpp \
-    scene/scene.cpp
+    scene/scene.cpp \
+    widgets/modelwidget.cpp \
+    widgets/scenewidget.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -75,7 +77,9 @@ HEADERS += \
     scene/node/node.h \
     scene/node/nodeitem.h \
     scene/node/volume.h \
-    scene/scene.h
+    scene/scene.h \
+    widgets/modelwidget.h \
+    widgets/scenewidget.h
 
 INCLUDEPATH += \
     ../QCollada
@@ -96,3 +100,6 @@ DISTFILES += \
 
 RESOURCES += \
     shaders.qrc
+
+FORMS += \
+    widgets/modelwidget.ui

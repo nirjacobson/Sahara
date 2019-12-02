@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>models/chibi.dae</file>
+        <file>models/tree.dae</file>
+        <file>models/scorpion.png</file>
+        <file>models/scorpion.dae</file>
+    </qresource>
+</RCC>
