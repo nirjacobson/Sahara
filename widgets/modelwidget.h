@@ -22,6 +22,8 @@ namespace Sahara {
             ~ModelWidget();
 
             void setModel(const QString& path);
+            QStringList animationClipNames() const;
+            void setAnimationClip(const QString& name);
 
         signals:
             void initialized() const;

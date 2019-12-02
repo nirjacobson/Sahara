@@ -36,6 +36,7 @@ void Sahara::ModelWidget::setModel(const QString& path)
     _modelNode = new Node(QFileInfo(path).baseName(), _model, QMatrix4x4(QMatrix3x3() * scale));
 
     ui->sceneWidget->scene().root().addChild(_modelNode);
+    dialValueChanged();
 
     if (_model->animationClipNames().size() > 1) {
         ui->animationComboBox->clear();
@@ -50,6 +51,16 @@ void Sahara::ModelWidget::setModel(const QString& path)
     }
 }
 
+QStringList Sahara::ModelWidget::animationClipNames() const
+{
+    return _model->animationClipNames();
+}
+
+void Sahara::ModelWidget::setAnimationClip(const QString& name)
+{
+   ui->animationComboBox->setCurrentText(name);
+}
+
 void Sahara::ModelWidget::showAnimationsUI(const bool visible)
 {
     ui->animationComboBox->setVisible(visible);
@@ -58,6 +69,10 @@ void Sahara::ModelWidget::showAnimationsUI(const bool visible)
 
 void Sahara::ModelWidget::sceneWidgetInitialized()
 {
+    QMatrix4x4 cameraTransform;
+    cameraTransform.translate({0, 0, 16});
+    ui->sceneWidget->scene().cameraNode().setTransform(cameraTransform);
+
     PointLight* pointLight = new PointLight(QColor(255, 255, 255), 1, 0, 0);
     Node* pointLightNode = new Node("Point Light", pointLight, QMatrix4x4());
 
