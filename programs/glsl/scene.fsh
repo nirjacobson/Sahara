@@ -38,7 +38,7 @@ void main() {
     vec4 outputColor;
 
     if (uFocus == 0) {
-        outputColor = vec4(0, 0, 0, 1);
+        outputColor = vec4(0, 0, 0, 0);
 
         for (int i = 0; i < 6; i++) {
             if (i == uLighting.pointLightCount) {
@@ -49,28 +49,27 @@ void main() {
             vec3 toCamera = normalize(uCameraPosition - vertPosition);
             vec3 reflection = reflect(-toLight, normal);
 
-            vec3 emissionComponent = vec3(0, 0, 0);
-            vec3 ambientComponent = vec3(0, 0, 0);
             vec4 diffuse;
             if (uMaterial.textured > 0) {
                 diffuse = texture2D(uSampler, vertTexcoord);
             } else {
                 diffuse = uMaterial.diffuse;
             }
-            vec3 diffuseComponent = uLighting.pointLights[i].color * vec3(diffuse) * max(dot(normal, toLight), 0.0);
-            vec3 specularComponent = uLighting.pointLights[i].color * vec3(uMaterial.specular) * pow(max(dot(reflection, toCamera), 0.0), uMaterial.shininess);
+            vec4 pointLightColor = vec4(uLighting.pointLights[i].color, 1.0);
+            vec4 diffuseComponent = pointLightColor * diffuse * max(dot(normal, toLight), 0.0);
+            vec4 specularComponent = pointLightColor * uMaterial.specular * pow(max(dot(reflection, toCamera), 0.0), uMaterial.shininess);
 
             float distanceToLight = length(uLighting.pointLights[i].position - vertPosition);
             float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + uLighting.pointLights[i].quadraticAttenuation * distanceToLight) * distanceToLight);
 
-            vec3 colorContribution = attenuation * (emissionComponent + ambientComponent + diffuseComponent + specularComponent);
+            vec4 colorContribution = attenuation * (uMaterial.emission + uMaterial.ambient + diffuseComponent + specularComponent);
 
             float gamma = 1.0 / 2.2;
             colorContribution.r = pow(colorContribution.r, gamma);
             colorContribution.g = pow(colorContribution.g, gamma);
             colorContribution.b = pow(colorContribution.b, gamma);
 
-            outputColor += vec4(colorContribution, 0.0);
+            outputColor += colorContribution;
         }
     } else {
         outputColor = vec4(1, 0.5765, 0, 0.5);

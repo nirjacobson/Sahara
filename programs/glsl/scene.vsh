@@ -20,8 +20,8 @@ struct Render {
 };
 
 uniform Render uRender;
-uniform vec4 uBoneRotations[67];
-uniform vec3 uBoneTranslations[67];
+uniform vec4 uBoneRotations[66];
+uniform vec3 uBoneTranslations[66];
 
 vec4 hamilton(vec4 q1, vec4 q2) {
     vec4 product;
