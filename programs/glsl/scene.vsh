@@ -35,14 +35,14 @@ void main() {
 
     if (uRender.boned == 1) {
         float sum = 0.0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;
             }
             sum += weights[i];
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;
