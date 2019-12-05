@@ -91,7 +91,10 @@ void Sahara::ModelWidget::dialValueChanged()
     rotation.rotate(z, {0, 0, 1});
 
     float scale = static_cast<float>(ui->scaleDial->value()) / ui->scaleDial->maximum();
-    _modelNode->setTransform(QMatrix4x4(rotation.toGenericMatrix<3, 3>() * scale));
+    QMatrix4x4 translation;
+    float half = (_model->volume().upperVertex().y() - _model->volume().lowerVertex().y()) / 2.0f;
+    translation.translate({0, -(half + _model->volume().lowerVertex().y()), 0});
+    _modelNode->setTransform(QMatrix4x4(scale * rotation.toGenericMatrix<3, 3>()) * translation);
 }
 
 void Sahara::ModelWidget::filePushButtonClicked()
