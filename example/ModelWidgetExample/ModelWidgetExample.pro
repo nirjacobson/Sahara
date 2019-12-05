@@ -30,8 +30,8 @@ INCLUDEPATH += \
     ../../../Sahara
 
 LIBS += \
-    -L/home/pi/Qt/build-Sahara-Desktop-Debug -lSahara \
-    -L/home/pi/Qt/build-QCollada-Desktop-Debug -lQCollada
+    -L../../../build-Sahara-Desktop-Debug -lSahara \
+    -L../../../build-QCollada-Desktop-Debug -lQCollada
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
