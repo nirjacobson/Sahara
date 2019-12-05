@@ -8,6 +8,7 @@ Sahara::ModelWidgetExample::MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     connect(ui->modelWidget, &Sahara::ModelWidget::initialized, this, &MainWindow::modelWidgetInitialized);
+    connect(ui->actionChibi, &QAction::triggered, this, &MainWindow::actionChibiTriggered);
     connect(ui->actionScorpion, &QAction::triggered, this, &MainWindow::actionScorpionTriggered);
     connect(ui->actionTree, &QAction::triggered, this, &MainWindow::actionTreeTriggered);
 }
@@ -19,14 +20,23 @@ Sahara::ModelWidgetExample::MainWindow::~MainWindow()
 
 void Sahara::ModelWidgetExample::MainWindow::modelWidgetInitialized()
 {
-    ui->modelWidget->setModel(":/models/scorpion.dae");
+    ui->actionChibi->trigger();
+}
+
+void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()
+{
+    ui->modelWidget->setModel(":/models/chibi.dae");
     ui->modelWidget->setAnimationClip("Idle");
+    ui->actionChibi->setChecked(true);
+    ui->actionScorpion->setChecked(false);
+    ui->actionTree->setChecked(false);
 }
 
 void Sahara::ModelWidgetExample::MainWindow::actionScorpionTriggered()
 {
     ui->modelWidget->setModel(":/models/scorpion.dae");
     ui->modelWidget->setAnimationClip("Idle");
+    ui->actionChibi->setChecked(false);
     ui->actionScorpion->setChecked(true);
     ui->actionTree->setChecked(false);
 }
@@ -34,6 +44,7 @@ void Sahara::ModelWidgetExample::MainWindow::actionScorpionTriggered()
 void Sahara::ModelWidgetExample::MainWindow::actionTreeTriggered()
 {
     ui->modelWidget->setModel(":/models/tree.dae");
+    ui->actionChibi->setChecked(false);
     ui->actionScorpion->setChecked(false);
     ui->actionTree->setChecked(true);
 }

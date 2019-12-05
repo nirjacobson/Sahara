@@ -22,8 +22,8 @@ struct Render {
 };
 
 uniform Render uRender;
-uniform vec4 uBoneRotations[66];
-uniform vec3 uBoneTranslations[66];
+uniform vec4 uBoneRotations[75];
+uniform vec3 uBoneTranslations[75];
 
 vec3 rotate(vec4 q, vec3 p) {
     return p + 2.0 * cross(q.xyz, cross(q.xyz, p) + q.w * p);

@@ -24,6 +24,7 @@ namespace Sahara {
 
             private slots:
                 void modelWidgetInitialized();
+                void actionChibiTriggered();
                 void actionScorpionTriggered();
                 void actionTreeTriggered();
         };

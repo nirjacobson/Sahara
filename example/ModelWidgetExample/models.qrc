@@ -3,5 +3,6 @@
         <file>models/tree.dae</file>
         <file>models/scorpion.png</file>
         <file>models/scorpion.dae</file>
+        <file>models/chibi.dae</file>
     </qresource>
 </RCC>
