@@ -64,7 +64,7 @@ void main() {
             vec3 ambient = uMaterial.ambient.rgb;
             float diff = max(dot(normal, toLightN), 0.0);
             vec3 diffuse = diff * uLighting.pointLights[i].color;
-            float spec = pow(max(dot(toCamera, reflection), 0.0), 0.0);
+            float spec = pow(max(dot(toCamera, reflection), 0.0), uMaterial.shininess);
             vec3 specular = spec * uLighting.pointLights[i].color * uMaterial.specular.rgb;
 
             float distancetoLight = length(toLight);
