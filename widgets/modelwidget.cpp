@@ -86,9 +86,9 @@ void Sahara::ModelWidget::dialValueChanged()
     float z = static_cast<float>(ui->zDial->value()) / ui->zDial->maximum() * 360.0f;
 
     QMatrix4x4 rotation;
-    rotation.rotate(x, {1, 0, 0});
-    rotation.rotate(y, {0, 1, 0});
-    rotation.rotate(z, {0, 0, 1});
+    rotation.rotate(-x, {1, 0, 0});
+    rotation.rotate(-y, {0, 1, 0});
+    rotation.rotate(-z, {0, 0, 1});
 
     float scale = static_cast<float>(ui->scaleDial->value()) / ui->scaleDial->maximum();
     QMatrix4x4 translation;
