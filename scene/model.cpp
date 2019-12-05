@@ -262,6 +262,14 @@ QList<QPair<int, float>> Sahara::Model::reduceBones(const QList<QPair<int, float
 
     QList<QPair<int, float>> reducedBones = sortedBones.mid(0, max);
 
+    float sum = 0.0f;
+    for (int i = 0; i < reducedBones.size(); i++) {
+        sum += reducedBones[i].second;
+    }
+    for (int i = 0; i < reducedBones.size(); i++) {
+        reducedBones[i].second /= sum;
+    }
+
     return reducedBones;
 }
 
@@ -313,7 +321,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
       int pStride = triangles.inputs().size();
       for (int j = 0; j < triangles.p().size(); j += pStride) {
         int vertex = triangles.p()[j + pOffset];
-        const QList<QPair<int, float>>& vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(vertex), 4);
+        const QList<QPair<int, float>>& vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(vertex), 3);
 
         for (int k = 0; k < 4; k++) {
           if (k < vertexBonesAndWeights.size()) {

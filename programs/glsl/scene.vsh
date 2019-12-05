@@ -34,22 +34,14 @@ void main() {
     vec3 vertNormalResult;
 
     if (uRender.boned == 1) {
-        float sum = 0.0;
-        for (int i = 0; i < 3; i++) {
-            int index = int(bones[i]);
-            if (index == -1) {
-                break;
-            }
-            sum += weights[i];
-        }
         for (int i = 0; i < 3; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;
             }
             vec3 transformed = rotate(uBoneRotations[index], position) + uBoneTranslations[index];
-            vertPositionResult += transformed * weights[i] / sum;
-            vertNormalResult += rotate(uBoneRotations[index], normal) * weights[i] / sum;
+            vertPositionResult += transformed * weights[i];
+            vertNormalResult += rotate(uBoneRotations[index], normal) * weights[i];
         }
     } else {
         vertPositionResult = position;
