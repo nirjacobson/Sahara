@@ -1,5 +1,8 @@
 #version 100
 
+precision highp float;
+precision highp int;
+
 varying vec3 vertPosition;
 varying vec3 vertNormal;
 varying vec2 vertTexcoord;
@@ -45,31 +48,32 @@ void main() {
                 break;
             }
 
-            vec3 toLight = normalize(uLighting.pointLights[i].position - vertPosition);
+            vec3 toLight = uLighting.pointLights[i].position - vertPosition;
+            vec3 toLightN = normalize(toLight);
             vec3 toCamera = normalize(uCameraPosition - vertPosition);
-            vec3 reflection = reflect(-toLight, normal);
+            vec3 reflection = reflect(-toLightN, normal);
 
-            vec4 diffuse;
+            vec4 d;
             if (uMaterial.textured > 0) {
-                diffuse = texture2D(uSampler, vertTexcoord);
+                d = texture2D(uSampler, vertTexcoord);
             } else {
-                diffuse = uMaterial.diffuse;
+                d = uMaterial.diffuse;
             }
-            vec4 pointLightColor = vec4(uLighting.pointLights[i].color, 1.0);
-            vec4 diffuseComponent = pointLightColor * diffuse * max(dot(normal, toLight), 0.0);
-            vec4 specularComponent = pointLightColor * uMaterial.specular * pow(max(dot(reflection, toCamera), 0.0), uMaterial.shininess);
 
-            float distanceToLight = length(uLighting.pointLights[i].position - vertPosition);
-            float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + uLighting.pointLights[i].quadraticAttenuation * distanceToLight) * distanceToLight);
+            vec3 ambient = uMaterial.ambient.rgb;
+            float diff = max(dot(normal, toLightN), 0.0);
+            vec3 diffuse = diff * uLighting.pointLights[i].color;
+            float spec = pow(max(dot(toCamera, reflection), 0.0), 0.0);
+            vec3 specular = spec * uLighting.pointLights[i].color * uMaterial.specular.rgb;
 
-            vec4 colorContribution = attenuation * (uMaterial.emission + uMaterial.ambient + diffuseComponent + specularComponent);
+            float distancetoLight = length(toLight);
+            float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + (uLighting.pointLights[i].quadraticAttenuation * distancetoLight)) * distancetoLight);
 
-            float gamma = 1.0 / 2.2;
-            colorContribution.r = pow(colorContribution.r, gamma);
-            colorContribution.g = pow(colorContribution.g, gamma);
-            colorContribution.b = pow(colorContribution.b, gamma);
+            vec3 color = (ambient + attenuation * (diffuse + specular)) * d.rgb;
 
-            outputColor += colorContribution;
+            vec3 gamma = vec3(1.0/2.2, 1.0/2.2, 1.0/2.2);
+
+            outputColor += vec4(pow(color, gamma), d.a);
         }
     } else {
         outputColor = vec4(1, 0.5765, 0, 0.5);

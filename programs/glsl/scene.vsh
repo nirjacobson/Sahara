@@ -1,5 +1,7 @@
 #version 100
 
+precision highp float;
+
 attribute vec3 position;
 attribute vec3 normal;
 attribute vec2 texcoord;
@@ -23,46 +25,27 @@ uniform Render uRender;
 uniform vec4 uBoneRotations[66];
 uniform vec3 uBoneTranslations[66];
 
-vec4 hamilton(vec4 q1, vec4 q2) {
-    vec4 product;
-
-    product.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
-    product.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
-    product.z = (q1.q * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
-    product.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
-
-    return product;
-}
-
-vec4 inverse(vec4 q) {
-    return vec4(-q.xyz, q.w);
-}
-
 vec3 rotate(vec4 q, vec3 p) {
-    vec4 temp = hamilton(q, vec4(p.xyz, 0));
-    vec3 rotated = hamilton(temp, inverse(q)).xyz;
-
-    return rotated;
+    return p + 2.0 * cross(q.xyz, cross(q.xyz, p) + q.w * p);
 }
 
 void main() {
     vec3 vertPositionResult;
+    vec3 vertNormalResult;
 
     if (uRender.boned == 1) {
-        float sum = 0.0;
-        for (int i = 0; i < 4; i++) {
-            sum += weights[i];
-        }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;
             }
-            vec3 rotatedAndTranslated = rotate(uBoneRotations[index], position) + uBoneTranslations[index];
-            vertPositionResult += rotatedAndTranslated * (weights[i]/sum);
+            vec3 transformed = rotate(uBoneRotations[index], position) + uBoneTranslations[index];
+            vertPositionResult += transformed * weights[i];
+            vertNormalResult += rotate(uBoneRotations[index], normal) * weights[i];
         }
     } else {
         vertPositionResult = position;
+        vertNormalResult = normal;
     }
 
     if (uFocus == 1) {
@@ -71,7 +54,7 @@ void main() {
 
     vec4 vertPositionResult4 = vec4(vertPositionResult, 1.0);
     vertPosition = vec3(uRender.modelView * vertPositionResult4);
-    vertNormal = mat3(uRender.modelView) * normal;
+    vertNormal = mat3(uRender.modelView) * vertNormalResult;
     vertTexcoord = texcoord;
 
     gl_Position = uRender.projection * uRender.inverseCamera * uRender.modelView * vertPositionResult4;
