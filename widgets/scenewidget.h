@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions>
 #include <QTime>
 #include <QTimer>
+#include <QPainter>
 
 #include "scene/scene.h"
 #include "render/renderer.h"
@@ -35,6 +36,7 @@ namespace Sahara {
             Sahara::Renderer* _renderer;
 
             QTime _time;
+            QTime _frameTime;
             QTimer _timer;
 
         private slots:

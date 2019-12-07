@@ -32,7 +32,13 @@ void Sahara::SceneWidget::initializeGL()
 
 void Sahara::SceneWidget::paintGL()
 {
+    glEnable(GL_DEPTH_TEST);
     _renderer->render(_scene, _time.elapsed() / 1000.0f);
+
+    double fps = 1000.0 / _frameTime.restart();
+
+    QPainter painter(this);
+    painter.drawText(16, height() - 16, QString::number(fps, 'f', 2)+" FPS");
 }
 
 void Sahara::SceneWidget::resizeGL(int w, int h)
