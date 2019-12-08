@@ -16,6 +16,11 @@ Sahara::Scene& Sahara::SceneWidget::scene()
     return _scene;
 }
 
+void Sahara::SceneWidget::showGrid(const bool visible)
+{
+    _renderer->renderGrid(visible);
+}
+
 void Sahara::SceneWidget::initializeGL()
 {
     initializeOpenGLFunctions();

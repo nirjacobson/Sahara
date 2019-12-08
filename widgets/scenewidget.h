@@ -23,6 +23,8 @@ namespace Sahara {
 
             Scene& scene();
 
+            void showGrid(const bool visible);
+
         signals:
             void initialized() const;
 

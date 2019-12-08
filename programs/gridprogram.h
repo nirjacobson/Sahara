@@ -5,6 +5,7 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
+#include "../render/grid/grid.h"
 
 namespace Sahara
 {
@@ -23,15 +24,16 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setPosition(const int stride, const void* offset);
-
+            void setGrid(Grid& grid);
+            void clearGrid(Grid& grid);
+            void setAxis(Axis& axis);
+            void clearAxis(Axis& axis);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
             void setProjection(const QMatrix4x4& projection);
 
         private:
             QOpenGLShader* _vertexShader;
             QOpenGLShader* _fragmentShader;
-            QOpenGLShaderProgram* _program;
 
             GLint _position;
 

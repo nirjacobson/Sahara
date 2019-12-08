@@ -1,6 +1,8 @@
 #include "renderer.h"
 
 Sahara::Renderer::Renderer()
+    : _grid(32)
+    , _renderGrid(false)
 {
     glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
     glClearDepthf(1.0f);
@@ -23,8 +25,16 @@ void Sahara::Renderer::render(Sahara::Scene& scene, const float time)
     renderScene(scene, time);
 }
 
+void Sahara::Renderer::renderGrid(const bool visible)
+{
+    _renderGrid = visible;
+}
+
 void Sahara::Renderer::renderScene(Scene& scene, const float time)
 {
+    if (_renderGrid)
+        renderGrid(scene);
+
     _sceneProgram.bind();
 
     _sceneProgram.setInverseCamera(scene.cameraNode().globalTransform().inverted());
@@ -52,6 +62,40 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
      });
 
     _sceneProgram.release();
+}
+
+void Sahara::Renderer::renderGrid(Scene& scene)
+{
+    _gridProgram.bind();
+
+    _gridProgram.setInverseCamera(scene.cameraNode().globalTransform().inverted());
+    _gridProgram.setProjection(scene.camera().projection());
+
+    _gridProgram.setGrid(_grid);
+    for (int i = 0; i < 2 * _grid.length(); i++) {
+        glDrawArrays(GL_LINE_LOOP, i * 4, 4);
+    }
+    _gridProgram.clearGrid(_grid);
+
+    _gridProgram.setAxis(_grid.xAxis());
+    for (int i = 0; i < 6; i++) {
+        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+    }
+    _gridProgram.clearAxis(_grid.xAxis());
+
+    _gridProgram.setAxis(_grid.yAxis());
+    for (int i = 0; i < 6; i++) {
+        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+    }
+    _gridProgram.clearAxis(_grid.yAxis());
+
+    _gridProgram.setAxis(_grid.zAxis());
+    for (int i = 0; i < 6; i++) {
+        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+    }
+    _gridProgram.clearAxis(_grid.zAxis());
+
+    _gridProgram.release();
 }
 
 void Sahara::Renderer::renderModel(Sahara::Model& model, const float time)

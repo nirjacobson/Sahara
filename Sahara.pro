@@ -47,7 +47,9 @@ SOURCES += \
     scene/scene.cpp \
     widgets/modelwidget.cpp \
     widgets/scenewidget.cpp \
-    render/withvertexbuffers.cpp
+    render/grid/grid.cpp \
+    render/withvertexbuffers.cpp \
+    render/grid/axis.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -81,7 +83,9 @@ HEADERS += \
     scene/scene.h \
     widgets/modelwidget.h \
     widgets/scenewidget.h \
-    render/withvertexbuffers.h
+    render/grid/grid.h \
+    render/withvertexbuffers.h \
+    render/grid/axis.h
 
 INCLUDEPATH += \
     ../QCollada
