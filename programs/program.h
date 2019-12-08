@@ -2,6 +2,9 @@
 #define SAHARA_PROGRAM_H
 
 #include <QtOpenGL>
+#include <QOpenGLShaderProgram>
+
+#include "../render/withvertexbuffers.h"
 
 namespace Sahara
 {
@@ -19,6 +22,14 @@ namespace Sahara
             GLfloat* qVector3DToArray(const QVector3D& vector) const;
             GLfloat* qVector4DToArray(const QVector4D& vector) const;
             GLfloat* qMatrix4x4ToArray(const QMatrix4x4& matrix) const;
+
+            QOpenGLShaderProgram& program();
+
+            void layout(WithVertexBuffers& wvb);
+            void unlayout(WithVertexBuffers& wvb);
+
+        private:
+            QOpenGLShaderProgram _program;
     };
 
 }

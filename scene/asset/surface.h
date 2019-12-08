@@ -3,25 +3,21 @@
 
 #include <QMap>
 
-#include "../../render/vertexbuffer.h"
+#include "../../render/withvertexbuffers.h"
 
 namespace Sahara
 {
-    typedef QMap<QString, VertexBuffer> VertexBufferDict;
 
-    class Surface
+    class Surface : public WithVertexBuffers
     {
         public:
             Surface(const QString& material);
 
             void addVertexBuffer(const QString& name, const GLenum type, const char* const data, const int size, const int stride);
 
-            const VertexBufferDict& vertexBuffers() const;
-            VertexBufferDict& vertexBuffers();
             QString material() const;
 
         private:
-            VertexBufferDict _vertexBuffers;
             QString _material;
     };
 

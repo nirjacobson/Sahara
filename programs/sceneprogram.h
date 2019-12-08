@@ -74,7 +74,6 @@ namespace Sahara
         private:
             QOpenGLShader* _vertexShader;
             QOpenGLShader* _fragmentShader;
-            QOpenGLShaderProgram* _program;
 
             RenderUniforms _render;
 

@@ -47,3 +47,31 @@ GLfloat* Sahara::Program::qMatrix4x4ToArray(const QMatrix4x4& matrix) const
 
     return data;
 }
+
+QOpenGLShaderProgram& Sahara::Program::program()
+{
+    return _program;
+}
+
+void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
+{
+    for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
+        GLint location = _program.attributeLocation(i.key());
+        if (location >= 0) {
+            i.value().bind();
+            _program.enableAttributeArray(location);
+            glVertexAttribPointer(static_cast<GLuint>(location), i.value().stride(), i.value().type(), GL_FALSE, 0, reinterpret_cast<void*>(0));
+            i.value().release();
+        }
+
+        assert(glGetError() == GL_NO_ERROR);
+    }
+}
+
+void Sahara::Program::unlayout(Sahara::WithVertexBuffers& wvb)
+{
+    for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
+        GLint location = _program.attributeLocation(i.key());
+        _program.disableAttributeArray(location);
+    }
+}

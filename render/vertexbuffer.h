@@ -4,6 +4,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
 #include <QtDebug>
+#include <QMap>
 
 namespace Sahara
 {
@@ -32,6 +33,7 @@ namespace Sahara
             int _size;
     };
 
+    typedef QMap<QString, VertexBuffer> VertexBufferDict;
 }
 
 #endif // SAHARA_VERTEXBUFFER_H

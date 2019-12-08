@@ -46,7 +46,8 @@ SOURCES += \
     scene/node/volume.cpp \
     scene/scene.cpp \
     widgets/modelwidget.cpp \
-    widgets/scenewidget.cpp
+    widgets/scenewidget.cpp \
+    render/withvertexbuffers.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -79,7 +80,8 @@ HEADERS += \
     scene/node/volume.h \
     scene/scene.h \
     widgets/modelwidget.h \
-    widgets/scenewidget.h
+    widgets/scenewidget.h \
+    render/withvertexbuffers.h
 
 INCLUDEPATH += \
     ../QCollada
