@@ -5,6 +5,7 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
+#include "../render/display/display.h"
 
 namespace Sahara
 {
@@ -29,9 +30,8 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setPosition(const int stride, const void* offset);
-            void setNormal(const int stride, const void* offset);
-
+            void setDisplay(Display& display);
+            void clearDisplay(Display& display);
             void setModelView(const QMatrix4x4& modelView);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
             void setProjection(const QMatrix4x4& projection);
@@ -41,7 +41,6 @@ namespace Sahara
         private:
             QOpenGLShader* _vertexShader;
             QOpenGLShader* _fragmentShader;
-            QOpenGLShaderProgram* _program;
 
             GLint _position;
             GLint _normal;

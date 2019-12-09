@@ -46,10 +46,14 @@ SOURCES += \
     scene/node/volume.cpp \
     scene/scene.cpp \
     widgets/modelwidget.cpp \
-    widgets/scenewidget.cpp \
+    widgets/scenewidget/scenewidget.cpp \
     render/grid/grid.cpp \
     render/withvertexbuffers.cpp \
-    render/grid/axis.cpp
+    render/grid/axis.cpp \
+    widgets/scenewidget/cameracontrol.cpp \
+    render/display/pointlightdisplay.cpp \
+    render/display/display.cpp \
+    render/display/cameradisplay.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -82,10 +86,14 @@ HEADERS += \
     scene/node/volume.h \
     scene/scene.h \
     widgets/modelwidget.h \
-    widgets/scenewidget.h \
+    widgets/scenewidget/scenewidget.h \
     render/grid/grid.h \
     render/withvertexbuffers.h \
-    render/grid/axis.h
+    render/grid/axis.h \
+    widgets/scenewidget/cameracontrol.h \
+    render/display/pointlightdisplay.h \
+    render/display/display.h \
+    render/display/cameradisplay.h
 
 INCLUDEPATH += \
     ../QCollada

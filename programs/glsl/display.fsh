@@ -1,5 +1,7 @@
 #version 100
 
+precision highp float;
+
 varying vec3 vertPosition;
 varying vec3 vertNormal;
 

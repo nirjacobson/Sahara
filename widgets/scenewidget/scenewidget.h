@@ -10,6 +10,7 @@
 
 #include "scene/scene.h"
 #include "render/renderer.h"
+#include "cameracontrol.h"
 
 namespace Sahara {
 
@@ -22,20 +23,32 @@ namespace Sahara {
             ~SceneWidget();
 
             Scene& scene();
+            void flyThrough(const bool on);
 
             void showGrid(const bool visible);
 
         signals:
             void initialized() const;
+            void cameraMotion() const;
+            void keyPressed(QKeyEvent* event);
+            void mouseMoved(QVector2D ndc);
+            void mousePressed(QVector2D ndc);
 
         protected:
             void initializeGL() override;
             void paintGL() override;
             void resizeGL(int w, int h) override;
+            void keyPressEvent(QKeyEvent* event) override;
+            void keyReleaseEvent(QKeyEvent* event) override;
+            void mousePressEvent(QMouseEvent* event) override;
+            void mouseMoveEvent(QMouseEvent* event) override;
 
         private:
             Sahara::Scene _scene;
             Sahara::Renderer* _renderer;
+
+            bool _flyThrough;
+            CameraControl _cameraControl;
 
             QTime _time;
             QTime _frameTime;

@@ -205,7 +205,7 @@
   <customwidget>
    <class>Sahara::SceneWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>widgets/scenewidget.h</header>
+   <header>widgets/scenewidget/scenewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

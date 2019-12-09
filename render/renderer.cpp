@@ -25,7 +25,7 @@ void Sahara::Renderer::render(Sahara::Scene& scene, const float time)
     renderScene(scene, time);
 }
 
-void Sahara::Renderer::renderGrid(const bool visible)
+void Sahara::Renderer::showGrid(const bool visible)
 {
     _renderGrid = visible;
 }
@@ -48,6 +48,8 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
     scene.root().depthFirst([&](Node& node, auto&) {
        transforms.push(transforms.top() * node.transform());
        Model* model;
+       PointLight* pointLight;
+       Camera* camera;
        if ((model = dynamic_cast<Model*>(&node.item()))) {
            _sceneProgram.setModelView(transforms.top());
            _sceneProgram.setFocus(false);
@@ -55,6 +57,12 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
            if (node.hasFocus()) {
                _sceneProgram.setFocus(true);
                renderModel(*model, time);
+           }
+       } else if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+           renderPointLight(scene, transforms.top(), node.hasFocus());
+       } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+           if (&node != &scene.cameraNode()) {
+               renderCamera(scene, transforms.top(), node.hasFocus());
            }
        }
     }, [&](Node&, auto&) {
@@ -96,6 +104,54 @@ void Sahara::Renderer::renderGrid(Scene& scene)
     _gridProgram.clearAxis(_grid.zAxis());
 
     _gridProgram.release();
+}
+
+void Sahara::Renderer::renderPointLight(Scene& scene, const QMatrix4x4& modelView, const bool focus)
+{
+    _displayProgram.bind();
+
+    _displayProgram.setModelView(modelView);
+    _displayProgram.setInverseCamera(scene.cameraNode().globalTransform().inverted());
+    _displayProgram.setProjection(scene.camera().projection());
+    _displayProgram.setCameraPosition(scene.cameraNode().globalPosition());
+    _displayProgram.setFocus(focus);
+
+    _displayProgram.setDisplay(_pointLightDisplay);
+
+    VertexBuffer buffer = _pointLightDisplay.vertexBuffers().first();
+    int vertices = buffer.count();
+
+    for (int i = 0; i < vertices / 3; i++) {
+        glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+    }
+
+    _displayProgram.clearDisplay(_pointLightDisplay);
+
+    _displayProgram.release();
+}
+
+void Sahara::Renderer::renderCamera(Sahara::Scene& scene, const QMatrix4x4& modelView, const bool focus)
+{
+    _displayProgram.bind();
+
+    _displayProgram.setModelView(modelView);
+    _displayProgram.setInverseCamera(scene.cameraNode().globalTransform().inverted());
+    _displayProgram.setProjection(scene.camera().projection());
+    _displayProgram.setCameraPosition(scene.cameraNode().globalPosition());
+    _displayProgram.setFocus(focus);
+
+    _displayProgram.setDisplay(_cameraDisplay);
+
+    VertexBuffer buffer = _cameraDisplay.vertexBuffers().first();
+    int vertices = buffer.count();
+
+    for (int i = 0; i < vertices / 3; i++) {
+        glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+    }
+
+    _displayProgram.clearDisplay(_cameraDisplay);
+
+    _displayProgram.release();
 }
 
 void Sahara::Renderer::renderModel(Sahara::Model& model, const float time)
