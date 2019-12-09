@@ -58,12 +58,18 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
                _sceneProgram.setFocus(true);
                renderModel(*model, time);
            }
-       } else if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-           renderPointLight(scene, transforms.top(), node.hasFocus());
-       } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-           if (&node != &scene.cameraNode()) {
-               renderCamera(scene, transforms.top(), node.hasFocus());
+       } else {
+           _sceneProgram.release();
+
+           if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+               renderPointLight(scene, transforms.top(), node.hasFocus());
+           } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+               if (&node != &scene.cameraNode()) {
+                   renderCamera(scene, transforms.top(), node.hasFocus());
+               }
            }
+
+           _sceneProgram.bind();
        }
     }, [&](Node&, auto&) {
         transforms.pop();
