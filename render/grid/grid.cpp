@@ -32,8 +32,8 @@ Sahara::Axis&Sahara::Grid::zAxis()
 
 void Sahara::Grid::initPositionBuffer()
 {
-    int dataSize = 2 * _length * 4 * 3 * static_cast<int>(sizeof(GLfloat));
-    char* data = new char[static_cast<unsigned long>(dataSize)];
+    int numFloats = 2 * _length * 4 * 3;
+    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D topLeft, bottomLeft, topRight, bottomRight;
@@ -67,7 +67,7 @@ void Sahara::Grid::initPositionBuffer()
 
         for (int j = 0; j < vertices.size(); j++) {
             for (int k = 0; k < 3; k++) {
-                *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[j][k];
+                data[dataIndex++] = vertices[j][k];
             }
         }
     }
@@ -100,14 +100,14 @@ void Sahara::Grid::initPositionBuffer()
 
         for (int j = 0; j < vertices.size(); j++) {
             for (int k = 0; k < 3; k++) {
-                *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[j][k];
+                data[dataIndex++] = vertices[j][k];
             }
         }
     }
 
-    VertexBuffer positionBuffer(GL_FLOAT);
+    VertexBuffer positionBuffer;
     positionBuffer.setStride(3);
-    positionBuffer.write(data, dataSize);
+    positionBuffer.write(data, numFloats);
 
     delete [] data;
 
@@ -117,19 +117,19 @@ void Sahara::Grid::initPositionBuffer()
 void Sahara::Grid::initColorBuffer()
 {
     int vertices = 2 * _length * 4;
-    int dataSize = vertices * 3 * static_cast<int>(sizeof(GLfloat));
-    char* data = new char[static_cast<unsigned long>(dataSize)];
+    int numFloats = vertices * 3;
+    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < 3; j++) {
-            *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = 0.5;
+            data[dataIndex++] = 0.5;
         }
     }
 
-    VertexBuffer colorBuffer(GL_FLOAT);
+    VertexBuffer colorBuffer;
     colorBuffer.setStride(3);
-    colorBuffer.write(data, dataSize);
+    colorBuffer.write(data, numFloats);
 
     delete [] data;
 

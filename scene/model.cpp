@@ -198,16 +198,16 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
         const QCollada::FloatSource& floatSource = dynamic_cast<const QCollada::FloatSource&>(source);
 
         int elemsPerBuffer = triangles.count() * 3;
-        int dataSize = elemsPerBuffer * floatSource.accessor().stride() * static_cast<int>(sizeof(GLfloat));
+        int numFloats = elemsPerBuffer * floatSource.accessor().stride();
         int dataIndex = 0;
-        char* data = new char[static_cast<unsigned long>(dataSize)];
+        GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
 
         for (int i = 0; i < elemsPerBuffer * triangles.inputs().size(); i += triangles.inputs().size()) {
           int sourceIndex = triangles.p()[i+offset];
           int sourceElementIndex = sourceIndex * source.accessor().stride();
 
           for (int j = 0; j < floatSource.accessor().stride(); j++) {
-            *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = floatSource.data()[sourceElementIndex + j];
+            data[dataIndex++] = floatSource.data()[sourceElementIndex + j];
           }
 
           if (semantic == QCollada::Triangles::Semantic::VERTEX) {
@@ -235,7 +235,7 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
             ? QCollada::Vertices::semanticToString( geometry->mesh().vertices().inputs().begin().key() )
             : QCollada::Triangles::semanticToString(semantic)).toLower();
 
-        surface.addVertexBuffer(bufferName, GL_FLOAT, data, dataSize, floatSource.accessor().stride());
+        surface.addVertexBuffer(bufferName, data, numFloats, floatSource.accessor().stride());
         delete [] data;
       }
       surfaces.append(surface);
@@ -310,10 +310,10 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
       const QCollada::Triangles& triangles = geometry->mesh().triangles().at(i);
 
       int elemsPerBuffer = triangles.count() * 3;
-      int bonesDataSize = elemsPerBuffer * 4 * static_cast<int>(sizeof(GLfloat));
-      char* bonesData = new char[static_cast<unsigned long>(bonesDataSize)];
-      int weightsDataSize = elemsPerBuffer * 4 * static_cast<int>(sizeof(GLfloat));
-      char* weightsData = new char[static_cast<unsigned long>(weightsDataSize)];
+      int bonesNumFloats = elemsPerBuffer * 4;
+      GLfloat* bonesData = new GLfloat[static_cast<unsigned long>(bonesNumFloats)];
+      int weightsNumFloats = elemsPerBuffer * 4;
+      GLfloat* weightsData = new GLfloat[static_cast<unsigned long>(weightsNumFloats)];
       int bonesDataIndex = 0;
       int weightsDataIndex = 0;
 
@@ -327,11 +327,11 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
           if (k < vertexBonesAndWeights.size()) {
             const QPair<int, float>& boneAndWeight = vertexBonesAndWeights.at(k);
 
-            reinterpret_cast<GLfloat*>(bonesData)[bonesDataIndex] = boneAndWeight.first;
-            reinterpret_cast<GLfloat*>(weightsData)[weightsDataIndex] = boneAndWeight.second;
+            bonesData[bonesDataIndex] = boneAndWeight.first;
+            weightsData[weightsDataIndex] = boneAndWeight.second;
           } else {
-            reinterpret_cast<GLfloat*>(bonesData)[bonesDataIndex] = -1;
-            reinterpret_cast<GLfloat*>(weightsData)[weightsDataIndex] = -1;
+            bonesData[bonesDataIndex] = -1;
+            weightsData[weightsDataIndex] = -1;
           }
 
           bonesDataIndex++;
@@ -339,8 +339,8 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
         }
       }
 
-      surface.addVertexBuffer("bones", GL_FLOAT, bonesData, bonesDataSize, 4);
-      surface.addVertexBuffer("weights", GL_FLOAT, weightsData, weightsDataSize, 4);
+      surface.addVertexBuffer("bones", bonesData, bonesNumFloats, 4);
+      surface.addVertexBuffer("weights", weightsData, weightsNumFloats, 4);
 
       delete [] bonesData;
       delete [] weightsData;
@@ -400,7 +400,7 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
           meshInstanceMaterials.insert(instanceMaterial.symbol(), materials[ instanceMaterial.target().mid(1) ]);
         }
 
-        Sahara::MeshInstance* meshInstance = new MeshInstance(meshInstanceMaterials, transformStack.top(), mesh);
+        Sahara::InstanceMesh* meshInstance = new InstanceMesh(meshInstanceMaterials, transformStack.top(), mesh);
         instances.append(meshInstance);
       } else if ((instanceController = dynamic_cast<const QCollada::InstanceController*>(node.item()))) {
         Sahara::Controller* controller = controllers[instanceController->url().mid(1)];
@@ -413,7 +413,7 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
           controllerInstanceMaterials.insert(instanceMaterial.symbol(), materials[ instanceMaterial.target().mid(1) ]);
         }
 
-        Sahara::ControllerInstance* controllerInstance = new ControllerInstance(armature, controllerInstanceMaterials, transformStack.top(), controller);
+        Sahara::InstanceController* controllerInstance = new InstanceController(armature, controllerInstanceMaterials, transformStack.top(), controller);
         instances.append(controllerInstance);
       }
 

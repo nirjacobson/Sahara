@@ -13,7 +13,7 @@ namespace Sahara
         public:
             Surface(const QString& material);
 
-            void addVertexBuffer(const QString& name, const GLenum type, const char* const data, const int size, const int stride);
+            void addVertexBuffer(const QString& name, const GLfloat* const data, const int size, const int stride);
 
             QString material() const;
 

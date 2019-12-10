@@ -12,8 +12,6 @@ varying vec3 vertPosition;
 varying vec3 vertNormal;
 varying vec2 vertTexcoord;
 
-uniform int uFocus;
-
 struct Render {
     mat4 modelView;
     mat4 inverseCamera;
@@ -46,10 +44,6 @@ void main() {
     } else {
         vertPositionResult = position;
         vertNormalResult = normal;
-    }
-
-    if (uFocus == 1) {
-        vertPositionResult *= 1.01;
     }
 
     vec4 vertPositionResult4 = vec4(vertPositionResult, 1.0);

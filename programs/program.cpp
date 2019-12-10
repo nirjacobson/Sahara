@@ -60,7 +60,7 @@ void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
         if (location >= 0) {
             i.value().bind();
             _program.enableAttributeArray(location);
-            glVertexAttribPointer(static_cast<GLuint>(location), i.value().stride(), i.value().type(), GL_FALSE, 0, reinterpret_cast<void*>(0));
+            glVertexAttribPointer(static_cast<GLuint>(location), i.value().stride(), GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(0));
             i.value().release();
         }
 

@@ -21,10 +21,9 @@ void Sahara::CameraDisplay::initBuffers()
     };
 
     int vertices = elements.size() / 2;
-
-    int dataSize = vertices * 3 * static_cast<int>(sizeof(GLfloat));
-    char* positionData = new char[static_cast<unsigned long>(dataSize)];
-    char* normalData = new char[static_cast<unsigned long>(dataSize)];
+    int numFloats = vertices * 3;
+    GLfloat* positionData = new GLfloat[static_cast<unsigned long>(numFloats)];
+    GLfloat* normalData = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     for (int i = 0; i < vertices; i++) {
@@ -35,20 +34,20 @@ void Sahara::CameraDisplay::initBuffers()
       QList<float> normal = normals.mid(normalIndex * 3, 3);
 
       for (int j = 0; j < 3; j++) {
-        reinterpret_cast<GLfloat*>(positionData)[dataIndex * 3 + j] = position[j];
-        reinterpret_cast<GLfloat*>(normalData)[dataIndex * 3 + j] = normal[j];
+        positionData[dataIndex * 3 + j] = position[j];
+        normalData[dataIndex * 3 + j] = normal[j];
       }
 
       dataIndex++;
     }
 
-    VertexBuffer positionBuffer(GL_FLOAT);
+    VertexBuffer positionBuffer;
     positionBuffer.setStride(3);
-    positionBuffer.write(positionData, dataSize);
+    positionBuffer.write(positionData, numFloats);
 
-    VertexBuffer normalBuffer(GL_FLOAT);
+    VertexBuffer normalBuffer;
     normalBuffer.setStride(3);
-    normalBuffer.write(normalData, dataSize);
+    normalBuffer.write(normalData, numFloats);
 
     delete [] positionData;
     delete [] normalData;

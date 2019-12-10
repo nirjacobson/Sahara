@@ -40,7 +40,7 @@ float Sahara::Volume::length()
 bool Sahara::Volume::intersects(const QVector3D& point) const {
     return (
         point.x() >= _lowerVertex.x() && point.x() < _upperVertex.x() &&
-        point.y() >= _lowerVertex.y() && point.x() < _upperVertex.y() &&
-        point.z() >= _lowerVertex.z() && point.x() < _upperVertex.z()
+        point.y() >= _lowerVertex.y() && point.y() < _upperVertex.y() &&
+        point.z() >= _lowerVertex.z() && point.z() < _upperVertex.z()
     );
 }

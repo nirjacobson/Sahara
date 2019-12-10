@@ -53,10 +53,10 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
        if ((model = dynamic_cast<Model*>(&node.item()))) {
            _sceneProgram.setModelView(transforms.top());
            _sceneProgram.setFocus(false);
-           renderModel(*model, time);
+           renderModel(*model, false, time);
            if (node.hasFocus()) {
                _sceneProgram.setFocus(true);
-               renderModel(*model, time);
+               renderModel(*model, true, time);
            }
        } else {
            _sceneProgram.release();
@@ -160,32 +160,32 @@ void Sahara::Renderer::renderCamera(Sahara::Scene& scene, const QMatrix4x4& mode
     _displayProgram.release();
 }
 
-void Sahara::Renderer::renderModel(Sahara::Model& model, const float time)
+void Sahara::Renderer::renderModel(Sahara::Model& model, const bool focus, const float time)
 {
     model.animate(time);
 
     for (Instance* instance : model.instances()) {
-        MeshInstance* meshInstance;
-        ControllerInstance* controllerInstance;
-        if ((meshInstance = dynamic_cast<MeshInstance*>(instance))) {
+        InstanceMesh* meshInstance;
+        InstanceController* controllerInstance;
+        if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
             _sceneProgram.setBoned(false);
 
             for (Surface& surface : meshInstance->mesh().surfaces()) {
-                renderSurface(surface, *meshInstance);
+                renderSurface(surface, *meshInstance, focus);
             }
-        } else if ((controllerInstance = dynamic_cast<ControllerInstance*>(instance))) {
+        } else if ((controllerInstance = dynamic_cast<InstanceController*>(instance))) {
             _sceneProgram.setBoned(true);
 
             processControllerInstanceArmature(*controllerInstance);
 
             for (Surface& surface : controllerInstance->controller().mesh().surfaces()) {
-                renderSurface(surface, *controllerInstance);
+                renderSurface(surface, *controllerInstance, focus);
             }
         }
     }
 }
 
-void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instance)
+void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instance, const bool focus)
 {
     const Material& material = instance.getMaterial(surface.material());
     _sceneProgram.setMaterial(material);
@@ -193,8 +193,17 @@ void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instanc
         (*material.image())->bind();
     }
 
-   _sceneProgram.setSurface(surface);
-   glDrawArrays(GL_TRIANGLES, 0, surface.vertexBuffers().first().count());
+    _sceneProgram.setSurface(surface);
+    if (focus) {
+        VertexBuffer buffer = surface.vertexBuffers().first();
+        int vertices = buffer.count();
+
+        for (int i = 0; i < vertices / 3; i++) {
+            glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+        }
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, surface.vertexBuffers().first().count());
+    }
    _sceneProgram.clearSurface(surface);
 
    assert(glGetError() == GL_NO_ERROR);
@@ -211,7 +220,7 @@ void Sahara::Renderer::processSceneLighting(Sahara::Scene& scene)
     });
 }
 
-void Sahara::Renderer::processControllerInstanceArmature(Sahara::ControllerInstance& controllerInstance)
+void Sahara::Renderer::processControllerInstanceArmature(Sahara::InstanceController& controllerInstance)
 {
     const Controller& controller = controllerInstance.controller();
 

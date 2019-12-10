@@ -12,10 +12,8 @@ namespace Sahara
     class VertexBuffer
     {
         public:
-            VertexBuffer(const GLenum type);
+            VertexBuffer();
             ~VertexBuffer();
-
-            GLenum type() const;
 
             int stride() const;
             int size() const;
@@ -23,12 +21,11 @@ namespace Sahara
 
             void bind();
             void release();
-            void write(const char* const data, const int size);
+            void write(const GLfloat* const data, const int size);
             void setStride(const int stride);
 
         private:
             QOpenGLBuffer _buffer;
-            GLenum _type;
             int _stride;
             int _size;
     };

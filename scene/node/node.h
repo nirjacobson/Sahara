@@ -20,6 +20,7 @@ namespace Sahara
             Node(const QString& name, NodeItem* const nodeItem, const QMatrix4x4& transform);
             ~Node();
 
+            bool isRoot() const;
             Node& parent();
 
             int index() const;

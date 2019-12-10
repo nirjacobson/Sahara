@@ -1,5 +1,5 @@
-#ifndef SAHARA_CONTROLLERINSTANCE_H
-#define SAHARA_CONTROLLERINSTANCE_H
+#ifndef SAHARA_INSTANCECONTROLLER_H
+#define SAHARA_INSTANCECONTROLLER_H
 
 #include "instance.h"
 #include "../asset/controller.h"
@@ -7,10 +7,10 @@
 
 namespace Sahara
 {
-    class ControllerInstance : public Instance
+    class InstanceController : public Instance
     {
         public:
-            ControllerInstance(Armature* armature, const MaterialDict& materials, const QMatrix4x4& transform, Controller* controller);
+            InstanceController(Armature* armature, const MaterialDict& materials, const QMatrix4x4& transform, Controller* controller);
 
             Controller& controller();
             const Controller& controller() const;
@@ -24,4 +24,4 @@ namespace Sahara
 
 }
 
-#endif // SAHARA_CONTROLLERINSTANCE_H
+#endif // SAHARA_INSTANCECONTROLLER_H

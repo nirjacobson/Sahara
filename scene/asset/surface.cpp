@@ -6,9 +6,9 @@ Sahara::Surface::Surface(const QString& material)
 
 }
 
-void Sahara::Surface::addVertexBuffer(const QString& name, const GLenum type, const char* const data, const int size, const int stride)
+void Sahara::Surface::addVertexBuffer(const QString& name, const GLfloat* const data, const int size, const int stride)
 {
-    VertexBuffer buffer(type);
+    VertexBuffer buffer;
     buffer.setStride(stride);
     buffer.write(data, size);
 

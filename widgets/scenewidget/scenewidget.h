@@ -29,6 +29,7 @@ namespace Sahara {
 
         signals:
             void initialized() const;
+            void sizeChanged(QSize size);
             void cameraMotion() const;
             void keyPressed(QKeyEvent* event);
             void mouseMoved(QVector2D ndc);

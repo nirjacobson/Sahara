@@ -119,6 +119,7 @@ void Sahara::SceneProgram::addPointLight(const Sahara::PointLight& pointLight, c
 void Sahara::SceneProgram::clearPointLights()
 {
     _pointLights = 0;
+    program().setUniformValue(_lighting.pointLightCount, _pointLights);
 }
 
 void Sahara::SceneProgram::setMaterial(const Sahara::Material& material)

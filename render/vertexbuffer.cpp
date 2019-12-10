@@ -1,8 +1,7 @@
 #include "vertexbuffer.h"
 
 
-Sahara::VertexBuffer::VertexBuffer(const GLenum type)
-    : _type(type)
+Sahara::VertexBuffer::VertexBuffer()
 {
     _buffer.create();
 }
@@ -10,11 +9,6 @@ Sahara::VertexBuffer::VertexBuffer(const GLenum type)
 Sahara::VertexBuffer::~VertexBuffer()
 {
 
-}
-
-GLenum Sahara::VertexBuffer::type() const
-{
-    return _type;
 }
 
 int Sahara::VertexBuffer::stride() const
@@ -29,18 +23,7 @@ int Sahara::VertexBuffer::size() const
 
 int Sahara::VertexBuffer::count() const
 {
-    int componentSize;
-    switch (_type) {
-        default:
-        case GL_FLOAT:
-            componentSize = sizeof(GLfloat);
-            break;
-        case GL_INT:
-            componentSize = sizeof(GLint);
-            break;
-    }
-
-    return _size / (_stride * componentSize);
+    return _size / _stride;
 }
 
 void Sahara::VertexBuffer::bind()
@@ -53,11 +36,12 @@ void Sahara::VertexBuffer::release()
     _buffer.release();
 }
 
-void Sahara::VertexBuffer::write(const char* const data, const int size)
+void Sahara::VertexBuffer::write(const GLfloat* const data, const int size)
 {
+    int sizeBytes = static_cast<int>(sizeof(GLfloat)) * size;
     _buffer.bind();
-    _buffer.allocate(size);
-    _buffer.write(0, data, size);
+    _buffer.allocate(sizeBytes);
+    _buffer.write(0, data, sizeBytes);
     _buffer.release();
 
     assert(glGetError() == GL_NO_ERROR);

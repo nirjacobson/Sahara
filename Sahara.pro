@@ -37,9 +37,7 @@ SOURCES += \
     scene/asset/mesh.cpp \
     scene/asset/pointlight.cpp \
     scene/asset/surface.cpp \
-    scene/instance/controllerinstance.cpp \
     scene/instance/instance.cpp \
-    scene/instance/meshinstance.cpp \
     scene/model.cpp \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
@@ -53,7 +51,9 @@ SOURCES += \
     widgets/scenewidget/cameracontrol.cpp \
     render/display/pointlightdisplay.cpp \
     render/display/display.cpp \
-    render/display/cameradisplay.cpp
+    render/display/cameradisplay.cpp \
+    scene/instance/instancecontroller.cpp \
+    scene/instance/instancemesh.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -77,9 +77,7 @@ HEADERS += \
     scene/asset/mesh.h \
     scene/asset/pointlight.h \
     scene/asset/surface.h \
-    scene/instance/controllerinstance.h \
     scene/instance/instance.h \
-    scene/instance/meshinstance.h \
     scene/model.h \
     scene/node/node.h \
     scene/node/nodeitem.h \
@@ -93,7 +91,9 @@ HEADERS += \
     widgets/scenewidget/cameracontrol.h \
     render/display/pointlightdisplay.h \
     render/display/display.h \
-    render/display/cameradisplay.h
+    render/display/cameradisplay.h \
+    scene/instance/instancecontroller.h \
+    scene/instance/instancemesh.h
 
 INCLUDEPATH += \
     ../QCollada

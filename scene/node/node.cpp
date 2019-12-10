@@ -20,6 +20,11 @@ Sahara::Node::~Node()
     }
 }
 
+bool Sahara::Node::isRoot() const
+{
+    return _parent == nullptr;
+}
+
 Sahara::Node& Sahara::Node::parent()
 {
     return *_parent;

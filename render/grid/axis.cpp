@@ -10,8 +10,8 @@ Sahara::Axis::Axis(const char axis, const int length)
 
 void Sahara::Axis::initPositionBuffer()
 {
-    int dataSize = 6 * 4 * 3 * static_cast<int>(sizeof(GLfloat));
-    char* data = new char[static_cast<unsigned long>(dataSize)];
+    int numFloats = 6 * 4 * 3;
+    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D topLeft, bottomLeft, topRight, bottomRight;
@@ -46,7 +46,7 @@ void Sahara::Axis::initPositionBuffer()
     for (int i = 0; i < vertices.size(); i++) {
         vertices[i] = axisRotation.map(vertices[i]);
         for (int j = 0; j < 3; j++) {
-            *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[i][j];
+            data[dataIndex++] = vertices[i][j];
         }
     }
 
@@ -65,7 +65,7 @@ void Sahara::Axis::initPositionBuffer()
     for (int i = 0; i < vertices.size(); i++) {
         vertices[i] = axisRotation.map(vertices[i]);
         for (int j = 0; j < 3; j++) {
-            *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[i][j];
+            data[dataIndex++] = vertices[i][j];
         }
     }
 
@@ -90,7 +90,7 @@ void Sahara::Axis::initPositionBuffer()
     for (int i = 0; i < vertices.size(); i++) {
         vertices[i] = axisRotation.map(vertices[i]);
         for (int j = 0; j < 3; j++) {
-            *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[i][j];
+            data[dataIndex++] = vertices[i][j];
         }
     }
 
@@ -111,14 +111,14 @@ void Sahara::Axis::initPositionBuffer()
         for (int j = 0; j < vertices.size(); j++) {
             vertices[j] = axisRotation.map(vertices[j]);
             for (int k = 0; k < 3; k++) {
-                *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = vertices[j][k];
+                data[dataIndex++] = vertices[j][k];
             }
         }
     }
 
-    VertexBuffer positionBuffer(GL_FLOAT);
+    VertexBuffer positionBuffer;
     positionBuffer.setStride(3);
-    positionBuffer.write(data, dataSize);
+    positionBuffer.write(data, numFloats);
 
     delete [] data;
 
@@ -128,8 +128,8 @@ void Sahara::Axis::initPositionBuffer()
 void Sahara::Axis::initColorBuffer()
 {
     int vertices = 6 * 4;
-    int dataSize = vertices * 3 * static_cast<int>(sizeof(GLfloat));
-    char* data = new char[static_cast<unsigned long>(dataSize)];
+    int numFloats = vertices * 3;
+    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D color;
@@ -146,14 +146,14 @@ void Sahara::Axis::initColorBuffer()
     }
 
     for (int i = 0; i < vertices; i++) {
-        *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = color.x();
-        *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = color.y();
-        *(reinterpret_cast<GLfloat*>(data) + dataIndex++) = color.z();
+        data[dataIndex++] = color.x();
+        data[dataIndex++] = color.y();
+        data[dataIndex++] = color.z();
     }
 
-    VertexBuffer colorBuffer(GL_FLOAT);
+    VertexBuffer colorBuffer;
     colorBuffer.setStride(3);
-    colorBuffer.write(data, dataSize);
+    colorBuffer.write(data, numFloats);
 
     delete [] data;
 
