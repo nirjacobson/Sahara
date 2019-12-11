@@ -55,6 +55,7 @@ void Sahara::SceneWidget::paintGL()
 
 void Sahara::SceneWidget::resizeGL(int w, int h)
 {
+    _scene.camera().setAspect(static_cast<float>(w) / h);
     emit sizeChanged(QSize(w, h));
 }
 
