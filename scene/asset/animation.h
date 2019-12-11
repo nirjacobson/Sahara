@@ -13,6 +13,8 @@ namespace Sahara
 
     class Animation : public Asset
     {
+        friend class JSON;
+
         public:
 
             class Keyframe

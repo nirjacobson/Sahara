@@ -12,6 +12,8 @@ namespace Sahara
 
     class Camera : public Asset, public NodeItem
     {
+        friend class JSON;
+
         public:
 
             enum Mode {

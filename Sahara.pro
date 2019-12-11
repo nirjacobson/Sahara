@@ -53,7 +53,8 @@ SOURCES += \
     render/display/display.cpp \
     render/display/cameradisplay.cpp \
     scene/instance/instancecontroller.cpp \
-    scene/instance/instancemesh.cpp
+    scene/instance/instancemesh.cpp \
+    json/json.cpp
 
 HEADERS += \
     Sahara_global.h \
@@ -93,7 +94,8 @@ HEADERS += \
     render/display/display.h \
     render/display/cameradisplay.h \
     scene/instance/instancecontroller.h \
-    scene/instance/instancemesh.h
+    scene/instance/instancemesh.h \
+    json/json.h
 
 INCLUDEPATH += \
     ../QCollada

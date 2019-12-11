@@ -12,6 +12,8 @@ namespace Sahara
 
     class AnimationClip : public Asset
     {
+        friend class JSON;
+
         public:
             AnimationClip(const QString& name, const QList<Animation*>& animations);
 

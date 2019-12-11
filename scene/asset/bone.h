@@ -9,6 +9,8 @@ namespace Sahara {
 
     class Bone
     {
+        friend class JSON;
+
         private:
             typedef std::function<void(void)> BoneVisitorStopFn;
             typedef std::function<void(Bone&, const BoneVisitorStopFn&)> BoneVisitor;

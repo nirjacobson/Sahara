@@ -9,6 +9,8 @@ namespace Sahara {
 
     class Transform
     {
+        friend class JSON;
+
         public:
             Transform();
             Transform(const QQuaternion& rotation, const QVector3D& translation);

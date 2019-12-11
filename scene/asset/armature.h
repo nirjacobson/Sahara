@@ -9,6 +9,8 @@ namespace Sahara
 
     class Armature : public Asset
     {
+        friend class JSON;
+
         public:
             Armature(Bone* const root);
             ~Armature();
