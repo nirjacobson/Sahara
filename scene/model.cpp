@@ -177,76 +177,85 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
 {
   MeshDict meshes;
 
-  QVector3D leastVertex;
-  QVector3D greatestVertex;
+  QVector3D lowerVertex;
+  QVector3D upperVertex;
 
   for (auto it = collada.geometries().begin(); it != collada.geometries().end(); it++) {
+    Sahara::Mesh* modelMesh = new Sahara::Mesh;
     QString id = it.key();
     QCollada::Geometry* geometry = it.value();
 
-    QList<Sahara::Surface> surfaces;
     for (const QCollada::Triangles& triangles : geometry->mesh().triangles()) {
-      Surface surface(triangles.material());
+      Surface* meshSurface = new Surface(*modelMesh, triangles.material());
       for (auto it = triangles.inputs().begin(); it != triangles.inputs().end(); ++it) {
         QCollada::Triangles::Semantic semantic = it.key();
         QString url = it.value().first;
+        QString sourceName = url.mid(1);
         int offset = it.value().second;
 
-        const QCollada::Source& source = (semantic == QCollada::Triangles::Semantic::VERTEX)
-          ? geometry->mesh().getSource(geometry->mesh().vertices().inputs().begin().value())
-          : geometry->mesh().getSource(url);
-        const QCollada::FloatSource& floatSource = dynamic_cast<const QCollada::FloatSource&>(source);
+        if (!modelMesh->sources().contains(sourceName)) {
+            const QCollada::Source& source = (semantic == QCollada::Triangles::Semantic::VERTEX)
+              ? geometry->mesh().getSource(geometry->mesh().vertices().inputs().begin().value())
+              : geometry->mesh().getSource(url);
+            const QCollada::FloatSource& floatSource = dynamic_cast<const QCollada::FloatSource&>(source);
 
-        int elemsPerBuffer = triangles.count() * 3;
-        int numFloats = elemsPerBuffer * floatSource.accessor().stride();
-        int dataIndex = 0;
-        GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
+            Sahara::Source* meshSource = new Sahara::Source(floatSource.data(), floatSource.accessor().stride());
+            modelMesh->addSource(sourceName, meshSource);
 
-        for (int i = 0; i < elemsPerBuffer * triangles.inputs().size(); i += triangles.inputs().size()) {
-          int sourceIndex = triangles.p()[i+offset];
-          int sourceElementIndex = sourceIndex * source.accessor().stride();
+            if (semantic == QCollada::Triangles::Semantic::VERTEX) {
+                for (int i = 0; i < floatSource.accessor().count(); i++) {
+                    GLfloat x = floatSource.data().at(i * floatSource.accessor().stride() + 0);
+                    GLfloat y = floatSource.data().at(i * floatSource.accessor().stride() + 1);
+                    GLfloat z = floatSource.data().at(i * floatSource.accessor().stride() + 2);
 
-          for (int j = 0; j < floatSource.accessor().stride(); j++) {
-            data[dataIndex++] = floatSource.data()[sourceElementIndex + j];
-          }
+                    if (x < lowerVertex.x())
+                        lowerVertex.setX(x);
+                    if (y < lowerVertex.y())
+                        lowerVertex.setY(y);
+                    if (z < lowerVertex.z())
+                        lowerVertex.setZ(z);
 
-          if (semantic == QCollada::Triangles::Semantic::VERTEX) {
-            for (int j = 0; j < 3; j++) {
-              float component = floatSource.data()[sourceElementIndex + j];
-              if (component < leastVertex[j]) {
-                switch (j) {
-                  case 0: leastVertex.setX(component); break;
-                  case 1: leastVertex.setY(component); break;
-                  case 2: leastVertex.setZ(component); break;
+                    if (x > upperVertex.x())
+                        upperVertex.setX(x);
+                    if (y > upperVertex.y())
+                        upperVertex.setY(y);
+                    if (z > upperVertex.z())
+                        upperVertex.setZ(z);
                 }
-              }
-              if (component > greatestVertex[j]) {
-                switch (j) {
-                  case 0: greatestVertex.setX(component); break;
-                  case 1: greatestVertex.setY(component); break;
-                  case 2: greatestVertex.setZ(component); break;
-                }
-              }
             }
-          }
         }
 
-        QString bufferName = ((semantic == QCollada::Triangles::Semantic::VERTEX)
-            ? QCollada::Vertices::semanticToString( geometry->mesh().vertices().inputs().begin().key() )
-            : QCollada::Triangles::semanticToString(semantic)).toLower();
+        Sahara::Surface::Input::Semantic surfaceSemantic;
+        switch (semantic) {
+            case QCollada::Triangles::VERTEX:
+                surfaceSemantic = Sahara::Surface::Input::Semantic::VERTEX;
+                break;
+            case QCollada::Triangles::NORMAL:
+                surfaceSemantic = Sahara::Surface::Input::Semantic::NORMAL;
+                break;
+            case QCollada::Triangles::TEXCOORD:
+                surfaceSemantic = Sahara::Surface::Input::Semantic::TEXCOORD;
+                break;
+            case QCollada::Triangles::COLOR:
+                surfaceSemantic = Sahara::Surface::Input::Semantic::COLOR;
+                break;
 
-        surface.addVertexBuffer(bufferName, data, numFloats, floatSource.accessor().stride());
-        delete [] data;
+        }
+        meshSurface->setInput(surfaceSemantic, sourceName, offset);
       }
-      surfaces.append(surface);
-    }
+      meshSurface->setElements(triangles.p());
 
-    Sahara::Mesh* modelMesh = new Sahara::Mesh(surfaces);
+      for (const Sahara::Surface::Input::Semantic input : meshSurface->inputs()) {
+          meshSurface->generateVertexBuffer(input);
+      }
+
+      modelMesh->addSurface(meshSurface);
+    }
 
     meshes.insert(id, modelMesh);
   }
 
-  volume = Volume(leastVertex, greatestVertex);
+  volume = Volume(lowerVertex, upperVertex);
 
   return meshes;
 }
@@ -280,8 +289,6 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
   for (auto it = collada.controllers().begin(); it != collada.controllers().end(); it++) {
     QString id = it.key();
     QCollada::Controller* controller = it.value();
-    const QCollada::Asset* geometryAsset = collada.resolve(controller->skin().source());
-    const QCollada::Geometry* geometry = dynamic_cast<const QCollada::Geometry*>(geometryAsset);
     Sahara::Mesh* mesh = meshes[controller->skin().source().mid(1)];
 
     const QCollada::Source& weightSource = controller->skin().getSource(
@@ -305,47 +312,57 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
       verticesBonesAndWeights.append( vertexBonesAndWeights );
     }
 
-    for (int i = 0; i < mesh->surfaces().size(); i++) {
-      Sahara::Surface& surface = mesh->surfaces()[i];
-      const QCollada::Triangles& triangles = geometry->mesh().triangles().at(i);
+    QList<float> bonesSourceData;
+    QList<float> weightsSourceData;
 
-      int elemsPerBuffer = triangles.count() * 3;
-      int bonesNumFloats = elemsPerBuffer * 4;
-      GLfloat* bonesData = new GLfloat[static_cast<unsigned long>(bonesNumFloats)];
-      int weightsNumFloats = elemsPerBuffer * 4;
-      GLfloat* weightsData = new GLfloat[static_cast<unsigned long>(weightsNumFloats)];
-      int bonesDataIndex = 0;
-      int weightsDataIndex = 0;
+    for (int i = 0; i < controller->skin().vertexWeights().vcount().size(); i++) {
+        const QList<QPair<int, float>> vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(i), 3);
 
-      int pOffset = triangles.inputs()[QCollada::Triangles::Semantic::VERTEX].second;
-      int pStride = triangles.inputs().size();
-      for (int j = 0; j < triangles.p().size(); j += pStride) {
-        int vertex = triangles.p()[j + pOffset];
-        const QList<QPair<int, float>>& vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(vertex), 3);
-
-        for (int k = 0; k < 4; k++) {
-          if (k < vertexBonesAndWeights.size()) {
-            const QPair<int, float>& boneAndWeight = vertexBonesAndWeights.at(k);
-
-            bonesData[bonesDataIndex] = boneAndWeight.first;
-            weightsData[weightsDataIndex] = boneAndWeight.second;
-          } else {
-            bonesData[bonesDataIndex] = -1;
-            weightsData[weightsDataIndex] = -1;
-          }
-
-          bonesDataIndex++;
-          weightsDataIndex++;
+        for (int k = 0; k < vertexBonesAndWeights.size(); k++) {
+            bonesSourceData.append(vertexBonesAndWeights.at(k).first);
+            weightsSourceData.append(vertexBonesAndWeights.at(k).second);
         }
-      }
 
-      surface.addVertexBuffer("bones", bonesData, bonesNumFloats, 4);
-      surface.addVertexBuffer("weights", weightsData, weightsNumFloats, 4);
-
-      delete [] bonesData;
-      delete [] weightsData;
+        for (int k = 0; k < qMax(0, 4 - vertexBonesAndWeights.size()); k++) {
+            bonesSourceData.append(-1);
+            weightsSourceData.append(-1);
+        }
     }
 
+    Sahara::Source* bonesSource = new Sahara::Source(bonesSourceData, 4);
+    Sahara::Source* weightsSource = new Sahara::Source(weightsSourceData, 4);
+
+    mesh->addSource("bones", bonesSource);
+    mesh->addSource("weights", weightsSource);
+
+    for (int i = 0; i < mesh->surfaces(); i++) {
+        Sahara::Surface& surface = mesh->surface(i);
+
+        surface.setInput(Sahara::Surface::Input::Semantic::BONES, "bones", surface.inputs().size());
+        surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
+
+        QList<int> elements;
+        int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::VERTEX);
+
+        QList<QList<int>> parts;
+        int partSize = surface.inputs().size() - 2;
+        for (int j = 0; j < surface.elements().size() / partSize; j++) {
+            parts.append(surface.elements().mid(j * partSize, partSize));
+        }
+
+        for (int j = 0; j < parts.size(); j++) {
+            const QList<int>& part = parts.at(j);
+            QList<int> newPart = part;
+            newPart.append(part.at(vertexOffset));
+            newPart.append(part.at(vertexOffset));
+            elements.append(newPart);
+        }
+
+        surface.setElements(elements);
+
+        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::BONES);
+        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::WEIGHTS);
+    }
 
     const QCollada::Source& jointsSource = controller->skin().getSource( controller->skin().joints().inputs()[QCollada::Joints::Semantic::JOINT] );
     const QCollada::NameSource& jointsNameSource = dynamic_cast<const QCollada::NameSource&>(jointsSource);

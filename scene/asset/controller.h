@@ -4,7 +4,7 @@
 #include <QMatrix4x4>
 
 #include "asset.h"
-#include "mesh.h"
+#include "mesh/mesh.h"
 
 namespace Sahara
 {

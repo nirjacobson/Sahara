@@ -2,7 +2,7 @@
 #define SAHARA_INSTANCEMESH_H
 
 #include "instance.h"
-#include "../asset/mesh.h"
+#include "../asset/mesh/mesh.h"
 
 namespace Sahara
 {

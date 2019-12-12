@@ -1,7 +1,7 @@
 #ifndef SAHARA_MODEL_H
 #define SAHARA_MODEL_H
 
-#include "asset/mesh.h"
+#include "asset/mesh/surface.h"
 #include "asset/controller.h"
 #include "asset/material.h"
 #include "asset/armature.h"
@@ -11,6 +11,7 @@
 #include "instance/instance.h"
 #include "instance/instancecontroller.h"
 #include "instance/instancemesh.h"
+#include "asset/image.h"
 #include "collada/collada.h"
 #include "node/volume.h"
 #include "common/transform.h"

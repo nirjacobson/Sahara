@@ -9,6 +9,8 @@
 #include "../programs/displayprogram.h"
 #include "../scene/scene.h"
 #include "../scene/model.h"
+#include "../scene/asset/mesh/mesh.h"
+#include "../scene/asset/mesh/surface.h"
 #include "../scene/asset/pointlight.h"
 #include "vertexbuffer.h"
 #include "grid/grid.h"
