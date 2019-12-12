@@ -25,8 +25,8 @@ int Sahara::Surface::Input::offset() const
 QString Sahara::Surface::Input::semanticToString(const Sahara::Surface::Input::Semantic semantic)
 {
     switch (semantic) {
-        case Sahara::Surface::Input::VERTEX:
-            return "VERTEX";
+        case Sahara::Surface::Input::POSITION:
+            return "POSITION";
         case Sahara::Surface::Input::NORMAL:
             return "NORMAL";
         case Sahara::Surface::Input::TEXCOORD:

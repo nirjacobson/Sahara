@@ -15,7 +15,7 @@ namespace Sahara {
             class Input {
                 public:
                     enum Semantic {
-                        VERTEX,
+                        POSITION,
                         NORMAL,
                         TEXCOORD,
                         COLOR,

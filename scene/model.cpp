@@ -228,7 +228,7 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
         Sahara::Surface::Input::Semantic surfaceSemantic;
         switch (semantic) {
             case QCollada::Triangles::VERTEX:
-                surfaceSemantic = Sahara::Surface::Input::Semantic::VERTEX;
+                surfaceSemantic = Sahara::Surface::Input::Semantic::POSITION;
                 break;
             case QCollada::Triangles::NORMAL:
                 surfaceSemantic = Sahara::Surface::Input::Semantic::NORMAL;
@@ -342,7 +342,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
         surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
 
         QList<int> elements;
-        int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::VERTEX);
+        int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
 
         QList<QList<int>> parts;
         int partSize = surface.inputs().size() - 2;
