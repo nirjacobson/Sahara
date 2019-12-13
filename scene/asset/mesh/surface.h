@@ -4,7 +4,7 @@
 #include <QMap>
 
 #include "../../../render/withvertexbuffers.h"
-#include "mesh.h"
+#include "source.h"
 
 namespace Sahara {
 
@@ -36,14 +36,14 @@ namespace Sahara {
                     int _offset;
             };
 
-            Surface(Mesh& mesh, const QString& material);
+            Surface(const SourceDict& sourceDict, const QString& material);
 
             const QString& material() const;
 
             QList<Input::Semantic> inputs() const;
-            QString source(const Input::Semantic semantic) const;
-            int offset(const Input::Semantic semantic) const;
             void setInput(const Input::Semantic semantic, const QString& source, const int offset);
+
+            int offset(const Input::Semantic semantic) const;
 
             const QList<int>& elements() const;
             void setElements(const QList<int>& elements);
@@ -52,7 +52,7 @@ namespace Sahara {
 
         private:
 
-            Mesh& _mesh;
+            const SourceDict& _sources;
             QString _material;
             QMap<Input::Semantic, Input> _inputs;
             QList<int> _elements;

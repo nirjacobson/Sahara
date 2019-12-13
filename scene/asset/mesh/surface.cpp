@@ -42,8 +42,8 @@ QString Sahara::Surface::Input::semanticToString(const Sahara::Surface::Input::S
     return "";
 }
 
-Sahara::Surface::Surface(Sahara::Mesh& mesh, const QString& material)
-    : _mesh(mesh)
+Sahara::Surface::Surface(const SourceDict& sourceDict, const QString& material)
+    : _sources(sourceDict)
     , _material(material)
 {
 
@@ -57,11 +57,6 @@ const QString&Sahara::Surface::material() const
 QList<Sahara::Surface::Input::Semantic> Sahara::Surface::inputs() const
 {
     return _inputs.keys();
-}
-
-QString Sahara::Surface::source(const Sahara::Surface::Input::Semantic semantic) const
-{
-    return _inputs[semantic].source();
 }
 
 int Sahara::Surface::offset(const Sahara::Surface::Input::Semantic semantic) const
@@ -86,15 +81,15 @@ void Sahara::Surface::setElements(const QList<int>& elements)
 
 void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semantic input)
 {
-    const Source& source = _mesh.source(_inputs[input].source());
+    const Source* source = _sources[_inputs[input].source()];
 
-    int dataSize = _elements.size() / _inputs.size() * source.stride();
+    int dataSize = _elements.size() / _inputs.size() * source->stride();
     GLfloat* data = new GLfloat[static_cast<unsigned long>(dataSize)];
     int dataIndex = 0;
 
     for (int i = _inputs[input].offset(); i < _elements.size(); i += _inputs.size()) {
         int index = _elements.at(i);
-        QList<float> element = source.at(index);
+        QList<float> element = source->at(index);
         for (int j = 0; j < element.size(); j++) {
             data[dataIndex++] = element.at(j);
         }
@@ -102,7 +97,9 @@ void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semanti
 
     VertexBuffer vertexBuffer;
     vertexBuffer.write(data, dataSize);
-    vertexBuffer.setStride(source.stride());
+    vertexBuffer.setStride(source->stride());
+
+    delete [] data;
 
     WithVertexBuffers::addVertexBuffer(Input::semanticToString(input).toLower(), vertexBuffer);
 }

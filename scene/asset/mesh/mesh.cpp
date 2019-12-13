@@ -20,17 +20,12 @@ QStringList Sahara::Mesh::sources() const
     return _sources.keys();
 }
 
-const Sahara::Source&Sahara::Mesh::source(const QString& name) const
-{
-    return *_sources[name];
-}
-
-void Sahara::Mesh::addSource(const QString& name, Sahara::Source* source)
+void Sahara::Mesh::add(const QString& name, Sahara::Source* source)
 {
     _sources[name] = source;
 }
 
-int Sahara::Mesh::surfaces() const
+int Sahara::Mesh::count() const
 {
     return _surfaces.size();
 }
@@ -40,7 +35,10 @@ Sahara::Surface&Sahara::Mesh::surface(const int i)
     return *_surfaces.at(i);
 }
 
-void Sahara::Mesh::addSurface(Sahara::Surface* surface)
+Sahara::Surface& Sahara::Mesh::add(const QString& material)
 {
+    Surface* surface = new Surface(_sources, material);
     _surfaces.append(surface);
+
+    return *surface;
 }

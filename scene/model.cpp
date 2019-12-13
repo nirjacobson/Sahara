@@ -186,7 +186,7 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
     QCollada::Geometry* geometry = it.value();
 
     for (const QCollada::Triangles& triangles : geometry->mesh().triangles()) {
-      Surface* meshSurface = new Surface(*modelMesh, triangles.material());
+      Surface& meshSurface = modelMesh->add(triangles.material());
       for (auto it = triangles.inputs().begin(); it != triangles.inputs().end(); ++it) {
         QCollada::Triangles::Semantic semantic = it.key();
         QString url = it.value().first;
@@ -200,7 +200,7 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
             const QCollada::FloatSource& floatSource = dynamic_cast<const QCollada::FloatSource&>(source);
 
             Sahara::Source* meshSource = new Sahara::Source(floatSource.data(), floatSource.accessor().stride());
-            modelMesh->addSource(sourceName, meshSource);
+            modelMesh->add(sourceName, meshSource);
 
             if (semantic == QCollada::Triangles::Semantic::VERTEX) {
                 for (int i = 0; i < floatSource.accessor().count(); i++) {
@@ -241,15 +241,13 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
                 break;
 
         }
-        meshSurface->setInput(surfaceSemantic, sourceName, offset);
+        meshSurface.setInput(surfaceSemantic, sourceName, offset);
       }
-      meshSurface->setElements(triangles.p());
+      meshSurface.setElements(triangles.p());
 
-      for (const Sahara::Surface::Input::Semantic input : meshSurface->inputs()) {
-          meshSurface->generateVertexBuffer(input);
+      for (const Sahara::Surface::Input::Semantic input : meshSurface.inputs()) {
+          meshSurface.generateVertexBuffer(input);
       }
-
-      modelMesh->addSurface(meshSurface);
     }
 
     meshes.insert(id, modelMesh);
@@ -295,75 +293,6 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
           controller->skin().vertexWeights().inputs()[QCollada::VertexWeights::Semantic::WEIGHT].first);
     const QCollada::FloatSource& weightSourceFloat = dynamic_cast<const QCollada::FloatSource&>(weightSource);
 
-    QList<QList<QPair<int, float>>> verticesBonesAndWeights;
-    int vIndex = 0;
-    for (int i = 0; i < controller->skin().vertexWeights().vcount().size(); i++) {
-      int numBones = controller->skin().vertexWeights().vcount()[i];
-
-      QList<QPair<int, float>> vertexBonesAndWeights;
-      for (int j = 0; j < numBones; j++) {
-        vertexBonesAndWeights.append( QPair<int, float>(
-          controller->skin().vertexWeights().v()[vIndex+0],
-          weightSourceFloat.data()[ controller->skin().vertexWeights().v()[vIndex+1] ]
-        ) );
-        vIndex += 2;
-      }
-
-      verticesBonesAndWeights.append( vertexBonesAndWeights );
-    }
-
-    QList<float> bonesSourceData;
-    QList<float> weightsSourceData;
-
-    for (int i = 0; i < controller->skin().vertexWeights().vcount().size(); i++) {
-        const QList<QPair<int, float>> vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(i), 3);
-
-        for (int k = 0; k < vertexBonesAndWeights.size(); k++) {
-            bonesSourceData.append(vertexBonesAndWeights.at(k).first);
-            weightsSourceData.append(vertexBonesAndWeights.at(k).second);
-        }
-
-        for (int k = 0; k < qMax(0, 4 - vertexBonesAndWeights.size()); k++) {
-            bonesSourceData.append(-1);
-            weightsSourceData.append(-1);
-        }
-    }
-
-    Sahara::Source* bonesSource = new Sahara::Source(bonesSourceData, 4);
-    Sahara::Source* weightsSource = new Sahara::Source(weightsSourceData, 4);
-
-    mesh->addSource("bones", bonesSource);
-    mesh->addSource("weights", weightsSource);
-
-    for (int i = 0; i < mesh->surfaces(); i++) {
-        Sahara::Surface& surface = mesh->surface(i);
-
-        surface.setInput(Sahara::Surface::Input::Semantic::BONES, "bones", surface.inputs().size());
-        surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
-
-        QList<int> elements;
-        int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
-
-        QList<QList<int>> parts;
-        int partSize = surface.inputs().size() - 2;
-        for (int j = 0; j < surface.elements().size() / partSize; j++) {
-            parts.append(surface.elements().mid(j * partSize, partSize));
-        }
-
-        for (int j = 0; j < parts.size(); j++) {
-            const QList<int>& part = parts.at(j);
-            QList<int> newPart = part;
-            newPart.append(part.at(vertexOffset));
-            newPart.append(part.at(vertexOffset));
-            elements.append(newPart);
-        }
-
-        surface.setElements(elements);
-
-        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::BONES);
-        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::WEIGHTS);
-    }
-
     const QCollada::Source& jointsSource = controller->skin().getSource( controller->skin().joints().inputs()[QCollada::Joints::Semantic::JOINT] );
     const QCollada::NameSource& jointsNameSource = dynamic_cast<const QCollada::NameSource&>(jointsSource);
     const QCollada::Source& ibmSource = controller->skin().getSource( controller->skin().joints().inputs()[QCollada::Joints::Semantic::INV_BIND_MATRIX] );
@@ -387,7 +316,16 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
       inverseBindMatrices.append(ibm);
     }
 
-    Sahara::Controller* modelController = new Sahara::Controller(mesh, controller->skin().bindShapeMatrix(), bones, inverseBindMatrices);
+    Sahara::Controller* modelController = new Sahara::Controller(
+                mesh,
+                controller->skin().bindShapeMatrix(),
+                bones,
+                inverseBindMatrices,
+                weightSourceFloat.data(),
+                controller->skin().vertexWeights().vcount(),
+                controller->skin().vertexWeights().v());
+
+    modelController->generateVertexBuffers();
 
     controllers.insert(id, modelController);
   }

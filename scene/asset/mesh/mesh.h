@@ -5,11 +5,10 @@
 
 #include "../asset.h"
 #include "source.h"
+#include "surface.h"
 
 namespace Sahara
 {
-    class Surface;
-
     class Mesh : public Asset
     {
 
@@ -18,15 +17,14 @@ namespace Sahara
             ~Mesh();
 
             QStringList sources() const;
-            const Source& source(const QString& name) const;
-            void addSource(const QString& name, Source* source);
+            void add(const QString& name, Source* source);
 
-            int surfaces() const;
+            int count() const;
             Surface& surface(const int i);
-            void addSurface(Surface* surface);
+            Surface& add(const QString& material);
 
         private:
-            QMap<QString, Source*> _sources;
+            SourceDict _sources;
             QList<Surface*> _surfaces;
     };
 }

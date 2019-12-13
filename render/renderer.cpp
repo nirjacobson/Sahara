@@ -170,7 +170,7 @@ void Sahara::Renderer::renderModel(Sahara::Model& model, const bool focus, const
         if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
             _sceneProgram.setBoned(false);
 
-            for (int i = 0; i < meshInstance->mesh().surfaces(); i++) {
+            for (int i = 0; i < meshInstance->mesh().count(); i++) {
                 renderSurface(meshInstance->mesh().surface(i), *meshInstance, focus);
             }
         } else if ((controllerInstance = dynamic_cast<InstanceController*>(instance))) {
@@ -178,7 +178,7 @@ void Sahara::Renderer::renderModel(Sahara::Model& model, const bool focus, const
 
             processControllerInstanceArmature(*controllerInstance);
 
-            for (int i = 0; i < controllerInstance->controller().mesh().surfaces(); i++) {
+            for (int i = 0; i < controllerInstance->controller().mesh().count(); i++) {
                 renderSurface(controllerInstance->controller().mesh().surface(i), *controllerInstance, focus);
             }
         }

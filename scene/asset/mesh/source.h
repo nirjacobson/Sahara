@@ -2,6 +2,7 @@
 #define SAHARA_SOURCE_H
 
 #include <QList>
+#include <QMap>
 
 namespace Sahara {
 
@@ -18,6 +19,8 @@ namespace Sahara {
             QList<float> _data;
             int _stride;
     };
+
+    typedef QMap<QString, Source*> SourceDict;
 
 }
 
