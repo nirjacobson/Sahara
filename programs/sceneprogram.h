@@ -8,7 +8,7 @@
 #include "scene/asset/bone.h"
 #include "scene/asset/pointlight.h"
 #include "scene/asset/material.h"
-#include "scene/asset/surface.h"
+#include "scene/asset/mesh/surface.h"
 #include "common/transform.h"
 
 namespace Sahara
@@ -51,7 +51,7 @@ namespace Sahara
 
 
             SceneProgram();
-            ~SceneProgram();
+            ~SceneProgram() override;
 
             void bind() override;
             void release() override;
