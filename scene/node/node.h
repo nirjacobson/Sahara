@@ -11,6 +11,8 @@ namespace Sahara
 
     class Node
     {
+        friend class JSON;
+
         private:
             typedef std::function<void(void)> NodeVisitorStopFn;
             typedef std::function<void(Node&, const NodeVisitorStopFn&)> NodeVisitor;

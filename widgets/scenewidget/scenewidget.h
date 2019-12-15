@@ -20,9 +20,11 @@ namespace Sahara {
 
         public:
             SceneWidget(QWidget* parent);
-            ~SceneWidget();
+            ~SceneWidget() override;
 
             Scene& scene();
+            void newScene();
+            void setScene(Scene* scene);
             void flyThrough(const bool on);
 
             void showGrid(const bool visible);
@@ -45,7 +47,7 @@ namespace Sahara {
             void mouseMoveEvent(QMouseEvent* event) override;
 
         private:
-            Sahara::Scene _scene;
+            Sahara::Scene* _scene;
             Sahara::Renderer* _renderer;
 
             bool _flyThrough;

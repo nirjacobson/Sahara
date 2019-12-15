@@ -14,6 +14,8 @@ namespace Sahara {
 
   class Scene
   {
+    friend class JSON;
+
     public:
       Scene();
       ~Scene();

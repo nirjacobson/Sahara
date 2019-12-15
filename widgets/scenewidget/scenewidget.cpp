@@ -2,6 +2,7 @@
 
 Sahara::SceneWidget::SceneWidget(QWidget* parent)
     : QOpenGLWidget(parent)
+    , _scene(new Scene)
     , _flyThrough(false)
 {
     connect(&_timer, &QTimer::timeout, this, &SceneWidget::frame);
@@ -11,11 +12,24 @@ Sahara::SceneWidget::SceneWidget(QWidget* parent)
 Sahara::SceneWidget::~SceneWidget()
 {
     delete _renderer;
+    delete _scene;
 }
 
 Sahara::Scene& Sahara::SceneWidget::scene()
 {
-    return _scene;
+    return *_scene;
+}
+
+void Sahara::SceneWidget::newScene()
+{
+    delete _scene;
+    _scene = new Scene;
+}
+
+void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
+{
+    delete _scene;
+    _scene = scene;
 }
 
 void Sahara::SceneWidget::flyThrough(const bool on)
@@ -45,7 +59,7 @@ void Sahara::SceneWidget::initializeGL()
 void Sahara::SceneWidget::paintGL()
 {
     glEnable(GL_DEPTH_TEST);
-    _renderer->render(_scene, _time.elapsed() / 1000.0f);
+    _renderer->render(*_scene, _time.elapsed() / 1000.0f);
 
     double fps = 1000.0 / _frameTime.restart();
 
@@ -55,7 +69,7 @@ void Sahara::SceneWidget::paintGL()
 
 void Sahara::SceneWidget::resizeGL(int w, int h)
 {
-    _scene.camera().setAspect(static_cast<float>(w) / h);
+    _scene->camera().setAspect(static_cast<float>(w) / h);
     emit sizeChanged(QSize(w, h));
 }
 
@@ -134,7 +148,7 @@ void Sahara::SceneWidget::mouseMoveEvent(QMouseEvent* event)
 void Sahara::SceneWidget::frame()
 {
     if (_flyThrough) {
-        _cameraControl.update(_scene.cameraNode());
+        _cameraControl.update(_scene->cameraNode());
         emit cameraMotion();
     }
     update();

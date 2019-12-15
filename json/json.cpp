@@ -155,6 +155,7 @@ QJsonObject Sahara::JSON::fromBone(const Sahara::Bone* bone)
     for (int i = 0; i < bone->_children.size(); i++) {
         children.append( fromBone(bone->_children.at(i)) );
     }
+    object["children"] = children;
 
     return object;
 }
@@ -578,7 +579,7 @@ QJsonObject Sahara::JSON::fromSurface(const Sahara::Surface* surface)
 
     QJsonObject inputsObject;
     for (QMap<Surface::Input::Semantic, Surface::Input>::const_iterator i = surface->_inputs.begin(); i != surface->_inputs.end(); i++) {
-        object[Surface::Input::semanticToString(i.key())] = fromSurfaceInput(i.value());
+        inputsObject[Surface::Input::semanticToString(i.key())] = fromSurfaceInput(i.value());
     }
 
     QJsonArray elementsArray;
@@ -768,42 +769,42 @@ Sahara::Volume Sahara::JSON::toVolume(const QJsonObject& object)
     return Volume(lowerVertex, upperVertex);
 }
 
-QJsonObject Sahara::JSON::fromModel(const Sahara::Model& model)
+QJsonObject Sahara::JSON::fromModel(const Sahara::Model* model)
 {
     QJsonObject object;
 
     object["_type"] = "Model";
 
-    QJsonObject volumeObject = fromVolume(model._volume);
+    QJsonObject volumeObject = fromVolume(model->_volume);
     object["volume"] = volumeObject;
 
     QJsonObject imagesObject;
-    for (ImageDict::const_iterator i = model._images.begin(); i != model._images.end(); i++) {
+    for (ImageDict::const_iterator i = model->_images.begin(); i != model->_images.end(); i++) {
         imagesObject[i.key()] = fromImage(i.value());
     }
     object["images"] = imagesObject;
 
     QJsonObject materialsObject;
-    for (MaterialDict::const_iterator i = model._materials.begin(); i != model._materials.end(); i++) {
+    for (MaterialDict::const_iterator i = model->_materials.begin(); i != model->_materials.end(); i++) {
         materialsObject[i.key()] = fromMaterial(i.value());
     }
     object["materials"] = materialsObject;
 
     QJsonObject meshesObject;
-    for (MeshDict::const_iterator i = model._meshes.begin(); i != model._meshes.end(); i++) {
+    for (MeshDict::const_iterator i = model->_meshes.begin(); i != model->_meshes.end(); i++) {
         meshesObject[i.key()] = fromMesh(i.value());
     }
     object["meshes"] = meshesObject;
 
     QJsonObject controllersObject;
-    for (ControllerDict::const_iterator i = model._controllers.begin(); i != model._controllers.end(); i++) {
+    for (ControllerDict::const_iterator i = model->_controllers.begin(); i != model->_controllers.end(); i++) {
         controllersObject[i.key()] = fromController(i.value());
     }
     object["controllers"] = controllersObject;
 
     QJsonArray instancesArray;
-    for (int i = 0; i < model._instances.size(); i++) {
-        Instance* instance = model._instances.at(i);
+    for (int i = 0; i < model->_instances.size(); i++) {
+        Instance* instance = model->_instances.at(i);
         InstanceMesh* instanceMesh;
         InstanceController* instanceController;
         if ((instanceMesh = dynamic_cast<InstanceMesh*>(instance))) {
@@ -814,23 +815,23 @@ QJsonObject Sahara::JSON::fromModel(const Sahara::Model& model)
     }
     object["instances"] = instancesArray;
 
-    if (model._armature) {
-        QJsonObject armatureObject = fromArmature(model._armature);
+    if (model->_armature) {
+        QJsonObject armatureObject = fromArmature(model->_armature);
         object["armature"] = armatureObject;
 
         QJsonObject animationsObject;
-        for (AnimationDict::const_iterator i = model._animations.begin(); i != model._animations.end(); i++) {
+        for (AnimationDict::const_iterator i = model->_animations.begin(); i != model->_animations.end(); i++) {
             animationsObject[i.key()] = fromAnimation(i.value());
         }
         object["animations"] = animationsObject;
 
         QJsonObject animationClipsObject;
-        for (AnimationClipDict::const_iterator i = model._animationClips.begin(); i != model._animationClips.end(); i++) {
+        for (AnimationClipDict::const_iterator i = model->_animationClips.begin(); i != model->_animationClips.end(); i++) {
             animationClipsObject[i.key()] = fromAnimationClip(i.value());
         }
         object["animationClips"] = animationClipsObject;
 
-        QString animationClip = model._animationClip->id();
+        QString animationClip = model->_animationClip->id();
         object["animationClip"] = animationClip;
     }
 
@@ -911,5 +912,125 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
     }
 
     return model;
+}
+
+QJsonObject Sahara::JSON::fromNode(const Sahara::Node* node)
+{
+    QJsonObject object;
+
+    object["_type"] = "Node";
+
+    object["index"] = node->_index;
+    object["name"] = node->_name;
+    object["item"] = QString::number(reinterpret_cast<int>(&node->item()));
+    object["transform"] = fromMatrix4x4(node->_transform);
+    object["hasFocus"] = node->_hasFocus;
+
+    QJsonArray childrenArray;
+    for (int i = 0; i < node->_children.size(); i++) {
+        childrenArray.append(fromNode(node->_children.at(i)));
+    }
+    object["children"] = childrenArray;
+
+    return object;
+}
+
+Sahara::Node* Sahara::JSON::toNode(const QJsonObject& object, const QMap<QString, NodeItem*>& items)
+{
+    assert(object["_type"] == "Node");
+
+    QString name = object["name"].toString();
+    NodeItem* item = items[object["item"].toString()];
+    QMatrix4x4 transform = toMatrix4x4(object["transform"].toArray());
+
+    Node* node = new Node(name, item, transform);
+
+    node->_index = object["index"].toInt();
+    node->_hasFocus = object["hasFocus"].toBool();
+
+    QJsonArray childrenArray = object["children"].toArray();
+    QList<Node*> children;
+    for (int i = 0; i < childrenArray.size(); i++) {
+        QJsonObject nodeObject = childrenArray.at(i).toObject();
+        Node* childNode = toNode(nodeObject, items);
+        childNode->_parent = node;
+        children.append(childNode);
+    }
+    node->_children = children;
+
+    return node;
+}
+
+QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
+{
+    QJsonObject object;
+
+    object["_type"] = "Scene";
+
+    QJsonObject itemsObject;
+    scene->_root->depthFirst([&](const Node& node, auto&) {
+        if (&node == scene->_root)
+            return;
+
+        QString id = QString::number(reinterpret_cast<int>(&node.item()));
+        if (itemsObject.contains(id))
+            return;
+
+        const NodeItem& nodeItem = node.item();
+        QJsonObject itemObject;
+        const Camera* camera;
+        const PointLight* pointLight;
+        const Model* model;
+        if ((camera = dynamic_cast<const Camera*>(&nodeItem))) {
+            itemObject = fromCamera(camera);
+        } else if ((pointLight = dynamic_cast<const PointLight*>(&nodeItem))) {
+            itemObject = fromPointLight(pointLight);
+        } else if ((model = dynamic_cast<const Model*>(&nodeItem))) {
+            itemObject = fromModel(model);
+        }
+
+        itemsObject[id] = itemObject;
+    });
+    object["items"] = itemsObject;
+
+    object["root"] = fromNode(&scene->root());
+
+    object["camera"] = static_cast<const Camera&>(scene->_cameraNode->item()).id();
+
+    return object;
+}
+
+Sahara::Scene* Sahara::JSON::toScene(const QJsonObject& object)
+{
+    assert(object["_type"] == "Scene");
+
+    QJsonObject itemsObject = object["items"].toObject();
+    QMap<QString, NodeItem*> items;
+    for (QJsonObject::iterator i = itemsObject.begin(); i != itemsObject.end(); i++) {
+        QString id = i.key();
+        QJsonObject itemObject = i.value().toObject();
+        if (itemObject["_type"] == "PointLight") {
+            items.insert(id, toPointLight(itemObject));
+        } else if (itemObject["_type"] == "Camera") {
+            items.insert(id, toCamera(itemObject));
+        } else if (itemObject["_type"] == "Model") {
+            items.insert(id, toModel(itemObject));
+        }
+    }
+
+    Scene* scene = new Scene;
+    scene->_root = toNode(object["root"].toObject(), items);
+
+    scene->_root->depthFirst([&](Node& node, auto& stop) {
+        const Camera* camera;
+        if ((camera = dynamic_cast<const Camera*>(&node.item()))) {
+            if (camera->id() == object["camera"].toString()) {
+                scene->_cameraNode = &node;
+                stop();
+            }
+        }
+    });
+
+    return scene;
 }
 

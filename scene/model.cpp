@@ -52,7 +52,12 @@ const Sahara::ControllerDict& Sahara::Model::controllers() const
 }
 
 const QList<Sahara::Instance*> Sahara::Model::instances() const {
-  return _instances;
+    return _instances;
+}
+
+const Sahara::AnimationDict&Sahara::Model::animations() const
+{
+    return _animations;
 }
 
 const Sahara::AnimationClipDict& Sahara::Model::animationClips() const

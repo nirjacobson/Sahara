@@ -21,6 +21,8 @@
 #include "scene/asset/mesh/mesh.h"
 #include "scene/instance/instancemesh.h"
 #include "scene/instance/instancecontroller.h"
+#include "scene/node/node.h"
+#include "scene/scene.h"
 
 namespace Sahara {
 
@@ -93,8 +95,14 @@ namespace Sahara {
             static QJsonObject fromVolume(const Volume& volume);
             static Volume toVolume(const QJsonObject& object);
 
-            static QJsonObject fromModel(const Model& model);
+            static QJsonObject fromModel(const Model* model);
             static Model* toModel(const QJsonObject& object);
+
+            static QJsonObject fromNode(const Node* node);
+            static Node* toNode(const QJsonObject& object, const QMap<QString, NodeItem*>& items);
+
+            static QJsonObject fromScene(const Scene* scene);
+            static Scene* toScene(const QJsonObject& object);
 
         private:
             static QJsonObject fromInstance(const Instance* instance);
