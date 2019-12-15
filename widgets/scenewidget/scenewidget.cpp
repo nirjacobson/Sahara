@@ -24,12 +24,16 @@ void Sahara::SceneWidget::newScene()
 {
     delete _scene;
     _scene = new Scene;
+
+    emit sceneLoaded();
 }
 
 void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
 {
     delete _scene;
     _scene = scene;
+
+    emit sceneLoaded();
 }
 
 void Sahara::SceneWidget::flyThrough(const bool on)

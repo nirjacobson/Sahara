@@ -36,6 +36,7 @@ namespace Sahara {
             void keyPressed(QKeyEvent* event);
             void mouseMoved(QVector2D ndc);
             void mousePressed(QVector2D ndc);
+            void sceneLoaded();
 
         protected:
             void initializeGL() override;
