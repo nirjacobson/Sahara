@@ -7,6 +7,8 @@ namespace Sahara {
 
     class Volume
     {
+        friend class JSON;
+
         public:
             Volume();
             Volume(const QVector3D& lowerVertex, const QVector3D& upperVertex);

@@ -246,7 +246,7 @@ QJsonObject Sahara::JSON::fromAnimationClip(const Sahara::AnimationClip* animati
 
     QJsonArray animations;
     for (int i = 0; i < animationClip->_animations.size(); i++) {
-        animations.append( fromAnimation(animationClip->_animations.at(i)) );
+        animations.append( animationClip->_animations.at(i)->id() );
     }
 
     object["animations"] = animations;
@@ -254,7 +254,7 @@ QJsonObject Sahara::JSON::fromAnimationClip(const Sahara::AnimationClip* animati
     return object;
 }
 
-Sahara::AnimationClip* Sahara::JSON::toAnimationClip(const QJsonObject& object, Armature& armature)
+Sahara::AnimationClip* Sahara::JSON::toAnimationClip(const QJsonObject& object, Model& model)
 {
     assert(object["_type"] == "AnimationClip");
     QString id = object["id"].toString();
@@ -264,7 +264,7 @@ Sahara::AnimationClip* Sahara::JSON::toAnimationClip(const QJsonObject& object, 
     QJsonArray animations = object["animations"].toArray();
     QList<Animation*> clipAnimations;
     for (int i = 0; i < animations.size(); i++) {
-        clipAnimations.append( toAnimation(animations.at(i).toObject(), armature) );
+        clipAnimations.append( model.animations()[animations.at(i).toString()] );
     }
 
     return new AnimationClip(id, name, clipAnimations);
@@ -744,5 +744,172 @@ Sahara::InstanceController*Sahara::JSON::toInstanceController(const QJsonObject&
     toInstance(object, instanceController, model);
 
     return instanceController;
+}
+
+QJsonObject Sahara::JSON::fromVolume(const Sahara::Volume& volume)
+{
+    QJsonObject object;
+
+    object["_type"] = "Volume";
+
+    object["lowerVertex"] = fromVector3D(volume._lowerVertex);
+    object["upperVertex"] = fromVector3D(volume._upperVertex);
+
+    return object;
+}
+
+Sahara::Volume Sahara::JSON::toVolume(const QJsonObject& object)
+{
+    assert(object["_type"] == "Volume");
+
+    QVector3D lowerVertex = toVector3D(object["lowerVertex"].toArray());
+    QVector3D upperVertex = toVector3D(object["upperVertex"].toArray());
+
+    return Volume(lowerVertex, upperVertex);
+}
+
+QJsonObject Sahara::JSON::fromModel(const Sahara::Model& model)
+{
+    QJsonObject object;
+
+    object["_type"] = "Model";
+
+    QJsonObject volumeObject = fromVolume(model._volume);
+    object["volume"] = volumeObject;
+
+    QJsonObject imagesObject;
+    for (ImageDict::const_iterator i = model._images.begin(); i != model._images.end(); i++) {
+        imagesObject[i.key()] = fromImage(i.value());
+    }
+    object["images"] = imagesObject;
+
+    QJsonObject materialsObject;
+    for (MaterialDict::const_iterator i = model._materials.begin(); i != model._materials.end(); i++) {
+        materialsObject[i.key()] = fromMaterial(i.value());
+    }
+    object["materials"] = materialsObject;
+
+    QJsonObject meshesObject;
+    for (MeshDict::const_iterator i = model._meshes.begin(); i != model._meshes.end(); i++) {
+        meshesObject[i.key()] = fromMesh(i.value());
+    }
+    object["meshes"] = meshesObject;
+
+    QJsonObject controllersObject;
+    for (ControllerDict::const_iterator i = model._controllers.begin(); i != model._controllers.end(); i++) {
+        controllersObject[i.key()] = fromController(i.value());
+    }
+    object["controllers"] = controllersObject;
+
+    QJsonArray instancesArray;
+    for (int i = 0; i < model._instances.size(); i++) {
+        Instance* instance = model._instances.at(i);
+        InstanceMesh* instanceMesh;
+        InstanceController* instanceController;
+        if ((instanceMesh = dynamic_cast<InstanceMesh*>(instance))) {
+            instancesArray.append( fromInstanceMesh(instanceMesh) );
+        } else if ((instanceController = dynamic_cast<InstanceController*>(instance))) {
+            instancesArray.append( fromInstanceController(instanceController) );
+        }
+    }
+    object["instances"] = instancesArray;
+
+    if (model._armature) {
+        QJsonObject armatureObject = fromArmature(model._armature);
+        object["armature"] = armatureObject;
+
+        QJsonObject animationsObject;
+        for (AnimationDict::const_iterator i = model._animations.begin(); i != model._animations.end(); i++) {
+            animationsObject[i.key()] = fromAnimation(i.value());
+        }
+        object["animations"] = animationsObject;
+
+        QJsonObject animationClipsObject;
+        for (AnimationClipDict::const_iterator i = model._animationClips.begin(); i != model._animationClips.end(); i++) {
+            animationClipsObject[i.key()] = fromAnimationClip(i.value());
+        }
+        object["animationClips"] = animationClipsObject;
+
+        QString animationClip = model._animationClip->id();
+        object["animationClip"] = animationClip;
+    }
+
+    return object;
+}
+
+Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
+{
+    assert(object["_type"] == "Model");
+
+    Model* model = new Model;
+
+    Volume volume = toVolume(object["volume"].toObject());
+    model->_volume = volume;
+
+    QJsonObject imagesObject = object["images"].toObject();
+    ImageDict images;
+    for (QJsonObject::iterator i = imagesObject.begin(); i != imagesObject.end(); i++) {
+        images[i.key()] = toImage(i.value().toObject());
+    }
+    model->_images = images;
+
+    QJsonObject materialsObject = object["materials"].toObject();
+    MaterialDict materials;
+    for (QJsonObject::iterator i = materialsObject.begin(); i != materialsObject.end(); i++) {
+        materials[i.key()] = toMaterial(i.value().toObject(), *model);
+    }
+    model->_materials = materials;
+
+    QJsonObject meshesObject = object["meshes"].toObject();
+    MeshDict meshes;
+    for (QJsonObject::iterator i = meshesObject.begin(); i != meshesObject.end(); i++) {
+        meshes[i.key()] = toMesh(i.value().toObject());
+    }
+    model->_meshes = meshes;
+
+    QJsonObject controllersObject = object["controllers"].toObject();
+    ControllerDict controllers;
+    for (QJsonObject::iterator i = controllersObject.begin(); i != controllersObject.end(); i++) {
+        controllers[i.key()] = toController(i.value().toObject(), *model);
+    }
+    model->_controllers = controllers;
+
+    QJsonArray instancesArray = object["instances"].toArray();
+    QList<Instance*> instances;
+    for (int i = 0; i < instancesArray.size(); i++) {
+        QJsonObject instanceObject = instancesArray.at(i).toObject();
+
+        if (instanceObject["_type"] == "InstanceMesh") {
+            instances.append( toInstanceMesh(instanceObject, *model) );
+        } else {
+            instances.append( toInstanceController(instanceObject, *model) );
+        }
+    }
+    model->_instances = instances;
+
+    if (object.contains("armature")) {
+        QJsonObject armatureObject = object["armature"].toObject();
+        Armature* armature = toArmature(armatureObject);
+        model->_armature = armature;
+
+        QJsonObject animationsObject = object["animations"].toObject();
+        AnimationDict animations;
+        for (QJsonObject::iterator i = animationsObject.begin(); i != animationsObject.end(); i++) {
+            animations[i.key()] = toAnimation(i.value().toObject(), *model->_armature);
+        }
+        model->_animations = animations;
+
+        QJsonObject animationClipsObject = object["animationClips"].toObject();
+        AnimationClipDict animationClips;
+        for (QJsonObject::iterator i = animationClipsObject.begin(); i != animationClipsObject.end(); i++) {
+            animationClips[i.key()] = toAnimationClip(animationClipsObject, *model);
+        }
+        model->_animationClips = animationClips;
+
+        QString animationClip = object["animationClip"].toString();
+        model->_animationClip = model->_animationClips[animationClip];
+    }
+
+    return model;
 }
 

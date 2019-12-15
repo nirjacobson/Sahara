@@ -39,7 +39,7 @@ SOURCES += \
     scene/model.cpp \
     scene/node/node.cpp \
     scene/node/nodeitem.cpp \
-    scene/node/volume.cpp \
+    common/volume.cpp \
     scene/scene.cpp \
     widgets/modelwidget.cpp \
     widgets/scenewidget/scenewidget.cpp \
@@ -81,7 +81,7 @@ HEADERS += \
     scene/model.h \
     scene/node/node.h \
     scene/node/nodeitem.h \
-    scene/node/volume.h \
+    common/volume.h \
     scene/scene.h \
     widgets/modelwidget.h \
     widgets/scenewidget/scenewidget.h \

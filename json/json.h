@@ -6,6 +6,7 @@
 #include <QMatrix4x4>
 
 #include "common/transform.h"
+#include "common/volume.h"
 #include "scene/asset/bone.h"
 #include "scene/asset/animation.h"
 #include "scene/asset/animationclip.h"
@@ -51,7 +52,7 @@ namespace Sahara {
             static Animation* toAnimation(const QJsonObject& object, Armature& armature);
 
             static QJsonObject fromAnimationClip(const AnimationClip* animationClip);
-            static AnimationClip* toAnimationClip(const QJsonObject& object, Armature& armature);
+            static AnimationClip* toAnimationClip(const QJsonObject& object, Model& model);
 
             static QJsonObject fromArmature(const Armature* armature);
             static Armature* toArmature(const QJsonObject& object);
@@ -88,6 +89,12 @@ namespace Sahara {
 
             static QJsonObject fromInstanceController(const InstanceController* instanceController);
             static InstanceController* toInstanceController(const QJsonObject& object, const Model& model);
+
+            static QJsonObject fromVolume(const Volume& volume);
+            static Volume toVolume(const QJsonObject& object);
+
+            static QJsonObject fromModel(const Model& model);
+            static Model* toModel(const QJsonObject& object);
 
         private:
             static QJsonObject fromInstance(const Instance* instance);

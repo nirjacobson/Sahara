@@ -13,7 +13,7 @@
 #include "instance/instancemesh.h"
 #include "asset/image.h"
 #include "collada/collada.h"
-#include "node/volume.h"
+#include "common/volume.h"
 #include "common/transform.h"
 
 namespace Sahara {
@@ -27,6 +27,8 @@ namespace Sahara {
 
   class Model : public NodeItem
   {
+    friend class JSON;
+
     private:
       Model();
 
