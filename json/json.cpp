@@ -407,7 +407,7 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
         boneMappings.append(boneMappingsArray.at(i).toInt());
     }
 
-    return new Controller(
+    Controller* controller = new Controller(
         id,
         mesh,
         bindShapeMatrix,
@@ -416,6 +416,10 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
         weights,
         boneCounts,
                 boneMappings);
+
+    controller->generateVertexBuffers();
+
+    return controller;
 }
 
 QJsonObject Sahara::JSON::fromImage(const Sahara::Image* image)
@@ -599,8 +603,9 @@ Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara:
 
     QString material = object["material"].toString();
 
+    QJsonObject inputsObject = object["inputs"].toObject();
     QMap<Surface::Input::Semantic, Surface::Input> inputs;
-    for (QJsonObject::const_iterator i = object.begin(); i != object.end(); i++) {
+    for (QJsonObject::const_iterator i = inputsObject.begin(); i != inputsObject.end(); i++) {
         Surface::Input::Semantic semantic = Surface::Input::semanticFromString(i.key());
         Surface::Input input = toSurfaceInput(i.value().toObject());
 
@@ -616,6 +621,10 @@ Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara:
     Surface* surface = new Surface(mesh._sources, material);
     surface->_inputs = inputs;
     surface->_elements = elements;
+
+    for (const auto semantic : inputs.keys()) {
+        surface->generateVertexBuffer(semantic);
+    }
 
     return surface;
 }
@@ -655,14 +664,13 @@ Sahara::Mesh*Sahara::JSON::toMesh(const QJsonObject& object)
     for (QJsonObject::iterator i = sourcesObject.begin(); i != sourcesObject.end(); i++) {
         sources[i.key()] = toSource(i.value().toObject());
     }
+    mesh->_sources = sources;
 
     QJsonArray surfacesArray = object["surfaces"].toArray();
     QList<Surface*> surfaces;
     for (int i = 0; i < surfacesArray.size(); i++) {
         surfaces.append(toSurface(surfacesArray.at(i).toObject(), *mesh));
     }
-
-    mesh->_sources = sources;
     mesh->_surfaces = surfaces;
 
     return mesh;
@@ -909,6 +917,9 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
 
         QString animationClip = object["animationClip"].toString();
         model->_animationClip = model->_animationClips[animationClip];
+    } else {
+        model->_armature = nullptr;
+        model->_animationClip = nullptr;
     }
 
     return model;
