@@ -1,7 +1,9 @@
 #include "image.h"
 #include <QtDebug>
-Sahara::Image::Image(const QString& uri)
-    : _texture(QOpenGLTexture(QImage(uri)))
+Sahara::Image::Image(const QString& id, const QString& uri)
+    : Asset(id)
+    , _uri(uri)
+    , _texture(QOpenGLTexture(QImage(uri)))
 {
 
 }

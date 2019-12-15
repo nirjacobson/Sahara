@@ -11,14 +11,17 @@ namespace Sahara
 
     class Image : public Asset
     {
+        friend class JSON;
+
         public:
-            Image(const QString& uri);
+            Image(const QString& id, const QString& uri);
             ~Image();
 
             void bind();
             void release();
 
         private:
+            QString _uri;
             QOpenGLTexture _texture;
     };
 

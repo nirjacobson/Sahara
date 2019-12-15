@@ -1,6 +1,7 @@
 #include "mesh.h"
 
-Sahara::Mesh::Mesh()
+Sahara::Mesh::Mesh(const QString& id)
+    : Asset(id)
 {
 
 }

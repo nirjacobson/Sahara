@@ -108,7 +108,8 @@ Sahara::Model* Sahara::Model::parseColladaModel(const QString& path)
   ControllerDict controllers = parseColladaModelControllers(collada, meshes);
   Armature* armature;
   QList<Sahara::Instance*> instances = parseColladaVisualScene(collada, materials, meshes, controllers, &armature);
-  Sahara::AnimationClipDict animationClips = parseColladaModelAnimationClips(collada, *armature);
+  Sahara::AnimationDict animations = parseColladaModelAnimations(collada, *armature);
+  Sahara::AnimationClipDict animationClips = parseColladaModelAnimationClips(collada, animations);
 
   model->_images = images;
   model->_materials = materials;
@@ -116,6 +117,7 @@ Sahara::Model* Sahara::Model::parseColladaModel(const QString& path)
   model->_controllers = controllers;
   model->_armature = armature;
   model->_instances = instances;
+  model->_animations = animations;
   model->_animationClips = animationClips;
   model->_animationClip = animationClips.isEmpty() ? nullptr : animationClips.first();
 
@@ -129,7 +131,7 @@ Sahara::ImageDict Sahara::Model::parseColladaModelImages(const QCollada::Collada
   for (auto it = collada.images().begin(); it != collada.images().end(); it++) {
     QString id = it.key();
     QCollada::Image* image = it.value();
-    Sahara::Image* modelImage = new Sahara::Image(QDir::cleanPath(path + QDir::separator() + image->initFrom()));
+    Sahara::Image* modelImage = new Sahara::Image(id, QDir::cleanPath(path + QDir::separator() + image->initFrom()));
 
     images.insert(id, modelImage);
   }
@@ -152,6 +154,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
         QString imageId = effect->sampler2D()->source();
         Sahara::Image* image = images[imageId];
         modelMaterial = new Sahara::Material(
+          id,
           effect->phong().emission(),
           effect->phong().ambient(),
           image,
@@ -159,6 +162,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
           effect->phong().shininess());
       } else {
         modelMaterial = new Sahara::Material(
+          id,
           effect->phong().emission(),
           effect->phong().ambient(),
           effect->phong().diffuse(),
@@ -181,9 +185,9 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
   QVector3D upperVertex;
 
   for (auto it = collada.geometries().begin(); it != collada.geometries().end(); it++) {
-    Sahara::Mesh* modelMesh = new Sahara::Mesh;
     QString id = it.key();
     QCollada::Geometry* geometry = it.value();
+    Sahara::Mesh* modelMesh = new Sahara::Mesh(id);
 
     for (const QCollada::Triangles& triangles : geometry->mesh().triangles()) {
       Surface& meshSurface = modelMesh->add(triangles.material());
@@ -317,6 +321,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
     }
 
     Sahara::Controller* modelController = new Sahara::Controller(
+                id,
                 mesh,
                 controller->skin().bindShapeMatrix(),
                 bones,
@@ -383,7 +388,7 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
 
 Sahara::Armature* Sahara::Model::parseColladaArmatureNode(const QCollada::Node& rootNode)
 {
-  Sahara::Armature* armature = new Sahara::Armature( parseColladaBoneNode(rootNode) );
+  Sahara::Armature* armature = new Sahara::Armature("Armature", parseColladaBoneNode(rootNode));
 
   return armature;
 }
@@ -399,7 +404,23 @@ Sahara::Bone* Sahara::Model::parseColladaBoneNode(const QCollada::Node& boneNode
   return bone;
 }
 
-Sahara::AnimationClipDict Sahara::Model::parseColladaModelAnimationClips(const QCollada::Collada& collada, Sahara::Armature& armature)
+Sahara::AnimationDict Sahara::Model::parseColladaModelAnimations(const QCollada::Collada& collada, Sahara::Armature& armature)
+{
+    Sahara::AnimationDict animations;
+
+    for (auto it = collada.animations().begin(); it != collada.animations().end(); it++) {
+      QString id = it.key();
+      QCollada::Animation* animation = it.value();
+
+      Sahara::Animation* modelAnimation = parseColladaModelAnimation(id, *animation, armature);
+
+      animations.insert(id, modelAnimation);
+    }
+
+    return animations;
+}
+
+Sahara::AnimationClipDict Sahara::Model::parseColladaModelAnimationClips(const QCollada::Collada& collada, const AnimationDict& animations)
 {
   Sahara::AnimationClipDict animationClips;
 
@@ -407,14 +428,13 @@ Sahara::AnimationClipDict Sahara::Model::parseColladaModelAnimationClips(const Q
     if (!collada.animations().isEmpty()) {
       QList<Sahara::Animation*> clipAnimations;
       for (auto it = collada.animations().begin(); it != collada.animations().end(); it++) {
-        QCollada::Animation* animation = it.value();
+        QString id = it.key();
+        Sahara::Animation* animation = animations[id];
 
-        Sahara::Animation* modelAnimation = parseColladaModelAnimation(*animation, armature);
-
-        clipAnimations.append(modelAnimation);
+        clipAnimations.append(animation);
       }
 
-      Sahara::AnimationClip* modelAnimationClip = new Sahara::AnimationClip("Animation", clipAnimations);
+      Sahara::AnimationClip* modelAnimationClip = new Sahara::AnimationClip("Animation", "Animation", clipAnimations);
       animationClips.insert("Animation", modelAnimationClip);
     }
   } else {
@@ -424,14 +444,14 @@ Sahara::AnimationClipDict Sahara::Model::parseColladaModelAnimationClips(const Q
 
       QList<Sahara::Animation*> clipAnimations;
       for (const QCollada::InstanceAnimation& instanceAnimation : animationClip->instanceAnimations()) {
-        QCollada::Animation* animation = collada.animations()[instanceAnimation.url().mid(1)];
+        QString id = instanceAnimation.url().mid(1);
 
-        Sahara::Animation* modelAnimation = parseColladaModelAnimation(*animation, armature);
+        Sahara::Animation* modelAnimation = animations[id];
 
         clipAnimations.append(modelAnimation);
       }
 
-      Sahara::AnimationClip* modelAnimationClip = new Sahara::AnimationClip(animationClip->name(), clipAnimations);
+      Sahara::AnimationClip* modelAnimationClip = new Sahara::AnimationClip(id, animationClip->name(), clipAnimations);
       animationClips.insert(id, modelAnimationClip);
     }
   }
@@ -439,7 +459,7 @@ Sahara::AnimationClipDict Sahara::Model::parseColladaModelAnimationClips(const Q
   return animationClips;
 }
 
-Sahara::Animation* Sahara::Model::parseColladaModelAnimation(const QCollada::Animation& animation, Sahara::Armature& armature)
+Sahara::Animation* Sahara::Model::parseColladaModelAnimation(const QString& id, const QCollada::Animation& animation, Sahara::Armature& armature)
 {
   const QCollada::Source& inputSource = animation.getSource(animation.sampler().inputs()[QCollada::Sampler::Semantic::INPUT]);
   const QCollada::FloatSource& inputFloatSource = dynamic_cast<const QCollada::FloatSource&>(inputSource);
@@ -470,5 +490,5 @@ Sahara::Animation* Sahara::Model::parseColladaModelAnimation(const QCollada::Ani
   QString boneId = animation.channel().target().split("/").at(0);
   Bone* bone = armature.getBoneById(boneId);
 
-  return new Sahara::Animation(bone, keyframes);
+  return new Sahara::Animation(id, bone, keyframes);
 }

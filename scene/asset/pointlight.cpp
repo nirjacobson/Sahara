@@ -1,8 +1,9 @@
 #include "pointlight.h"
 
 
-Sahara::PointLight::PointLight(const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation)
-    : _color(color)
+Sahara::PointLight::PointLight(const QString& id, const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation)
+    : Light(id)
+    , _color(color)
     , _constantAttenuation(constantAttenuation)
     , _linearAttenuation(linearAttenuation)
     , _quadraticAttenuation(quadraticAttenuation)

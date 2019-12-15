@@ -37,9 +37,30 @@ QString Sahara::Surface::Input::semanticToString(const Sahara::Surface::Input::S
             return "BONES";
         case Sahara::Surface::Input::WEIGHTS:
             return "WEIGHTS";
+        case Sahara::Surface::Input::UNDEFINED:
+            return "UNDEFINED";
+            break;
     }
 
     return "";
+}
+
+Sahara::Surface::Input::Semantic Sahara::Surface::Input::semanticFromString(const QString& semantic)
+{
+    if (semantic == "POSITION")
+        return Sahara::Surface::Input::POSITION;
+    if (semantic == "NORMAL")
+        return Sahara::Surface::Input::NORMAL;
+    if (semantic == "TEXCOORD")
+        return Sahara::Surface::Input::TEXCOORD;
+    if (semantic == "COLOR")
+        return Sahara::Surface::Input::COLOR;
+    if (semantic == "BONES")
+        return Sahara::Surface::Input::BONES;
+    if (semantic == "WEIGHTS")
+        return Sahara::Surface::Input::WEIGHTS;
+
+    return Sahara::Surface::Input::UNDEFINED;
 }
 
 Sahara::Surface::Surface(const SourceDict& sourceDict, const QString& material)

@@ -1,7 +1,15 @@
 #include "controller.h"
 
-Sahara::Controller::Controller(Sahara::Mesh* const mesh, const QMatrix4x4& bindShapeMatrix, const QStringList& bones, const QList<QMatrix4x4>& inverseBindMatrices, const QList<float>& weights, const QList<int>& boneCounts, const QList<int>& boneMappings)
-    : _mesh(mesh)
+Sahara::Controller::Controller(const QString& id,
+                               Sahara::Mesh* const mesh,
+                               const QMatrix4x4& bindShapeMatrix,
+                               const QStringList& bones,
+                               const QList<QMatrix4x4>& inverseBindMatrices,
+                               const QList<float>& weights,
+                               const QList<int>& boneCounts,
+                               const QList<int>& boneMappings)
+    : Asset(id)
+    , _mesh(mesh)
     , _bindShapeMatrix(bindShapeMatrix)
     , _bones(bones)
     , _inverseBindMatrices(inverseBindMatrices)

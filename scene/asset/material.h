@@ -12,9 +12,11 @@ namespace Sahara
 
     class Material : public Asset
     {
+        friend class JSON;
+
         public:
-            Material(const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess);
-            Material(const QColor& emission, const QColor& ambient, Image* const image, const QColor& specular, const float shininess);
+            Material(const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess);
+            Material(const QString& id, const QColor& emission, const QColor& ambient, Image* const image, const QColor& specular, const float shininess);
 
             const QColor& emission() const;
             const QColor& ambient() const;

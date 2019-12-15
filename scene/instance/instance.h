@@ -12,6 +12,8 @@ namespace Sahara
 
     class Instance
     {
+        friend class JSON;
+
         protected:
             Instance(const MaterialDict& materials, const QMatrix4x4& transform);
 

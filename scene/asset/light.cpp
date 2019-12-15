@@ -1,7 +1,8 @@
 #include "light.h"
 
 
-Sahara::Light::Light()
+Sahara::Light::Light(const QString& id)
+    : Asset(id)
 {
 
 }

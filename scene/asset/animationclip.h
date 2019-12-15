@@ -15,7 +15,7 @@ namespace Sahara
         friend class JSON;
 
         public:
-            AnimationClip(const QString& name, const QList<Animation*>& animations);
+            AnimationClip(const QString& id, const QString& name, const QList<Animation*>& animations);
 
             const QString& name() const;
 

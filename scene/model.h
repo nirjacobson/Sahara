@@ -22,6 +22,7 @@ namespace Sahara {
   typedef QMap<QString, Material*> MaterialDict;
   typedef QMap<QString, Mesh*> MeshDict;
   typedef QMap<QString, Controller*> ControllerDict;
+  typedef QMap<QString, Animation*> AnimationDict;
   typedef QMap<QString, AnimationClip*> AnimationClipDict;
 
   class Model : public NodeItem
@@ -39,6 +40,7 @@ namespace Sahara {
       const MeshDict& meshes() const;
       const ControllerDict& controllers() const;
       const QList<Instance*> instances() const ;
+      const AnimationDict& animations() const;
       const AnimationClipDict& animationClips() const;
       const Armature& armature() const;
 
@@ -55,6 +57,7 @@ namespace Sahara {
       MaterialDict _materials;
       MeshDict _meshes;
       ControllerDict _controllers;
+      AnimationDict _animations;
       AnimationClipDict _animationClips;
 
       QList<Instance*> _instances;
@@ -70,8 +73,9 @@ namespace Sahara {
       static QList<Instance*> parseColladaVisualScene(const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr);
       static Armature* parseColladaArmatureNode(const QCollada::Node& rootNode);
       static Bone* parseColladaBoneNode(const QCollada::Node& boneNode);
-      static AnimationClipDict parseColladaModelAnimationClips(const QCollada::Collada& collada, Armature& armature);
-      static Animation* parseColladaModelAnimation(const QCollada::Animation& animation, Sahara::Armature& armature);
+      static AnimationDict parseColladaModelAnimations(const QCollada::Collada& collada, Armature& armature);
+      static AnimationClipDict parseColladaModelAnimationClips(const QCollada::Collada& collada, const AnimationDict& animations);
+      static Animation* parseColladaModelAnimation(const QString& id, const QCollada::Animation& animation, Sahara::Armature& armature);
   };
 }
 

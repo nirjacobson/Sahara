@@ -9,8 +9,10 @@ namespace Sahara
 {
     class InstanceController : public Instance
     {
+        friend class JSON;
+
         public:
-            InstanceController(Armature* armature, const MaterialDict& materials, const QMatrix4x4& transform, Controller* controller);
+            InstanceController(const Armature* armature, const MaterialDict& materials, const QMatrix4x4& transform, Controller* controller);
 
             Controller& controller();
             const Controller& controller() const;
@@ -18,7 +20,7 @@ namespace Sahara
             const Armature& armature() const;
 
         private:
-            Armature* _armature;
+            const Armature* _armature;
             Controller* _controller;
     };
 

@@ -1,7 +1,8 @@
 #include "material.h"
 
-Sahara::Material::Material(const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
-    : _emission(emission)
+Sahara::Material::Material(const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
+    : Asset(id)
+    , _emission(emission)
     , _ambient(ambient)
     , _diffuse(diffuse)
     , _specular(specular)
@@ -10,8 +11,9 @@ Sahara::Material::Material(const QColor& emission, const QColor& ambient, const 
 
 }
 
-Sahara::Material::Material(const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
-    : _emission(emission)
+Sahara::Material::Material(const QString& id, const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
+    : Asset(id)
+    , _emission(emission)
     , _ambient(ambient)
     , _image(image)
     , _specular(specular)

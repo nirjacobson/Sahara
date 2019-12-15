@@ -21,7 +21,7 @@ namespace Sahara
                 Orthographic
             };
 
-            Camera(const Mode mode, const float xfov, const float xmag, const float aspect, const float znear, const float zfar);
+            Camera(const QString& id, const Mode mode, const float xfov, const float xmag, const float aspect, const float znear, const float zfar);
 
             Mode mode() const;
             float xfov() const;

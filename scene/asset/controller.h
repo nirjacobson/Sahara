@@ -11,8 +11,17 @@ namespace Sahara
 
     class Controller : public Asset
     {
+        friend class JSON;
+
         public:
-            Controller(Mesh* const mesh, const QMatrix4x4& bindShapeMatrix, const QStringList& bones, const QList<QMatrix4x4>& inverseBindMatrices, const QList<float>& weights, const QList<int>& boneCounts, const QList<int>& boneMappings);
+            Controller(const QString& id,
+                    Mesh* const mesh,
+                    const QMatrix4x4& bindShapeMatrix,
+                    const QStringList& bones,
+                    const QList<QMatrix4x4>& inverseBindMatrices,
+                    const QList<float>& weights,
+                    const QList<int>& boneCounts,
+                    const QList<int>& boneMappings);
 
             const QMatrix4x4& bindShapeMatrix() const;
             const QStringList& bones() const;

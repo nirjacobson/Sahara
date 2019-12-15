@@ -1,8 +1,9 @@
 #include "armature.h"
 
 
-Sahara::Armature::Armature(Sahara::Bone* const root)
-    : _root(root)
+Sahara::Armature::Armature(const QString& id, Sahara::Bone* const root)
+    : Asset(id)
+    , _root(root)
 {
 
 }

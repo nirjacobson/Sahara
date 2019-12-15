@@ -10,7 +10,7 @@ namespace Sahara
     class Light : public Asset, public NodeItem
     {
         public:
-            Light();
+            Light(const QString& id);
 
             Volume volume() const override;
     };

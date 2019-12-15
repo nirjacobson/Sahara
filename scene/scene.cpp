@@ -4,7 +4,7 @@ Sahara::Scene::Scene()
   : _root(new Node("Root", nullptr, QMatrix4x4()))
   , _cameraNode(new Node(
                   "Camera",
-                  new Camera(Camera::Mode::Perspective, 90, 7.31429f, 1.3333f, 1, 100),
+                  new Camera("Camera", Camera::Mode::Perspective, 90, 7.31429f, 1.3333f, 1, 100),
                   QMatrix4x4(
                     0.9271839f, -0.1403301f, 0.3473292f, 5, 0, 0.9271839f, 0.3746066f, 5, -0.3746066f, -0.3473292f, 0.8596699f, 10, 0, 0, 0, 1
                   )))

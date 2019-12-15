@@ -10,6 +10,8 @@ namespace Sahara {
 
     class Surface : public WithVertexBuffers
     {
+        friend class JSON;
+
         public:
 
             class Input {
@@ -20,7 +22,8 @@ namespace Sahara {
                         TEXCOORD,
                         COLOR,
                         BONES,
-                        WEIGHTS
+                        WEIGHTS,
+                        UNDEFINED
                     };
 
                     Input();
@@ -30,6 +33,7 @@ namespace Sahara {
                     int offset() const;
 
                     static QString semanticToString(const Semantic semantic);
+                    static Semantic semanticFromString(const QString& semantic);
 
                 private:
                     QString _source;

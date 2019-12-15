@@ -12,7 +12,7 @@ namespace Sahara
         friend class JSON;
 
         public:
-            Armature(Bone* const root);
+            Armature(const QString& id, Bone* const root);
             ~Armature();
 
             const Bone& root() const;

@@ -1,8 +1,9 @@
 #include "camera.h"
 
 
-Sahara::Camera::Camera(const Sahara::Camera::Mode mode, const float xfov, const float xmag, const float aspect, const float znear, const float zfar)
-    : _mode(mode)
+Sahara::Camera::Camera(const QString& id, const Sahara::Camera::Mode mode, const float xfov, const float xmag, const float aspect, const float znear, const float zfar)
+    : Asset(id)
+    , _mode(mode)
     , _xfov(xfov)
     , _xmag(xmag)
     , _aspect(aspect)

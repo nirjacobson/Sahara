@@ -1,7 +1,8 @@
 #include "animation.h"
 
-Sahara::Animation::Animation(Sahara::Bone* const bone, const QList<Sahara::Animation::Keyframe>& keyframes)
-    : _bone(bone)
+Sahara::Animation::Animation(const QString& id, Sahara::Bone* const bone, const QList<Sahara::Animation::Keyframe>& keyframes)
+    : Asset(id)
+    , _bone(bone)
     , _keyframes(keyframes)
 {
     float end = _keyframes.last().time;

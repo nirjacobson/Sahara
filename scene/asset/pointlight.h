@@ -10,8 +10,10 @@ namespace Sahara
 
     class PointLight : public Light
     {
+        friend class JSON;
+
         public:
-            PointLight(const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation);
+            PointLight(const QString& id, const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation);
 
             const QColor& color() const;
             float constantAttenuation() const;

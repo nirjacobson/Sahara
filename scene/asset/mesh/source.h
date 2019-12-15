@@ -8,6 +8,8 @@ namespace Sahara {
 
     class Source
     {
+        friend class JSON;
+
         public:
             Source(const QList<float> data, const int stride);
 

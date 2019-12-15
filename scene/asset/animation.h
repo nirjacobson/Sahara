@@ -24,7 +24,7 @@ namespace Sahara
                     Transform transform;
             };
 
-            Animation(Bone* const bone, const QList<Keyframe>& keyframes);
+            Animation(const QString& id, Bone* const bone, const QList<Keyframe>& keyframes);
 
             void apply(const float time);
 

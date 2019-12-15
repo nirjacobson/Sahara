@@ -11,9 +11,10 @@ namespace Sahara
 {
     class Mesh : public Asset
     {
+        friend class JSON;
 
         public:
-            Mesh();
+            Mesh(const QString& id);
             ~Mesh();
 
             QStringList sources() const;

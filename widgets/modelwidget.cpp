@@ -73,7 +73,7 @@ void Sahara::ModelWidget::sceneWidgetInitialized()
     cameraTransform.translate({0, 0, 16});
     ui->sceneWidget->scene().cameraNode().setTransform(cameraTransform);
 
-    PointLight* pointLight = new PointLight(QColor(255, 255, 255), 1, 0, 0);
+    PointLight* pointLight = new PointLight("Point Light", QColor(255, 255, 255), 1, 0, 0);
     Node* pointLightNode = new Node("Point Light", pointLight, QMatrix4x4());
 
     ui->sceneWidget->scene().cameraNode().addChild(pointLightNode);

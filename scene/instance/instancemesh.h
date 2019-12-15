@@ -9,6 +9,8 @@ namespace Sahara
 
     class InstanceMesh : public Instance
     {
+        friend class JSON;
+
         public:
             InstanceMesh(const MaterialDict& materials, const QMatrix4x4& transform, Mesh* mesh);
 

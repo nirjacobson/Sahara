@@ -1,8 +1,9 @@
 #include "animationclip.h"
 
 
-Sahara::AnimationClip::AnimationClip(const QString& name, const QList<Sahara::Animation*>& animations)
-    : _name(name)
+Sahara::AnimationClip::AnimationClip(const QString& id, const QString& name, const QList<Sahara::Animation*>& animations)
+    : Asset(id)
+    , _name(name)
     , _animations(animations)
 {
 
