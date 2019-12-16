@@ -417,8 +417,6 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
         boneCounts,
                 boneMappings);
 
-    controller->generateVertexBuffers();
-
     return controller;
 }
 
@@ -749,6 +747,7 @@ Sahara::InstanceController*Sahara::JSON::toInstanceController(const QJsonObject&
     Controller* controller = model.controllers()[object["controller"].toString()];
 
     InstanceController* instanceController = new InstanceController(&model.armature(), {}, {}, controller);
+    instanceController->_armature = model._armature;
 
     toInstance(object, instanceController, model);
 
@@ -883,19 +882,6 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
     }
     model->_controllers = controllers;
 
-    QJsonArray instancesArray = object["instances"].toArray();
-    QList<Instance*> instances;
-    for (int i = 0; i < instancesArray.size(); i++) {
-        QJsonObject instanceObject = instancesArray.at(i).toObject();
-
-        if (instanceObject["_type"] == "InstanceMesh") {
-            instances.append( toInstanceMesh(instanceObject, *model) );
-        } else {
-            instances.append( toInstanceController(instanceObject, *model) );
-        }
-    }
-    model->_instances = instances;
-
     if (object.contains("armature")) {
         QJsonObject armatureObject = object["armature"].toObject();
         Armature* armature = toArmature(armatureObject);
@@ -911,7 +897,7 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
         QJsonObject animationClipsObject = object["animationClips"].toObject();
         AnimationClipDict animationClips;
         for (QJsonObject::iterator i = animationClipsObject.begin(); i != animationClipsObject.end(); i++) {
-            animationClips[i.key()] = toAnimationClip(animationClipsObject, *model);
+            animationClips[i.key()] = toAnimationClip(i.value().toObject(), *model);
         }
         model->_animationClips = animationClips;
 
@@ -921,6 +907,19 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
         model->_armature = nullptr;
         model->_animationClip = nullptr;
     }
+
+    QJsonArray instancesArray = object["instances"].toArray();
+    QList<Instance*> instances;
+    for (int i = 0; i < instancesArray.size(); i++) {
+        QJsonObject instanceObject = instancesArray.at(i).toObject();
+
+        if (instanceObject["_type"] == "InstanceMesh") {
+            instances.append( toInstanceMesh(instanceObject, *model) );
+        } else if (instanceObject["_type"] == "InstanceController") {
+            instances.append( toInstanceController(instanceObject, *model) );
+        }
+    }
+    model->_instances = instances;
 
     return model;
 }

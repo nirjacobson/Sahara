@@ -72,6 +72,10 @@ void Sahara::Program::unlayout(Sahara::WithVertexBuffers& wvb)
 {
     for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
         GLint location = _program.attributeLocation(i.key());
-        _program.disableAttributeArray(location);
+        if (location >= 0) {
+            _program.disableAttributeArray(location);
+        }
+
+        assert(glGetError() == GL_NO_ERROR);
     }
 }
