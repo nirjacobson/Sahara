@@ -417,6 +417,8 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
         boneCounts,
                 boneMappings);
 
+    controller->generateVertexBuffers();
+
     return controller;
 }
 

@@ -90,27 +90,39 @@ void Sahara::Controller::generateVertexBuffers()
     for (int i = 0; i < _mesh->count(); i++) {
         Sahara::Surface& surface = _mesh->surface(i);
 
-        surface.setInput(Sahara::Surface::Input::Semantic::BONES, "bones", surface.inputs().size());
-        surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
+        if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::BONES) ||
+            !surface.inputs().contains(Sahara::Surface::Input::Semantic::WEIGHTS)) {
+            QList<QList<int>> parts;
+            int partSize = surface.inputs().size();
+            for (int j = 0; j < surface.elements().size() / partSize; j++) {
+                parts.append(surface.elements().mid(j * partSize, partSize));
+            }
 
-        QList<int> elements;
-        int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
+            int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
 
-        QList<QList<int>> parts;
-        int partSize = surface.inputs().size() - 2;
-        for (int j = 0; j < surface.elements().size() / partSize; j++) {
-            parts.append(surface.elements().mid(j * partSize, partSize));
+            if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::BONES)) {
+                surface.setInput(Sahara::Surface::Input::Semantic::BONES, "bones", surface.inputs().size());
+
+                for (int j = 0; j < parts.size(); j++) {
+                    parts[j].append(parts[j].at(vertexOffset));
+                }
+            }
+
+            if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::WEIGHTS)) {
+                surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
+
+                for (int j = 0; j < parts.size(); j++) {
+                    parts[j].append(parts[j].at(vertexOffset));
+                }
+            }
+
+            QList<int> elements;
+            for (int j = 0; j < parts.size(); j++) {
+                elements.append(parts.at(j));
+            }
+
+            surface.setElements(elements);
         }
-
-        for (int j = 0; j < parts.size(); j++) {
-            const QList<int>& part = parts.at(j);
-            QList<int> newPart = part;
-            newPart.append(part.at(vertexOffset));
-            newPart.append(part.at(vertexOffset));
-            elements.append(newPart);
-        }
-
-        surface.setElements(elements);
 
         surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::BONES);
         surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::WEIGHTS);
