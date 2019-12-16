@@ -267,28 +267,6 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
   return meshes;
 }
 
-QList<QPair<int, float>> Sahara::Model::reduceBones(const QList<QPair<int, float> >& bones, const int max)
-{
-    auto sortBones =  [](const QPair<int, float>& b1, const QPair<int, float>& b2) {
-        return b1.second > b2.second;
-    };
-
-    QList<QPair<int, float>> sortedBones = bones;
-    std::sort(sortedBones.begin(), sortedBones.end(), sortBones);
-
-    QList<QPair<int, float>> reducedBones = sortedBones.mid(0, max);
-
-    float sum = 0.0f;
-    for (int i = 0; i < reducedBones.size(); i++) {
-        sum += reducedBones[i].second;
-    }
-    for (int i = 0; i < reducedBones.size(); i++) {
-        reducedBones[i].second /= sum;
-    }
-
-    return reducedBones;
-}
-
 Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollada::Collada& collada, MeshDict& meshes)
 {
   Sahara::ControllerDict controllers;
