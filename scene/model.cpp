@@ -95,6 +95,21 @@ void Sahara::Model::setAnimationClip(const QString& name)
   }
 }
 
+QString Sahara::Model::animationClip() const
+{
+    return _animationClip ? _animationClip->name() : "";
+}
+
+int Sahara::Model::triangles() const
+{
+    int triangles = 0;
+    for (Sahara::Mesh* mesh : _meshes.values()) {
+      triangles += mesh->triangles();
+    }
+
+    return triangles;
+}
+
 void Sahara::Model::animate(const float time)
 {
   if (_animationClip != nullptr) {

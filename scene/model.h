@@ -50,6 +50,9 @@ namespace Sahara {
 
       QStringList animationClipNames() const;
       void setAnimationClip(const QString& name);
+      QString animationClip() const;
+
+      int triangles() const;
 
       void animate(const float time);
 

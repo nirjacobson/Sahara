@@ -19,10 +19,15 @@ namespace Sahara
             Material(const QString& id, const QColor& emission, const QColor& ambient, Image* const image, const QColor& specular, const float shininess);
 
             const QColor& emission() const;
+            void setEmission(const QColor& color);
             const QColor& ambient() const;
+            void setAmbient(const QColor& color);
             const QColor& diffuse() const;
+            void setDiffuse(const QColor& color);
             const QColor& specular() const;
+            void setSpecular(const QColor& color);
             float shininess() const;
+            void setShininess(const float shininess);
 
             const std::optional<Image*>& image() const;
             std::optional<Image*>& image();

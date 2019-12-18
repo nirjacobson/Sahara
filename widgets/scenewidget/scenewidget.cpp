@@ -32,6 +32,7 @@ void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
 {
     delete _scene;
     _scene = scene;
+    _scene->camera().setAspect(static_cast<float>(width()) / height());
 
     emit sceneLoaded();
 }

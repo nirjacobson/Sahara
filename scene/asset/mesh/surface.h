@@ -52,6 +52,8 @@ namespace Sahara {
             const QList<int>& elements() const;
             void setElements(const QList<int>& elements);
 
+            int triangles() const;
+
             void generateVertexBuffer(const Input::Semantic input);
 
         private:

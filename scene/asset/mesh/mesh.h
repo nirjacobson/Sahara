@@ -24,6 +24,8 @@ namespace Sahara
             Surface& surface(const int i);
             Surface& add(const QString& material);
 
+            int triangles() const;
+
         private:
             SourceDict _sources;
             QList<Surface*> _surfaces;

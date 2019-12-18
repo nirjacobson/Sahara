@@ -43,3 +43,14 @@ Sahara::Surface& Sahara::Mesh::add(const QString& material)
 
     return *surface;
 }
+
+int Sahara::Mesh::triangles() const
+{
+    int triangles = 0;
+    for (int i = 0; i < _surfaces.size(); i++) {
+        triangles += _surfaces.at(i)->triangles();
+    }
+
+    return triangles;
+}
+

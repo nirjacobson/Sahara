@@ -100,6 +100,11 @@ void Sahara::Surface::setElements(const QList<int>& elements)
     _elements = elements;
 }
 
+int Sahara::Surface::triangles() const
+{
+    return _elements.size() / _inputs.size() / 3;
+}
+
 void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semantic input)
 {
     const Source* source = _sources[_inputs[input].source()];
