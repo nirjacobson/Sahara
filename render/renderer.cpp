@@ -2,7 +2,8 @@
 
 Sahara::Renderer::Renderer()
     : _grid(32)
-    , _renderGrid(false)
+    , _showGrid(false)
+    , _showAxes(true)
 {
     glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
     glClearDepthf(1.0f);
@@ -25,14 +26,29 @@ void Sahara::Renderer::render(Sahara::Scene& scene, const float time)
     renderScene(scene, time);
 }
 
+bool Sahara::Renderer::showGrid() const
+{
+    return _showGrid;
+}
+
 void Sahara::Renderer::showGrid(const bool visible)
 {
-    _renderGrid = visible;
+    _showGrid = visible;
+}
+
+bool Sahara::Renderer::showAxes() const
+{
+    return _showAxes;
+}
+
+void Sahara::Renderer::showAxes(const bool visible)
+{
+    _showAxes = visible;
 }
 
 void Sahara::Renderer::renderScene(Scene& scene, const float time)
 {
-    if (_renderGrid)
+    if (_showGrid)
         renderGrid(scene);
 
     _sceneProgram.bind();
@@ -90,23 +106,25 @@ void Sahara::Renderer::renderGrid(Scene& scene)
     }
     _gridProgram.clearGrid(_grid);
 
-    _gridProgram.setAxis(_grid.xAxis());
-    for (int i = 0; i < 6; i++) {
-        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
-    }
-    _gridProgram.clearAxis(_grid.xAxis());
+    if (_showAxes) {
+        _gridProgram.setAxis(_grid.xAxis());
+        for (int i = 0; i < 6; i++) {
+            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+        }
+        _gridProgram.clearAxis(_grid.xAxis());
 
-    _gridProgram.setAxis(_grid.yAxis());
-    for (int i = 0; i < 6; i++) {
-        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
-    }
-    _gridProgram.clearAxis(_grid.yAxis());
+        _gridProgram.setAxis(_grid.yAxis());
+        for (int i = 0; i < 6; i++) {
+            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+        }
+        _gridProgram.clearAxis(_grid.yAxis());
 
-    _gridProgram.setAxis(_grid.zAxis());
-    for (int i = 0; i < 6; i++) {
-        glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+        _gridProgram.setAxis(_grid.zAxis());
+        for (int i = 0; i < 6; i++) {
+            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+        }
+        _gridProgram.clearAxis(_grid.zAxis());
     }
-    _gridProgram.clearAxis(_grid.zAxis());
 
     _gridProgram.release();
 }

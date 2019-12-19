@@ -28,7 +28,10 @@ namespace Sahara {
 
             void render(Scene& scene, const float time);
 
+            bool showGrid() const;
             void showGrid(const bool visible);
+            bool showAxes() const;
+            void showAxes(const bool visible);
 
         private:
             SceneProgram _sceneProgram;
@@ -36,7 +39,8 @@ namespace Sahara {
             DisplayProgram _displayProgram;
 
             Grid _grid;
-            bool _renderGrid;
+            bool _showGrid;
+            bool _showAxes;
 
             PointLightDisplay _pointLightDisplay;
             CameraDisplay _cameraDisplay;

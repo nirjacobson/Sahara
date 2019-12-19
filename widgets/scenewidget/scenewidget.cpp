@@ -44,9 +44,24 @@ void Sahara::SceneWidget::flyThrough(const bool on)
     _flyThrough = on;
 }
 
+bool Sahara::SceneWidget::showGrid() const
+{
+    return _renderer->showGrid();
+}
+
 void Sahara::SceneWidget::showGrid(const bool visible)
 {
     _renderer->showGrid(visible);
+}
+
+bool Sahara::SceneWidget::showAxes() const
+{
+    return _renderer->showAxes();
+}
+
+void Sahara::SceneWidget::showAxes(const bool visible)
+{
+    _renderer->showAxes(visible);
 }
 
 void Sahara::SceneWidget::initializeGL()
