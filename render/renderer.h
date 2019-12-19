@@ -32,6 +32,10 @@ namespace Sahara {
             void showGrid(const bool visible);
             bool showAxes() const;
             void showAxes(const bool visible);
+            bool showLights() const;
+            void showLights(const bool visible);
+            bool showCameras() const;
+            void showCameras(const bool visible);
 
         private:
             SceneProgram _sceneProgram;
@@ -41,6 +45,8 @@ namespace Sahara {
             Grid _grid;
             bool _showGrid;
             bool _showAxes;
+            bool _showLights;
+            bool _showCameras;
 
             PointLightDisplay _pointLightDisplay;
             CameraDisplay _cameraDisplay;

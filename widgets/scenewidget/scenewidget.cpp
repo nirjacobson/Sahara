@@ -3,6 +3,7 @@
 Sahara::SceneWidget::SceneWidget(QWidget* parent)
     : QOpenGLWidget(parent)
     , _scene(new Scene)
+    , _showFPS(true)
     , _flyThrough(false)
 {
     connect(&_timer, &QTimer::timeout, this, &SceneWidget::frame);
@@ -64,6 +65,36 @@ void Sahara::SceneWidget::showAxes(const bool visible)
     _renderer->showAxes(visible);
 }
 
+bool Sahara::SceneWidget::showFPS() const
+{
+    return _showFPS;
+}
+
+void Sahara::SceneWidget::showFPS(const bool visible)
+{
+    _showFPS = visible;
+}
+
+bool Sahara::SceneWidget::showLights() const
+{
+    return _renderer->showLights();
+}
+
+void Sahara::SceneWidget::showLights(const bool visible)
+{
+    _renderer->showLights(visible);
+}
+
+bool Sahara::SceneWidget::showCameras() const
+{
+    return _renderer->showCameras();
+}
+
+void Sahara::SceneWidget::showCameras(const bool visible)
+{
+    _renderer->showCameras(visible);
+}
+
 void Sahara::SceneWidget::initializeGL()
 {
     initializeOpenGLFunctions();
@@ -85,8 +116,10 @@ void Sahara::SceneWidget::paintGL()
 
     double fps = 1000.0 / _frameTime.restart();
 
-    QPainter painter(this);
-    painter.drawText(16, height() - 16, QString::number(fps, 'f', 2)+" FPS");
+    if (_showFPS) {
+        QPainter painter(this);
+        painter.drawText(16, height() - 16, QString::number(fps, 'f', 2)+" FPS");
+    }
 }
 
 void Sahara::SceneWidget::resizeGL(int w, int h)

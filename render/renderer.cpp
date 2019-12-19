@@ -4,6 +4,8 @@ Sahara::Renderer::Renderer()
     : _grid(32)
     , _showGrid(false)
     , _showAxes(true)
+    , _showLights(true)
+    , _showCameras(true)
 {
     glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
     glClearDepthf(1.0f);
@@ -46,6 +48,26 @@ void Sahara::Renderer::showAxes(const bool visible)
     _showAxes = visible;
 }
 
+bool Sahara::Renderer::showLights() const
+{
+    return _showLights;
+}
+
+void Sahara::Renderer::showLights(const bool visible)
+{
+    _showLights = visible;
+}
+
+bool Sahara::Renderer::showCameras() const
+{
+    return _showCameras;
+}
+
+void Sahara::Renderer::showCameras(const bool visible)
+{
+    _showCameras = visible;
+}
+
 void Sahara::Renderer::renderScene(Scene& scene, const float time)
 {
     if (_showGrid)
@@ -77,9 +99,11 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
            _sceneProgram.release();
 
            if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-               renderPointLight(scene, transforms.top(), node.hasFocus());
+               if (_showLights) {
+                   renderPointLight(scene, transforms.top(), node.hasFocus());
+               }
            } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-               if (&node != &scene.cameraNode()) {
+               if (_showCameras && &node != &scene.cameraNode()) {
                    renderCamera(scene, transforms.top(), node.hasFocus());
                }
            }

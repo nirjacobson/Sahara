@@ -31,6 +31,12 @@ namespace Sahara {
             void showGrid(const bool visible);
             bool showAxes() const;
             void showAxes(const bool visible);
+            bool showFPS() const;
+            void showFPS(const bool visible);
+            bool showLights() const;
+            void showLights(const bool visible);
+            bool showCameras() const;
+            void showCameras(const bool visible);
 
         signals:
             void initialized() const;
@@ -53,6 +59,8 @@ namespace Sahara {
         private:
             Sahara::Scene* _scene;
             Sahara::Renderer* _renderer;
+
+            bool _showFPS;
 
             bool _flyThrough;
             CameraControl _cameraControl;
