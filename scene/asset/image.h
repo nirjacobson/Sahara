@@ -20,6 +20,8 @@ namespace Sahara
             void bind();
             void release();
 
+            const QString& uri() const;
+
         private:
             QString _uri;
             QOpenGLTexture _texture;

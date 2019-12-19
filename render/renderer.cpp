@@ -51,12 +51,11 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
        PointLight* pointLight;
        Camera* camera;
        if ((model = dynamic_cast<Model*>(&node.item()))) {
-           _sceneProgram.setModelView(transforms.top());
            _sceneProgram.setFocus(false);
-           renderModel(*model, false, time);
+           renderModel(*model, transforms, false, time);
            if (node.hasFocus()) {
                _sceneProgram.setFocus(true);
-               renderModel(*model, true, time);
+               renderModel(*model, transforms, true, time);
            }
        } else {
            _sceneProgram.release();
@@ -160,11 +159,14 @@ void Sahara::Renderer::renderCamera(Sahara::Scene& scene, const QMatrix4x4& mode
     _displayProgram.release();
 }
 
-void Sahara::Renderer::renderModel(Sahara::Model& model, const bool focus, const float time)
+void Sahara::Renderer::renderModel(Sahara::Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time)
 {
     model.animate(time);
 
     for (Instance* instance : model.instances()) {
+        transformStack.push(transformStack.top() * instance->transform());
+        _sceneProgram.setModelView(transformStack.top());
+
         InstanceMesh* meshInstance;
         InstanceController* controllerInstance;
         if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
@@ -182,6 +184,8 @@ void Sahara::Renderer::renderModel(Sahara::Model& model, const bool focus, const
                 renderSurface(controllerInstance->controller().mesh().surface(i), *controllerInstance, focus);
             }
         }
+
+        transformStack.pop();
     }
 }
 

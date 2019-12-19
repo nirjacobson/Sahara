@@ -1,9 +1,9 @@
 #include "image.h"
-#include <QtDebug>
+#include <QUrl>
 Sahara::Image::Image(const QString& id, const QString& uri)
     : Asset(id)
     , _uri(uri)
-    , _texture(QOpenGLTexture(QImage(uri)))
+    , _texture(QOpenGLTexture(QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored()))
 {
 
 }
@@ -21,4 +21,9 @@ void Sahara::Image::bind()
 void Sahara::Image::release()
 {
     _texture.release();
+}
+
+const QString&Sahara::Image::uri() const
+{
+    return _uri;
 }

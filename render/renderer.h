@@ -45,7 +45,7 @@ namespace Sahara {
             void renderGrid(Scene& scene);
             void renderPointLight(Scene& scene, const QMatrix4x4& modelView, const bool focus);
             void renderCamera(Scene& scene, const QMatrix4x4& modelView, const bool focus);
-            void renderModel(Model& model, const bool focus, const float time);
+            void renderModel(Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
             void renderSurface(Surface& surface, Sahara::Instance& instance, const bool focus);
 
             void processSceneLighting(Scene& scene);

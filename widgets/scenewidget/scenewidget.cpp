@@ -11,8 +11,10 @@ Sahara::SceneWidget::SceneWidget(QWidget* parent)
 
 Sahara::SceneWidget::~SceneWidget()
 {
+    makeCurrent();
     delete _renderer;
     delete _scene;
+    doneCurrent();
 }
 
 Sahara::Scene& Sahara::SceneWidget::scene()
