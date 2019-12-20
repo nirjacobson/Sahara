@@ -27,6 +27,9 @@ namespace Sahara {
             void setScene(Scene* scene);
             void flyThrough(const bool on);
 
+            void pause();
+            void resume();
+
             bool showGrid() const;
             void showGrid(const bool visible);
             bool showAxes() const;

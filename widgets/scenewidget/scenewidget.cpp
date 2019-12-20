@@ -46,6 +46,16 @@ void Sahara::SceneWidget::flyThrough(const bool on)
     _flyThrough = on;
 }
 
+void Sahara::SceneWidget::pause()
+{
+    _timer.stop();
+}
+
+void Sahara::SceneWidget::resume()
+{
+    _timer.start();
+}
+
 bool Sahara::SceneWidget::showGrid() const
 {
     return _renderer->showGrid();
