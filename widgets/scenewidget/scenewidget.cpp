@@ -112,7 +112,7 @@ void Sahara::SceneWidget::initializeGL()
 
     _renderer = new Renderer;
 
-    _timer.setInterval(1000 / 30);
+    _timer.setInterval(1000 / 60);
 
     _time.start();
     _timer.start();

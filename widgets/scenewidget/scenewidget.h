@@ -68,8 +68,8 @@ namespace Sahara {
             bool _flyThrough;
             CameraControl _cameraControl;
 
-            QTime _time;
-            QTime _frameTime;
+            QElapsedTimer _time;
+            QElapsedTimer _frameTime;
             QTimer _timer;
 
         private slots:
