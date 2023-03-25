@@ -8,7 +8,8 @@ Sahara::Renderer::Renderer()
     , _showCameras(true)
 {
     glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
-    glClearDepthf(1.0f);
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+    glFuncs.glClearDepthf(1.0f);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -83,7 +84,7 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
 
     QStack<QMatrix4x4> transforms;
     transforms.push(QMatrix4x4());
-    scene.root().depthFirst([&](Node& node, auto&) {
+    scene.root().depthFirst([&](Node& node) {
        transforms.push(transforms.top() * node.transform());
        Model* model;
        PointLight* pointLight;
@@ -110,8 +111,11 @@ void Sahara::Renderer::renderScene(Scene& scene, const float time)
 
            _sceneProgram.bind();
        }
-    }, [&](Node&, auto&) {
+
+       return false;
+    }, [&](Node&) {
         transforms.pop();
+        return false;
      });
 
     _sceneProgram.release();
@@ -258,11 +262,12 @@ void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instanc
 void Sahara::Renderer::processSceneLighting(Sahara::Scene& scene)
 {
     _sceneProgram.clearPointLights();
-    scene.root().depthFirst([&](const Node& node, auto&) {
+    scene.root().depthFirst([&](const Node& node) {
         const PointLight* pointLight;
         if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
             _sceneProgram.addPointLight(*pointLight, node.globalPosition());
         }
+        return false;
     });
 }
 

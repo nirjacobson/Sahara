@@ -1,20 +1,23 @@
 #ifndef SAHARA_MODEL_H
 #define SAHARA_MODEL_H
 
-#include "asset/mesh/surface.h"
+#include <QFileInfo>
+#include <QDir>
+#include <QStack>
+#include <QMatrix4x4>
+
+#include "asset/mesh/mesh.h"
 #include "asset/controller.h"
 #include "asset/material.h"
 #include "asset/armature.h"
 #include "asset/animation.h"
 #include "asset/animationclip.h"
 #include "node/nodeitem.h"
-#include "instance/instance.h"
-#include "instance/instancecontroller.h"
 #include "instance/instancemesh.h"
+#include "instance/instancecontroller.h"
 #include "asset/image.h"
 #include "collada/collada.h"
 #include "common/volume.h"
-#include "common/transform.h"
 
 namespace Sahara {
 

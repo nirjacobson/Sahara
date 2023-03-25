@@ -4,11 +4,9 @@
 #include <functional>
 
 #include "asset/camera.h"
-#include "asset/perspectivecamera.h"
 #include "asset/light.h"
 #include "model.h"
 #include "node/node.h"
-#include "node/nodeitem.h"
 
 namespace Sahara {
 

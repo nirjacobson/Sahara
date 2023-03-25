@@ -5,7 +5,6 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
-#include "scene/asset/bone.h"
 #include "scene/asset/pointlight.h"
 #include "scene/asset/material.h"
 #include "scene/asset/mesh/surface.h"

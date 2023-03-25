@@ -345,7 +345,7 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
   if ((visualScene = dynamic_cast<const QCollada::VisualScene*>( collada.resolve(collada.scene()->instanceVisualScene().url()) ))) {
     QStack<QMatrix4x4> transformStack;
     transformStack.push(QMatrix4x4());
-    visualScene->root()->depthFirst([&](const QCollada::Node& node, auto) {
+    visualScene->root()->depthFirst([&](const QCollada::Node& node) {
       transformStack.push(transformStack.top() * node.transform());
 
       const QCollada::InstanceGeometry* instanceGeometry;
@@ -376,6 +376,8 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
       }
 
       transformStack.pop();
+
+      return false;
     });
   }
 

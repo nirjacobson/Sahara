@@ -12,9 +12,8 @@ namespace Sahara {
         friend class JSON;
 
         private:
-            typedef std::function<void(void)> BoneVisitorStopFn;
-            typedef std::function<void(Bone&, const BoneVisitorStopFn&)> BoneVisitor;
-            typedef std::function<void(const Bone&, const BoneVisitorStopFn&)> BoneVisitorConst;
+            typedef std::function<bool(Bone&)> BoneVisitor;
+            typedef std::function<bool(const Bone&)> BoneVisitorConst;
 
         public:
             Bone(Bone* const parent, const QString& id, const QString& name, const Transform& transform);
@@ -28,8 +27,8 @@ namespace Sahara {
             const Transform& transform() const;
             void setTransform(const Transform& transform);
 
-            void depthFirst(const BoneVisitor& visitor);
-            void depthFirst(const BoneVisitorConst& visitor) const;
+            bool depthFirst(const BoneVisitor& visitor);
+            bool depthFirst(const BoneVisitorConst& visitor) const;
 
         private:
             Bone* _parent;
@@ -37,9 +36,6 @@ namespace Sahara {
             QString _name;
             Transform _transform;
             QList<Bone*> _children;
-
-            void depthFirstOnBone(const BoneVisitor& visitor, Bone& bone, const BoneVisitorStopFn& stopFn, const bool& stop);
-            void depthFirstOnBone(const BoneVisitorConst& visitor, const Bone& bone, const BoneVisitorStopFn& stopFn, const bool& stop) const;
 
 
     };

@@ -68,7 +68,7 @@ void Sahara::Controller::generateVertexBuffers()
     QList<float> weightsSourceData;
 
     for (int i = 0; i < _boneCounts.size(); i++) {
-        const QList<QPair<int, float>> vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(i), 3);
+        const QList<QPair<int, float>> vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(i), 4);
 
         for (int k = 0; k < vertexBonesAndWeights.size(); k++) {
             bonesSourceData.append(vertexBonesAndWeights.at(k).first);

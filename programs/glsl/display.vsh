@@ -1,10 +1,15 @@
-#version 100
+#version 300 es
+#undef lowp
+#undef mediump
+#undef highp
 
-attribute vec3 position;
-attribute vec3 normal;
+precision highp float;
 
-varying vec3 vertPosition;
-varying vec3 vertNormal;
+in vec3 position;
+in vec3 normal;
+
+out vec3 vertPosition;
+out vec3 vertNormal;
 
 struct VertexRender {
     mat4 modelView;

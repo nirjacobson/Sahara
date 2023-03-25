@@ -55,12 +55,13 @@ QOpenGLShaderProgram& Sahara::Program::program()
 
 void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
     for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
         GLint location = _program.attributeLocation(i.key());
         if (location >= 0) {
             i.value().bind();
             _program.enableAttributeArray(location);
-            glVertexAttribPointer(static_cast<GLuint>(location), i.value().stride(), GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(0));
+            glFuncs.glVertexAttribPointer(static_cast<GLuint>(location), i.value().stride(), GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(0));
             i.value().release();
         }
 

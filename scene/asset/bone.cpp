@@ -52,40 +52,32 @@ void Sahara::Bone::setTransform(const Sahara::Transform& transform)
     _transform = transform;
 }
 
-void Sahara::Bone::depthFirst(const Sahara::Bone::BoneVisitor& visitor)
+bool Sahara::Bone::depthFirst(const Sahara::Bone::BoneVisitor& visitor)
 {
-    bool stop = false;
-    BoneVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnBone(visitor, *this, doStop, stop);
-}
-
-void Sahara::Bone::depthFirst(const Sahara::Bone::BoneVisitorConst& visitor) const
-{
-    bool stop = false;
-    BoneVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnBone(visitor, *this, doStop, stop);
-}
-
-void Sahara::Bone::depthFirstOnBone(const Sahara::Bone::BoneVisitor& visitor, Sahara::Bone& bone, const Sahara::Bone::BoneVisitorStopFn& stopFn, const bool& stop)
-{
-    visitor(bone, stopFn);
-
-    for (Bone* childBone : bone._children) {
-        if (stop) return;
-        depthFirstOnBone(visitor, *childBone, stopFn, stop);
+    if (visitor(*this)) {
+        return true;
     }
+
+    for (Bone* childBone : _children) {
+        if (childBone->depthFirst(visitor)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-void Sahara::Bone::depthFirstOnBone(const Sahara::Bone::BoneVisitorConst& visitor, const Sahara::Bone& bone, const Sahara::Bone::BoneVisitorStopFn& stopFn, const bool& stop) const
+bool Sahara::Bone::depthFirst(const Sahara::Bone::BoneVisitorConst& visitor) const
 {
-    visitor(bone, stopFn);
-
-    for (Bone* childBone : bone._children) {
-        if (stop) return;
-        depthFirstOnBone(visitor, *childBone, stopFn, stop);
+    if (visitor(*this)) {
+        return true;
     }
+
+    for (const Bone* childBone : _children) {
+        if (childBone->depthFirst(visitor)) {
+            return true;
+        }
+    }
+
+    return false;
 }

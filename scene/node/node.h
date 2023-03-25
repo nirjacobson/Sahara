@@ -14,9 +14,8 @@ namespace Sahara
         friend class JSON;
 
         private:
-            typedef std::function<void(void)> NodeVisitorStopFn;
-            typedef std::function<void(Node&, const NodeVisitorStopFn&)> NodeVisitor;
-            typedef std::function<void(const Node&, const NodeVisitorStopFn&)> NodeVisitorConst;
+            typedef std::function<bool(Node&)> NodeVisitor;
+            typedef std::function<bool(const Node&)> NodeVisitorConst;
 
         public:
             Node(const QString& name, NodeItem* const nodeItem, const QMatrix4x4& transform);
@@ -50,11 +49,11 @@ namespace Sahara
 
             bool intersects(const QVector3D& point) const;
 
-            void depthFirst(const NodeVisitor& visitor);
-            void depthFirst(const NodeVisitorConst& visitor) const;
+            bool depthFirst(const NodeVisitor& visitor);
+            bool depthFirst(const NodeVisitorConst& visitor) const;
 
-            void depthFirst(const NodeVisitor& visitorBefore, const NodeVisitor& visitorAfter);
-            void depthFirst(const NodeVisitorConst& visitorBefore, const NodeVisitorConst& visitorAfter) const;
+            bool depthFirst(const NodeVisitor& visitorBefore, const NodeVisitor& visitorAfter);
+            bool depthFirst(const NodeVisitorConst& visitorBefore, const NodeVisitorConst& visitorAfter) const;
 
         private:
             Node* _parent;
@@ -66,12 +65,6 @@ namespace Sahara
             bool _hasFocus;
 
             void trySetName(Node* root, const QString name, const int suffix);
-
-            void depthFirstOnNode(const NodeVisitor& visitor, Node& node, const NodeVisitorStopFn& stopFn, const bool& stop);
-            void depthFirstOnNode(const NodeVisitorConst& visitor, const Node& node, const NodeVisitorStopFn& stopFn, const bool& stop) const;
-
-            void depthFirstOnNode(const NodeVisitor& visitorBefore, const NodeVisitor& visitorAfter, Node& node, const NodeVisitorStopFn& stopFn, const bool& stop);
-            void depthFirstOnNode(const NodeVisitorConst& visitorBefore, const NodeVisitorConst& visitorAfter, const Node& node, const NodeVisitorStopFn& stopFn, const bool& stop) const;
     };
 
 }

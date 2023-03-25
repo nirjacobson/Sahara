@@ -934,7 +934,7 @@ QJsonObject Sahara::JSON::fromNode(const Sahara::Node* node)
 
     object["index"] = node->_index;
     object["name"] = node->_name;
-    object["item"] = QString::number(reinterpret_cast<int>(&node->item()));
+    object["item"] = QString::number(reinterpret_cast<long>(&node->item()));
     object["transform"] = fromMatrix4x4(node->_transform);
     object["hasFocus"] = node->_hasFocus;
 
@@ -980,13 +980,13 @@ QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
     object["_type"] = "Scene";
 
     QJsonObject itemsObject;
-    scene->_root->depthFirst([&](const Node& node, auto&) {
+    scene->_root->depthFirst([&](const Node& node) {
         if (&node == scene->_root)
-            return;
+            return false;
 
-        QString id = QString::number(reinterpret_cast<int>(&node.item()));
+        QString id = QString::number(reinterpret_cast<long>(&node.item()));
         if (itemsObject.contains(id))
-            return;
+            return false;
 
         const NodeItem& nodeItem = node.item();
         QJsonObject itemObject;
@@ -1002,6 +1002,8 @@ QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
         }
 
         itemsObject[id] = itemObject;
+
+        return false;
     });
     object["items"] = itemsObject;
 
@@ -1033,14 +1035,15 @@ Sahara::Scene* Sahara::JSON::toScene(const QJsonObject& object)
     Scene* scene = new Scene;
     scene->_root = toNode(object["root"].toObject(), items);
 
-    scene->_root->depthFirst([&](Node& node, auto& stop) {
+    scene->_root->depthFirst([&](Node& node) {
         const Camera* camera;
         if ((camera = dynamic_cast<const Camera*>(&node.item()))) {
             if (camera->id() == object["camera"].toString()) {
                 scene->_cameraNode = &node;
-                stop();
+                return true;
             }
         }
+        return false;
     });
 
     return scene;

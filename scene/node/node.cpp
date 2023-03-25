@@ -48,14 +48,16 @@ void Sahara::Node::setName(const QString& name)
         Node* root = this;
         for (; root->_parent; root = root->_parent) ;
 
-        root->depthFirst([&](Node& node, auto& stop) {
+        root->depthFirst([&](Node& node) {
            if (&node == this)
-               return;
+               return false;
 
            if (node.name() == name) {
                node.trySetName(root, name, 1);
-               stop();
+               return true;
            }
+
+           return false;
         });
     }
 }
@@ -103,9 +105,9 @@ QMatrix4x4 Sahara::Node::transform() const
 QMatrix4x4 Sahara::Node::globalTransform() const
 {
     const Node* currentNode = this;
-    QMatrix4x4 globalTransform;
+    QMatrix4x4 globalTransform = transform();
     while (currentNode->_parent != nullptr) {
-        globalTransform = currentNode->transform() * globalTransform;
+        globalTransform = currentNode->_parent->transform() * globalTransform;
         currentNode = currentNode->_parent;
     }
 
@@ -135,14 +137,16 @@ void Sahara::Node::setFocus(const bool focus)
         Node* root = this;
         for (; root->_parent; root = root->_parent) ;
 
-        root->depthFirst([&](Node& node, auto& stop) {
+        root->depthFirst([&](Node& node) {
             if (&node == this)
-                return;
+                return false;
 
             if (node._hasFocus) {
                 node._hasFocus = false;
-                stop();
+                return true;
             }
+
+            return false;
         });
     }
 }
@@ -167,45 +171,95 @@ bool Sahara::Node::intersects(const QVector3D& point) const
     QVector3D globalVolumeLowerVertex = transform.map(_item->volume().lowerVertex());
     QVector3D globalVolumeUpperVertex = transform.map(_item->volume().upperVertex());
 
+    if (globalVolumeLowerVertex.x() > globalVolumeUpperVertex.x()) {
+        float x = globalVolumeLowerVertex.x();
+        globalVolumeLowerVertex.setX(globalVolumeUpperVertex.x());
+        globalVolumeUpperVertex.setX(x);
+    }
+
+    if (globalVolumeLowerVertex.y() > globalVolumeUpperVertex.y()) {
+        float y = globalVolumeLowerVertex.y();
+        globalVolumeLowerVertex.setY(globalVolumeUpperVertex.y());
+        globalVolumeUpperVertex.setY(y);
+    }
+
+    if (globalVolumeLowerVertex.z() > globalVolumeUpperVertex.z()) {
+        float z = globalVolumeLowerVertex.z();
+        globalVolumeLowerVertex.setZ(globalVolumeUpperVertex.z());
+        globalVolumeUpperVertex.setZ(z);
+    }
+
     Volume globalVolume(globalVolumeLowerVertex, globalVolumeUpperVertex);
 
     return globalVolume.intersects(point);
 }
 
-void Sahara::Node::depthFirst(const Sahara::Node::NodeVisitor& visitor)
+bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitor& visitor)
 {
-    bool stop = false;
-    NodeVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnNode(visitor, *this, doStop, stop);
+    if (visitor(*this)) {
+        return true;
+    }
+
+    for (Node* childNode : _children) {
+        if (childNode->depthFirst(visitor)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-void Sahara::Node::depthFirst(const Sahara::Node::NodeVisitorConst& visitor) const
+bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitorConst& visitor) const
 {
-    bool stop = false;
-    NodeVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnNode(visitor, *this, doStop, stop);
+    if (visitor(*this)) {
+        return true;
+    }
+
+    for (const Node* childNode : _children) {
+        if (childNode->depthFirst(visitor)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-void Sahara::Node::depthFirst(const Sahara::Node::NodeVisitor& visitorBefore, const Sahara::Node::NodeVisitor& visitorAfter)
+bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitor& visitorBefore, const Sahara::Node::NodeVisitor& visitorAfter)
 {
-    bool stop = false;
-    NodeVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnNode(visitorBefore, visitorAfter, *this, doStop, stop);
+    if (visitorBefore(*this)) {
+        return true;
+    }
+
+    for (Node* childNode : _children) {
+        if (childNode->depthFirst(visitorBefore, visitorAfter)) {
+            return true;
+        }
+    }
+
+    if (visitorAfter(*this)) {
+        return true;
+    }
+
+    return false;
 }
 
-void Sahara::Node::depthFirst(const Sahara::Node::NodeVisitorConst& visitorBefore, const Sahara::Node::NodeVisitorConst& visitorAfter) const
+bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitorConst& visitorBefore, const Sahara::Node::NodeVisitorConst& visitorAfter) const
 {
-    bool stop = false;
-    NodeVisitorStopFn doStop = [&]() {
-        stop = true;
-    };
-    depthFirstOnNode(visitorBefore, visitorAfter, *this, doStop, stop);
+    if (visitorBefore(*this)) {
+        return true;
+    }
+
+    for (const Node* childNode : _children) {
+        if (childNode->depthFirst(visitorBefore, visitorAfter)) {
+            return true;
+        }
+    }
+
+    if (visitorAfter(*this)) {
+        return true;
+    }
+
+    return false;
 }
 
 void Sahara::Node::trySetName(Sahara::Node* root, const QString name, const int suffix)
@@ -213,63 +267,16 @@ void Sahara::Node::trySetName(Sahara::Node* root, const QString name, const int 
     QString newName = name+"."+QString("%1").arg(suffix, 3, 10, QChar('0'));
 
     bool found = false;
-    root->depthFirst([&](const Node& node, auto& stop) {
+    root->depthFirst([&](const Node& node) {
         if (node.name() == newName) {
             found = true;
             trySetName(root, name, suffix+1);
-            stop();
+            return true;
         }
+        return false;
     });
 
     if (!found) {
         _name = newName;
     }
-}
-
-void Sahara::Node::depthFirstOnNode(const Sahara::Node::NodeVisitor& visitor, Sahara::Node& node, const Sahara::Node::NodeVisitorStopFn& stopFn, const bool& stop)
-{
-    visitor(node, stopFn);
-
-    for (Node* childNode : node._children) {
-        if (stop) return;
-        depthFirstOnNode(visitor, *childNode, stopFn, stop);
-    }
-}
-
-void Sahara::Node::depthFirstOnNode(const Sahara::Node::NodeVisitorConst& visitor, const Sahara::Node& node, const Sahara::Node::NodeVisitorStopFn& stopFn, const bool& stop) const
-{
-    visitor(node, stopFn);
-
-    for (Node* childNode : node._children) {
-        if (stop) return;
-        depthFirstOnNode(visitor, *childNode, stopFn, stop);
-    }
-}
-
-void Sahara::Node::depthFirstOnNode(const Sahara::Node::NodeVisitor& visitorBefore, const Sahara::Node::NodeVisitor& visitorAfter, Sahara::Node& node, const Sahara::Node::NodeVisitorStopFn& stopFn, const bool& stop)
-{
-    visitorBefore(node, stopFn);
-
-    if (stop) return;
-
-    for (Node* childNode : node._children) {
-        depthFirstOnNode(visitorBefore, visitorAfter, *childNode, stopFn, stop);
-        if (stop) return;
-    }
-
-    visitorAfter(node, stopFn);
-}
-
-void Sahara::Node::depthFirstOnNode(const Sahara::Node::NodeVisitorConst& visitorBefore, const Sahara::Node::NodeVisitorConst& visitorAfter, const Sahara::Node& node, const Sahara::Node::NodeVisitorStopFn& stopFn, const bool& stop) const
-{
-    visitorBefore(node, stopFn);
-
-    if (stop) return;
-
-    for (Node* childNode : node._children) {
-        depthFirstOnNode(visitorBefore, visitorAfter, *childNode, stopFn, stop);
-        if (stop) return;
-    }
-
-    visitorAfter(node, stopFn);
 }

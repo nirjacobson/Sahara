@@ -1,16 +1,19 @@
-#version 100
+#version 300 es
+#undef lowp
+#undef mediump
+#undef highp
 
 precision highp float;
 
-attribute vec3 position;
-attribute vec3 normal;
-attribute vec2 texcoord;
-attribute vec4 bones;
-attribute vec4 weights;
+in vec3 position;
+in vec3 normal;
+in vec2 texcoord;
+in vec4 bones;
+in vec4 weights;
 
-varying vec3 vertPosition;
-varying vec3 vertNormal;
-varying vec2 vertTexcoord;
+out vec3 vertPosition;
+out vec3 vertNormal;
+out vec2 vertTexcoord;
 
 struct Render {
     mat4 modelView;
@@ -32,7 +35,7 @@ void main() {
     vec3 vertNormalResult;
 
     if (uRender.boned == 1) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;

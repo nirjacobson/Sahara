@@ -95,11 +95,12 @@ const Sahara::Camera& Sahara::Scene::camera() const
 Sahara::Node* Sahara::Scene::focusNode()
 {
   Sahara::Node* focusNode = nullptr;
-  _root->depthFirst([&](Sahara::Node& node, auto stop) {
+  _root->depthFirst([&](Sahara::Node& node) {
     if (node.hasFocus()) {
       focusNode = &node;
-      stop();
+      return true;
     }
+    return false;
   });
 
   return focusNode;

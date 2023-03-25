@@ -1,8 +1,9 @@
 #ifndef SAHARA_PROGRAM_H
 #define SAHARA_PROGRAM_H
 
-#include <QtOpenGL>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFunctions>
+
 
 #include "../render/withvertexbuffers.h"
 

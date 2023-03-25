@@ -21,11 +21,12 @@ const Sahara::Bone& Sahara::Armature::root() const
 Sahara::Bone* Sahara::Armature::getBoneById(const QString& id)
 {
     Bone* bone = nullptr;
-    _root->depthFirst([&](Bone& curBone, auto& stop) {
+    _root->depthFirst([&](Bone& curBone) {
         if (curBone.id() == id) {
             bone = &curBone;
-            stop();
+            return true;
         }
+        return false;
     });
 
     return bone;
@@ -34,11 +35,12 @@ Sahara::Bone* Sahara::Armature::getBoneById(const QString& id)
 const Sahara::Bone* Sahara::Armature::getBoneByName(const QString& name) const
 {
     const Bone* bone = nullptr;
-    _root->depthFirst([&](const Bone& curBone, auto& stop) {
+    _root->depthFirst([&](const Bone& curBone) {
         if (curBone.name() == name) {
             bone = &curBone;
-            stop();
+            return true;
         }
+        return false;
     });
 
     return bone;

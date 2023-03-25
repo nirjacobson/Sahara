@@ -3,20 +3,19 @@
 
 #include <QStack>
 #include <QMatrix4x4>
+#include <QOpenGLFunctions>
 
 #include "../programs/sceneprogram.h"
 #include "../programs/gridprogram.h"
 #include "../programs/displayprogram.h"
 #include "../scene/scene.h"
 #include "../scene/model.h"
-#include "../scene/asset/mesh/mesh.h"
 #include "../scene/asset/mesh/surface.h"
-#include "../scene/asset/pointlight.h"
-#include "vertexbuffer.h"
 #include "grid/grid.h"
-#include "../common/transform.h"
 #include "display/pointlightdisplay.h"
 #include "display/cameradisplay.h"
+#include "scene/instance/instancemesh.h"
+#include "scene/instance/instancecontroller.h"
 
 namespace Sahara {
 

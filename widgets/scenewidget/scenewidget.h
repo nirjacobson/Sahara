@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QElapsedTimer>
 #include <QTime>
 #include <QTimer>
 #include <QPainter>
@@ -71,6 +74,8 @@ namespace Sahara {
             QElapsedTimer _time;
             QElapsedTimer _frameTime;
             QTimer _timer;
+
+            double _fps;
 
         private slots:
             void frame();

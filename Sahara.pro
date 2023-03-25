@@ -1,4 +1,4 @@
-QT += gui xml opengl
+QT += gui xml widgets
 
 TEMPLATE = lib
 DEFINES += SAHARA_LIBRARY

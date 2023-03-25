@@ -122,14 +122,21 @@ void Sahara::SceneWidget::initializeGL()
 
 void Sahara::SceneWidget::paintGL()
 {
+    static double fps = _fps;
+    static int i = 0;
+    i = (i + 1) % 15;
+
     glEnable(GL_DEPTH_TEST);
     _renderer->render(*_scene, _time.elapsed() / 1000.0f);
+    _fps = 1000.0 / _frameTime.restart();
 
-    double fps = 1000.0 / _frameTime.restart();
+    if (i == 0) {
+        fps = _fps;
+    }
 
     if (_showFPS) {
         QPainter painter(this);
-        painter.drawText(16, height() - 16, QString::number(fps, 'f', 2)+" FPS");
+        painter.drawText(16, height() - 16, QString::number(fps, 'f', 0)+" FPS");
     }
 }
 

@@ -1,9 +1,14 @@
-#version 100
+#version 300 es
+#undef lowp
+#undef mediump
+#undef highp
 
 precision highp float;
 
-varying vec3 vertPosition;
-varying vec3 vertNormal;
+in vec3 vertPosition;
+in vec3 vertNormal;
+
+out vec4 color;
 
 struct FragmentRender {
     vec3 cameraPosition;
@@ -18,8 +23,8 @@ void main() {
         diffuse = vec3(0.5, 0.5, 0.5);
         vec3 lightPosition = uFragmentRender.cameraPosition;
         vec3 toLight = normalize(lightPosition - vertPosition);
-        gl_FragColor = vec4(diffuse * max(dot(vertNormal, toLight), 0.0), 1.0);
+        color = vec4(diffuse * max(dot(vertNormal, toLight), 0.0), 1.0);
     } else {
-        gl_FragColor = vec4(1, 0.5765, 0, 1);
+        color = vec4(1, 0.5765, 0, 1);
     }
 }

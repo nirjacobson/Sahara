@@ -2,6 +2,7 @@
 #define SAHARA_MODELWIDGET_H
 
 #include <QWidget>
+#include <QFileDialog>
 
 #include "scene/asset/pointlight.h"
 #include "scene/model.h"

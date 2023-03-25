@@ -97,5 +97,5 @@ QMatrix4x4 Sahara::Camera::projection()
 
 Sahara::Volume Sahara::Camera::volume() const
 {
-    return {{-1, -1, -2}, {1, 2.066667f, 1}};
+    return {{-1, -1, -2}, {1, 1, 0}};
 }
