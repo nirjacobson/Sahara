@@ -42,14 +42,16 @@ uniform sampler2D uSampler;
 
 void main() {
     vec3 normal = normalize(vertNormal);
-    vec4 outputColor;
 
     if (uFocus == 0) {
-        outputColor = vec4(0, 0, 0, 0);
-
-        if (uLighting.pointLightCount == 0) {
-           outputColor.a = 1.0;
+        vec4 d;
+        if (uMaterial.textured > 0) {
+            d = texture2D(uSampler, vertTexcoord);
+        } else {
+            d = uMaterial.diffuse;
         }
+
+        vec3 outputColor = uMaterial.emission.rgb;
 
         for (int i = 0; i < 6; i++) {
             if (i == uLighting.pointLightCount) {
@@ -61,32 +63,22 @@ void main() {
             vec3 toCamera = normalize(uCameraPosition - vertPosition);
             vec3 reflection = reflect(-toLightN, normal);
 
-            vec4 d;
-            if (uMaterial.textured > 0) {
-                d = texture2D(uSampler, vertTexcoord);
-            } else {
-                d = uMaterial.diffuse;
-            }
-
-            vec3 emission = uMaterial.emission.rgb;
             vec3 ambient = uMaterial.ambient.rgb;
             float diff = max(dot(normal, toLightN), 0.0);
-            vec3 diffuse = diff * uLighting.pointLights[i].color;
+            vec3 diffuse = diff * d.rgb;
             float spec = pow(max(dot(toCamera, reflection), 0.0), uMaterial.shininess);
-            vec3 specular = spec * uLighting.pointLights[i].color * uMaterial.specular.rgb;
+            vec3 specular = spec * uMaterial.specular.rgb;
 
             float distancetoLight = length(toLight);
             float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + (uLighting.pointLights[i].quadraticAttenuation * distancetoLight)) * distancetoLight);
 
-            vec3 color = (emission + ambient + attenuation * (diffuse + specular)) * d.rgb;
-
-            vec3 gamma = vec3(1.0/2.2, 1.0/2.2, 1.0/2.2);
-
-            outputColor += vec4(pow(color, gamma), d.a);
+            outputColor += (ambient + attenuation * (diffuse + specular)) * uLighting.pointLights[i].color;;
         }
-    } else {
-        outputColor = vec4(1, 0.5765, 0, 0.5);
-    }
 
-    Color = outputColor;
+        vec3 gamma = vec3(1.0/2.2);
+
+        Color = vec4(pow(outputColor, gamma), d.a);
+    } else {
+        Color = vec4(1, 0.5765, 0, 0.5);
+    }
 }
