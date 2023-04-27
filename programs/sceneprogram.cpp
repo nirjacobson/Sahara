@@ -21,6 +21,8 @@ Sahara::SceneProgram::SceneProgram()
     _boneRotations = program().uniformLocation("uBoneRotations");
     _boneTranslations = program().uniformLocation("uBoneTranslations");
 
+    _lighting.ambientLight.color = program().uniformLocation("uLighting.ambientLight.color");
+    _lighting.ambientLight.strength = program().uniformLocation("uLighting.ambientLight.strength");
     for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
         _lighting.pointLights[i].position = program().uniformLocation("uLighting.pointLights["+QString::number(i)+"].position");
         _lighting.pointLights[i].color = program().uniformLocation("uLighting.pointLights["+QString::number(i)+"].color");
@@ -95,6 +97,16 @@ void Sahara::SceneProgram::setBoneTransforms(const QList<Sahara::Transform>& tra
 
     program().setUniformValueArray(_boneRotations, rotations.data(), rotations.size());
     program().setUniformValueArray(_boneTranslations, translations.data(), translations.size());
+
+    assert(glGetError() == GL_NO_ERROR);
+}
+
+void Sahara::SceneProgram::setAmbientLight(const AmbientLight& ambientLight)
+{
+    QVector3D color(ambientLight.color().red(), ambientLight.color().green(), ambientLight.color().blue());
+    color /= 255.0f;
+    program().setUniformValue(_lighting.ambientLight.color, color);
+    program().setUniformValue(_lighting.ambientLight.strength, ambientLight.strength());
 
     assert(glGetError() == GL_NO_ERROR);
 }

@@ -15,7 +15,7 @@
 #include "scene/asset/controller.h"
 #include "scene/model.h"
 #include "scene/asset/image.h"
-#include "scene/asset/pointlight.h"
+#include "scene/asset/light/pointlight.h"
 #include "scene/asset/mesh/source.h"
 #include "scene/asset/mesh/surface.h"
 #include "scene/asset/mesh/mesh.h"

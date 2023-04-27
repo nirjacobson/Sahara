@@ -4,7 +4,8 @@
 #include <functional>
 
 #include "asset/camera.h"
-#include "asset/light.h"
+#include "asset/light/light.h"
+#include "asset/light/ambientlight.h"
 #include "model.h"
 #include "node/node.h"
 
@@ -36,7 +37,12 @@ namespace Sahara {
       const Camera& camera() const;
       Node* focusNode();
 
+      const AmbientLight& ambientLight() const;
+      AmbientLight& ambientLight();
+
     private:
+      AmbientLight _ambientLight;
+
       Node* _root;
 
       Node* _cameraNode;

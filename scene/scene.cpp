@@ -106,6 +106,16 @@ Sahara::Node* Sahara::Scene::focusNode()
   return focusNode;
 }
 
+const Sahara::AmbientLight &Sahara::Scene::ambientLight() const
+{
+    return _ambientLight;
+}
+
+Sahara::AmbientLight& Sahara::Scene::ambientLight()
+{
+    return _ambientLight;
+}
+
 
 
 

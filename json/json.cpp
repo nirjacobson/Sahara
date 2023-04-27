@@ -496,7 +496,7 @@ QJsonObject Sahara::JSON::fromPointLight(const Sahara::PointLight* pointLight)
     object["_type"] = "PointLight";
     object["id"] = pointLight->id();
 
-    QJsonArray colorArray = fromColor(pointLight->_color);
+    QJsonArray colorArray = fromColor(pointLight->color());
 
     object["color"] = colorArray;
     object["constantAttenuation"] = static_cast<double>(pointLight->_constantAttenuation);

@@ -2,18 +2,13 @@
 
 
 Sahara::PointLight::PointLight(const QString& id, const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation)
-    : Light(id)
-    , _color(color)
+    : Asset(id)
+    , Light(color)
     , _constantAttenuation(constantAttenuation)
     , _linearAttenuation(linearAttenuation)
     , _quadraticAttenuation(quadraticAttenuation)
 {
 
-}
-
-const QColor& Sahara::PointLight::color() const
-{
-    return _color;
 }
 
 float Sahara::PointLight::constantAttenuation() const
@@ -31,11 +26,6 @@ float Sahara::PointLight::quadraticAttenuation() const
     return _quadraticAttenuation;
 }
 
-void Sahara::PointLight::setColor(const QColor& color)
-{
-    _color = color;
-}
-
 void Sahara::PointLight::setConstantAttenuation(const float constantAttenuation)
 {
     _constantAttenuation = constantAttenuation;
@@ -49,4 +39,9 @@ void Sahara::PointLight::setLinearAttenuation(const float linearAttenuation)
 void Sahara::PointLight::setQuadraticAttenuation(const float quadraticAttenuation)
 {
     _quadraticAttenuation = quadraticAttenuation;
+}
+
+Sahara::Volume Sahara::PointLight::volume() const
+{
+    return {{-0.4755289f, -0.8258762f, -0.5f}, {0.4755289f, 0.5495058f, 0.5f}};
 }

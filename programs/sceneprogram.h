@@ -5,7 +5,8 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
-#include "scene/asset/pointlight.h"
+#include "scene/asset/light/ambientlight.h"
+#include "scene/asset/light/pointlight.h"
 #include "scene/asset/material.h"
 #include "scene/asset/mesh/surface.h"
 #include "common/transform.h"
@@ -26,6 +27,11 @@ namespace Sahara
                 GLint boned;
             };
 
+            struct AmbientLightUniforms {
+                GLint color;
+                GLint strength;
+            };
+
             struct PointLightUniforms {
                 GLint position;
                 GLint color;
@@ -35,6 +41,7 @@ namespace Sahara
             };
 
             struct LightingUniforms {
+                AmbientLightUniforms ambientLight;
                 PointLightUniforms pointLights[MAX_POINT_LIGHTS];
                 GLint pointLightCount;
             };
@@ -65,6 +72,7 @@ namespace Sahara
             void setFocus(const bool focus);
             void setBoneTransforms(const QList<Transform>& transforms);
 
+            void setAmbientLight(const AmbientLight& ambientLight);
             void addPointLight(const PointLight& pointLight, const QVector3D& position);
             void clearPointLights();
             void setMaterial(const Material& material);

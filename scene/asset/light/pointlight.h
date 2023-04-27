@@ -3,30 +3,30 @@
 
 #include <QColor>
 
+#include "../asset.h"
+#include "../../node/nodeitem.h"
 #include "light.h"
 
 namespace Sahara
 {
 
-    class PointLight : public Light
+    class PointLight : public Asset, public NodeItem,  public Light
     {
         friend class JSON;
 
         public:
             PointLight(const QString& id, const QColor& color, const float constantAttenuation, const float linearAttenuation, const float quadraticAttenuation);
 
-            const QColor& color() const;
             float constantAttenuation() const;
             float linearAttenuation() const;
             float quadraticAttenuation() const;
 
-            void setColor(const QColor& color);
             void setConstantAttenuation(const float constantAttenuation);
             void setLinearAttenuation(const float linearAttenuation);
             void setQuadraticAttenuation(const float quadraticAttenuation);
 
+            Sahara::Volume volume() const override;
         private:
-            QColor _color;
             float _constantAttenuation;
             float _linearAttenuation;
             float _quadraticAttenuation;

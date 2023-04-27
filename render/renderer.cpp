@@ -261,6 +261,7 @@ void Sahara::Renderer::renderSurface(Sahara::Surface& surface, Instance& instanc
 
 void Sahara::Renderer::processSceneLighting(Sahara::Scene& scene)
 {
+    _sceneProgram.setAmbientLight(scene.ambientLight());
     _sceneProgram.clearPointLights();
     scene.root().depthFirst([&](const Node& node) {
         const PointLight* pointLight;

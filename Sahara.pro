@@ -32,9 +32,10 @@ SOURCES += \
     scene/asset/camera.cpp \
     scene/asset/controller.cpp \
     scene/asset/image.cpp \
-    scene/asset/light.cpp \
+    scene/asset/light/ambientlight.cpp \
+    scene/asset/light/light.cpp \
+    scene/asset/light/pointlight.cpp \
     scene/asset/material.cpp \
-    scene/asset/pointlight.cpp \
     scene/instance/instance.cpp \
     scene/model.cpp \
     scene/node/node.cpp \
@@ -74,9 +75,10 @@ HEADERS += \
     scene/asset/camera.h \
     scene/asset/controller.h \
     scene/asset/image.h \
-    scene/asset/light.h \
+    scene/asset/light/ambientlight.h \
+    scene/asset/light/light.h \
+    scene/asset/light/pointlight.h \
     scene/asset/material.h \
-    scene/asset/pointlight.h \
     scene/instance/instance.h \
     scene/model.h \
     scene/node/node.h \

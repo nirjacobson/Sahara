@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QFileDialog>
 
-#include "scene/asset/pointlight.h"
 #include "scene/model.h"
 #include "scene/node/node.h"
 
