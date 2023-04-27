@@ -8,7 +8,7 @@ precision highp float;
 in vec3 position;
 in vec3 normal;
 in vec2 texcoord;
-in vec4 bones;
+in vec4 joints;
 in vec4 weights;
 
 out vec3 vertPosition;
@@ -44,7 +44,7 @@ void main() {
 
     if (uArmature.present == 1) {
         for (int i = 0; i < 4; i++) {
-            int index = int(bones[i]);
+            int index = int(joints[i]);
             if (index == -1) {
                 break;
             }

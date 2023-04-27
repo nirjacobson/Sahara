@@ -17,7 +17,7 @@ namespace Sahara
     class SceneProgram : public Program
     {
         public:
-            static constexpr int MAX_BONES = 75;
+            static constexpr int MAX_JOINTS = 75;
             static constexpr int MAX_POINT_LIGHTS = 6;
 
             struct RenderUniforms {
@@ -32,7 +32,7 @@ namespace Sahara
             };
 
             struct ArmatureUniforms {
-                JointUniforms joints[MAX_BONES];
+                JointUniforms joints[MAX_JOINTS];
                 GLint present;
             };
 
@@ -77,9 +77,9 @@ namespace Sahara
             void setModelView(const QMatrix4x4& modelView);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
             void setProjection(const QMatrix4x4& projection);
-            void setBoned(const bool boned);
+            void setArticulated(const bool articulated);
             void setFocus(const bool focus);
-            void setBoneTransforms(const QList<Transform>& transforms);
+            void setJointTransforms(const QList<Transform>& transforms);
 
             void setAmbientLight(const AmbientLight& ambientLight);
             void addPointLight(const PointLight& pointLight, const QVector3D& position);

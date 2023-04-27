@@ -5,7 +5,7 @@
 #include <cmath>
 
 #include "asset.h"
-#include "bone.h"
+#include "joint.h"
 #include "../../common/transform.h"
 
 namespace Sahara
@@ -24,12 +24,12 @@ namespace Sahara
                     Transform transform;
             };
 
-            Animation(const QString& id, Bone* const bone, const QList<Keyframe>& keyframes);
+            Animation(const QString& id, Joint* const joint, const QList<Keyframe>& keyframes);
 
             void apply(const float time);
 
         private:
-            Bone* _bone;
+            Joint* _joint;
             QList<Keyframe> _keyframes;
             float _runningTime;
     };

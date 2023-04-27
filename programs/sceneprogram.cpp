@@ -17,7 +17,7 @@ Sahara::SceneProgram::SceneProgram()
     _render.inverseCamera = program().uniformLocation("uRender.inverseCamera");
     _render.projection = program().uniformLocation("uRender.projection");
 
-    for (int i = 0; i < MAX_BONES; i++) {
+    for (int i = 0; i < MAX_JOINTS; i++) {
         _armature.joints[i].rotation = program().uniformLocation("uArmature.joints["+QString::number(i)+"].rotation");
         _armature.joints[i].translation = program().uniformLocation("uArmature.joints["+QString::number(i)+"].translation");
     }
@@ -74,9 +74,9 @@ void Sahara::SceneProgram::setProjection(const QMatrix4x4& projection)
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void Sahara::SceneProgram::setBoned(const bool boned)
+void Sahara::SceneProgram::setArticulated(const bool articulated)
 {
-    program().setUniformValue(_armature.present, static_cast<GLint>(boned));
+    program().setUniformValue(_armature.present, static_cast<GLint>(articulated));
 
     assert(glGetError() == GL_NO_ERROR);
 }
@@ -88,7 +88,7 @@ void Sahara::SceneProgram::setFocus(const bool focus)
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void Sahara::SceneProgram::setBoneTransforms(const QList<Sahara::Transform>& transforms)
+void Sahara::SceneProgram::setJointTransforms(const QList<Sahara::Transform>& transforms)
 {
     for (int i = 0; i < transforms.size(); i++) {
         program().setUniformValue(_armature.joints[i].rotation, transforms[i].rotation().toVector4D());

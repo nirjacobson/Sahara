@@ -28,10 +28,10 @@ SOURCES += \
     scene/asset/animationclip.cpp \
     scene/asset/armature.cpp \
     scene/asset/asset.cpp \
-    scene/asset/bone.cpp \
     scene/asset/camera.cpp \
     scene/asset/controller.cpp \
     scene/asset/image.cpp \
+    scene/asset/joint.cpp \
     scene/asset/light/ambientlight.cpp \
     scene/asset/light/light.cpp \
     scene/asset/light/pointlight.cpp \
@@ -71,10 +71,10 @@ HEADERS += \
     scene/asset/animationclip.h \
     scene/asset/armature.h \
     scene/asset/asset.h \
-    scene/asset/bone.h \
     scene/asset/camera.h \
     scene/asset/controller.h \
     scene/asset/image.h \
+    scene/asset/joint.h \
     scene/asset/light/ambientlight.h \
     scene/asset/light/light.h \
     scene/asset/light/pointlight.h \

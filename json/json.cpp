@@ -141,41 +141,41 @@ Sahara::Transform Sahara::JSON::toTransform(const QJsonObject& object)
     return Transform(rotation, translation);
 }
 
-QJsonObject Sahara::JSON::fromBone(const Sahara::Bone* bone)
+QJsonObject Sahara::JSON::fromJoint(const Sahara::Joint* joint)
 {
     QJsonObject object;
 
-    object["_type"] = "Bone";
+    object["_type"] = "Joint";
 
-    object["id"] = bone->_id;
-    object["name"] = bone->_name;
-    object["transform"] = fromTransform(bone->_transform);
+    object["id"] = joint->_id;
+    object["name"] = joint->_name;
+    object["transform"] = fromTransform(joint->_transform);
 
     QJsonArray children;
-    for (int i = 0; i < bone->_children.size(); i++) {
-        children.append( fromBone(bone->_children.at(i)) );
+    for (int i = 0; i < joint->_children.size(); i++) {
+        children.append( fromJoint(joint->_children.at(i)) );
     }
     object["children"] = children;
 
     return object;
 }
 
-Sahara::Bone*Sahara::JSON::toBone(const QJsonObject& object)
+Sahara::Joint*Sahara::JSON::toJoint(const QJsonObject& object)
 {
-    assert(object["_type"] == "Bone");
+    assert(object["_type"] == "Joint");
 
     QString id = object["id"].toString();
     QString name = object["name"].toString();
     Transform transform = toTransform(object["transform"].toObject());
 
-    Bone* bone = new Bone(nullptr, id, name, transform);
+    Joint* joint = new Joint(nullptr, id, name, transform);
 
     QJsonArray children = object["children"].toArray();
     for (int i = 0; i < children.size(); i++) {
-        bone->addChild( toBone(children.at(i).toObject()) );
+        joint->addChild( toJoint(children.at(i).toObject()) );
     }
 
-    return bone;
+    return joint;
 }
 
 QJsonObject Sahara::JSON::fromAnimationKeyframe(const Sahara::Animation::Keyframe& keyframe)
@@ -208,7 +208,7 @@ QJsonObject Sahara::JSON::fromAnimation(const Sahara::Animation* animation)
     object["_type"] = "Animation";
     object["id"] = animation->id();
 
-    object["bone"] = animation->_bone->id();
+    object["joint"] = animation->_joint->id();
 
     QJsonArray keyframes;
     for (int i = 0; i < animation->_keyframes.size(); i++) {
@@ -224,8 +224,8 @@ Sahara::Animation* Sahara::JSON::toAnimation(const QJsonObject& object, Armature
     assert(object["_type"] == "Animation");
     QString id = object["id"].toString();
 
-    QString boneId = object["bone"].toString();
-    Bone* bone = armature.getBoneById(boneId);
+    QString jointId = object["joint"].toString();
+    Joint* joint = armature.getJointById(jointId);
 
     QJsonArray keyframes = object["keyframes"].toArray();
     QList<Animation::Keyframe> animationKeyframes;
@@ -233,7 +233,7 @@ Sahara::Animation* Sahara::JSON::toAnimation(const QJsonObject& object, Armature
         animationKeyframes.append( toAnimationKeyframe(keyframes.at(i).toObject()) );
     }
 
-    return new Animation(id, bone, animationKeyframes);
+    return new Animation(id, joint, animationKeyframes);
 }
 
 QJsonObject Sahara::JSON::fromAnimationClip(const Sahara::AnimationClip* animationClip)
@@ -278,7 +278,7 @@ QJsonObject Sahara::JSON::fromArmature(const Sahara::Armature* armature)
     object["_type"] = "Armature";
     object["id"] = armature->id();
 
-    object["root"] = fromBone(armature->_root);
+    object["root"] = fromJoint(armature->_root);
 
     return object;
 }
@@ -288,7 +288,7 @@ Sahara::Armature* Sahara::JSON::toArmature(const QJsonObject& object)
     assert(object["_type"] == "Armature");
     QString id = object["id"].toString();
 
-    Bone* root = toBone(object["root"].toObject());
+    Joint* root = toJoint(object["root"].toObject());
 
     return new Armature(id, root);
 }
@@ -335,11 +335,11 @@ QJsonObject Sahara::JSON::fromController(const Sahara::Controller* controller)
     object["mesh"] = controller->_mesh->id();
     object["bindShapeMatrix"] = fromMatrix4x4(controller->_bindShapeMatrix);
 
-    QJsonArray bonesArray;
-    for (int i = 0; i < controller->_bones.size(); i++) {
-        bonesArray.append(controller->_bones.at(i));
+    QJsonArray jointsArray;
+    for (int i = 0; i < controller->_joints.size(); i++) {
+        jointsArray.append(controller->_joints.at(i));
     }
-    object["bones"] = bonesArray;
+    object["joints"] = jointsArray;
 
     QJsonArray inverseBindMatricesArray;
     for (int i = 0; i < controller->_inverseBindMatrices.size(); i++) {
@@ -353,17 +353,17 @@ QJsonObject Sahara::JSON::fromController(const Sahara::Controller* controller)
     }
     object["weights"] = weightsArray;
 
-    QJsonArray boneCountsArray;
-    for (int i = 0; i < controller->_boneCounts.size(); i++) {
-        boneCountsArray.append(controller->_boneCounts.at(i));
+    QJsonArray jointCountsArray;
+    for (int i = 0; i < controller->_jointCounts.size(); i++) {
+        jointCountsArray.append(controller->_jointCounts.at(i));
     }
-    object["boneCounts"] = boneCountsArray;
+    object["jointCounts"] = jointCountsArray;
 
-    QJsonArray boneMappingsArray;
-    for (int i = 0; i < controller->_boneMappings.size(); i++) {
-        boneMappingsArray.append(controller->_boneMappings.at(i));
+    QJsonArray jointMappingsArray;
+    for (int i = 0; i < controller->_jointMappings.size(); i++) {
+        jointMappingsArray.append(controller->_jointMappings.at(i));
     }
-    object["boneMappings"] = boneMappingsArray;
+    object["jointMappings"] = jointMappingsArray;
 
     return object;
 }
@@ -377,10 +377,10 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
 
     QMatrix4x4 bindShapeMatrix = toMatrix4x4(object["bindShapeMatrix"].toArray());
 
-    QJsonArray bonesArray = object["bones"].toArray();
-    QStringList bones;
-    for (int i = 0; i < bonesArray.size(); i++) {
-        bones.append(bonesArray.at(i).toString());
+    QJsonArray jointsArray = object["joints"].toArray();
+    QStringList joints;
+    for (int i = 0; i < jointsArray.size(); i++) {
+        joints.append(jointsArray.at(i).toString());
     }
 
     QJsonArray inverseBindMatricesArray = object["inverseBindMatrices"].toArray();
@@ -395,27 +395,27 @@ Sahara::Controller* Sahara::JSON::toController(const QJsonObject& object, const 
         weights.append(static_cast<float>(weightsArray.at(i).toDouble()));
     }
 
-    QJsonArray boneCountsArray = object["boneCounts"].toArray();
-    QList<int> boneCounts;
-    for (int i = 0; i < boneCountsArray.size(); i++) {
-        boneCounts.append(boneCountsArray.at(i).toInt());
+    QJsonArray jointCountsArray = object["jointCounts"].toArray();
+    QList<int> jointCounts;
+    for (int i = 0; i < jointCountsArray.size(); i++) {
+        jointCounts.append(jointCountsArray.at(i).toInt());
     }
 
-    QJsonArray boneMappingsArray = object["boneMappings"].toArray();
-    QList<int> boneMappings;
-    for (int i = 0; i < boneMappingsArray.size(); i++) {
-        boneMappings.append(boneMappingsArray.at(i).toInt());
+    QJsonArray jointMappingsArray = object["jointMappings"].toArray();
+    QList<int> jointMappings;
+    for (int i = 0; i < jointMappingsArray.size(); i++) {
+        jointMappings.append(jointMappingsArray.at(i).toInt());
     }
 
     Controller* controller = new Controller(
         id,
         mesh,
         bindShapeMatrix,
-        bones,
+        joints,
         inverseBindMatrices,
         weights,
-        boneCounts,
-                boneMappings);
+        jointCounts,
+        jointMappings);
 
     controller->generateVertexBuffers();
 

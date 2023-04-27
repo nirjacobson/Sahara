@@ -2,7 +2,7 @@
 #define SAHARA_ARMATURE_H
 
 #include "asset.h"
-#include "bone.h"
+#include "joint.h"
 
 namespace Sahara
 {
@@ -12,16 +12,16 @@ namespace Sahara
         friend class JSON;
 
         public:
-            Armature(const QString& id, Bone* const root);
+            Armature(const QString& id, Joint* const root);
             ~Armature();
 
-            const Bone& root() const;
+            const Joint& root() const;
 
-            Bone* getBoneById(const QString& id);
-            const Bone* getBoneByName(const QString& name) const;
+            Joint* getJointById(const QString& id);
+            const Joint* getJointByName(const QString& name) const;
 
         private:
-            Bone* _root;
+            Joint* _root;
     };
 
 }

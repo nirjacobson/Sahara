@@ -33,8 +33,8 @@ QString Sahara::Surface::Input::semanticToString(const Sahara::Surface::Input::S
             return "TEXCOORD";
         case Sahara::Surface::Input::COLOR:
             return "COLOR";
-        case Sahara::Surface::Input::BONES:
-            return "BONES";
+        case Sahara::Surface::Input::JOINTS:
+            return "JOINTS";
         case Sahara::Surface::Input::WEIGHTS:
             return "WEIGHTS";
         case Sahara::Surface::Input::UNDEFINED:
@@ -55,8 +55,8 @@ Sahara::Surface::Input::Semantic Sahara::Surface::Input::semanticFromString(cons
         return Sahara::Surface::Input::TEXCOORD;
     if (semantic == "COLOR")
         return Sahara::Surface::Input::COLOR;
-    if (semantic == "BONES")
-        return Sahara::Surface::Input::BONES;
+    if (semantic == "JOINTS")
+        return Sahara::Surface::Input::JOINTS;
     if (semantic == "WEIGHTS")
         return Sahara::Surface::Input::WEIGHTS;
 

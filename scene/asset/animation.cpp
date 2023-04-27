@@ -1,8 +1,8 @@
 #include "animation.h"
 
-Sahara::Animation::Animation(const QString& id, Sahara::Bone* const bone, const QList<Sahara::Animation::Keyframe>& keyframes)
+Sahara::Animation::Animation(const QString& id, Sahara::Joint* const joint, const QList<Sahara::Animation::Keyframe>& keyframes)
     : Asset(id)
-    , _bone(bone)
+    , _joint(joint)
     , _keyframes(keyframes)
 {
     float end = _keyframes.last().time;
@@ -28,5 +28,5 @@ void Sahara::Animation::apply(const float time)
 
     float t = (animationTime - fromFrame.time) / (toFrame.time - fromFrame.time);
 
-    _bone->setTransform(Transform::interpolate(fromFrame.transform, toFrame.transform, t));
+    _joint->setTransform(Transform::interpolate(fromFrame.transform, toFrame.transform, t));
 }

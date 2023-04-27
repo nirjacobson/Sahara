@@ -300,7 +300,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
     const QCollada::Source& ibmSource = controller->skin().getSource( controller->skin().joints().inputs()[QCollada::Joints::Semantic::INV_BIND_MATRIX] );
     const QCollada::FloatSource& ibmFloatSource = dynamic_cast<const QCollada::FloatSource&>(ibmSource);
 
-    QStringList bones;
+    QStringList joints;
     QList<QMatrix4x4> inverseBindMatrices;
     for (int i = 0; i < jointsNameSource.data().size(); i++) {
       QString name = jointsNameSource.data().at(i);
@@ -314,7 +314,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
         row.setW(ibmComponents[j + 3]);
         ibm.setRow(j / 4, row);
       }
-      bones.append(name);
+      joints.append(name);
       inverseBindMatrices.append(ibm);
     }
 
@@ -322,7 +322,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
                 id,
                 mesh,
                 controller->skin().bindShapeMatrix(),
-                bones,
+                joints,
                 inverseBindMatrices,
                 weightSourceFloat.data(),
                 controller->skin().vertexWeights().vcount(),
@@ -388,20 +388,20 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
 
 Sahara::Armature* Sahara::Model::parseColladaArmatureNode(const QCollada::Node& rootNode)
 {
-  Sahara::Armature* armature = new Sahara::Armature("Armature", parseColladaBoneNode(rootNode));
+  Sahara::Armature* armature = new Sahara::Armature("Armature", parseColladaJointNode(rootNode));
 
   return armature;
 }
 
-Sahara::Bone* Sahara::Model::parseColladaBoneNode(const QCollada::Node& boneNode)
+Sahara::Joint* Sahara::Model::parseColladaJointNode(const QCollada::Node& jointNode)
 {
-  Sahara::Bone* bone = new Sahara::Bone(nullptr, boneNode.id(), boneNode.sid(), Transform(boneNode.transform()));
+  Sahara::Joint* joint = new Sahara::Joint(nullptr, jointNode.id(), jointNode.sid(), Transform(jointNode.transform()));
 
-  for (const QCollada::Node* node : boneNode.children()) {
-    bone->addChild( parseColladaBoneNode(*node) );
+  for (const QCollada::Node* node : jointNode.children()) {
+    joint->addChild( parseColladaJointNode(*node) );
   }
 
-  return bone;
+  return joint;
 }
 
 Sahara::AnimationDict Sahara::Model::parseColladaModelAnimations(const QCollada::Collada& collada, Sahara::Armature& armature)
@@ -487,8 +487,8 @@ Sahara::Animation* Sahara::Model::parseColladaModelAnimation(const QString& id, 
 
     keyframes.append(keyframe);
   }
-  QString boneId = animation.channel().target().split("/").at(0);
-  Bone* bone = armature.getBoneById(boneId);
+  QString jointId = animation.channel().target().split("/").at(0);
+  Joint* joint = armature.getJointById(jointId);
 
-  return new Sahara::Animation(id, bone, keyframes);
+  return new Sahara::Animation(id, joint, keyframes);
 }

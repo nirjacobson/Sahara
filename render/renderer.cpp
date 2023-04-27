@@ -216,13 +216,13 @@ void Sahara::Renderer::renderModel(Sahara::Model& model, QStack<QMatrix4x4>& tra
         InstanceMesh* meshInstance;
         InstanceController* controllerInstance;
         if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
-            _sceneProgram.setBoned(false);
+            _sceneProgram.setArticulated(false);
 
             for (int i = 0; i < meshInstance->mesh().count(); i++) {
                 renderSurface(meshInstance->mesh().surface(i), *meshInstance, focus);
             }
         } else if ((controllerInstance = dynamic_cast<InstanceController*>(instance))) {
-            _sceneProgram.setBoned(true);
+            _sceneProgram.setArticulated(true);
 
             processControllerInstanceArmature(*controllerInstance);
 
@@ -276,22 +276,22 @@ void Sahara::Renderer::processControllerInstanceArmature(Sahara::InstanceControl
 {
     const Controller& controller = controllerInstance.controller();
 
-    QList<Transform> boneTransforms;
-    for (int i = 0; i < controller.bones().size(); i++) {
-        QString boneName = controller.bones().at(i);
-        const Bone* bone = controllerInstance.armature().getBoneByName(boneName);
+    QList<Transform> jointTransforms;
+    for (int i = 0; i < controller.joints().size(); i++) {
+        QString jointName = controller.joints().at(i);
+        const Joint* joint = controllerInstance.armature().getJointByName(jointName);
         QMatrix4x4 inverseBindMatrix = controller.inverseBindMatrices().at(i);
         QMatrix4x4 matrix = inverseBindMatrix * controller.bindShapeMatrix();
 
         Transform transform = Transform(matrix);
 
-        while (bone) {
-            transform = bone->transform() * transform;
-            bone = &bone->parent();
+        while (joint) {
+            transform = joint->transform() * transform;
+            joint = &joint->parent();
         }
 
-        boneTransforms.push_back(transform);
+        jointTransforms.push_back(transform);
     }
 
-    _sceneProgram.setBoneTransforms(boneTransforms);
+    _sceneProgram.setJointTransforms(jointTransforms);
 }

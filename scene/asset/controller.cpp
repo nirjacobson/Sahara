@@ -3,19 +3,19 @@
 Sahara::Controller::Controller(const QString& id,
                                Sahara::Mesh* const mesh,
                                const QMatrix4x4& bindShapeMatrix,
-                               const QStringList& bones,
+                               const QStringList& joints,
                                const QList<QMatrix4x4>& inverseBindMatrices,
                                const QList<float>& weights,
-                               const QList<int>& boneCounts,
-                               const QList<int>& boneMappings)
+                               const QList<int>& jointCounts,
+                               const QList<int>& jointMappings)
     : Asset(id)
     , _mesh(mesh)
     , _bindShapeMatrix(bindShapeMatrix)
-    , _bones(bones)
+    , _joints(joints)
     , _inverseBindMatrices(inverseBindMatrices)
     , _weights(weights)
-    , _boneCounts(boneCounts)
-    , _boneMappings(boneMappings)
+    , _jointCounts(jointCounts)
+    , _jointMappings(jointMappings)
 {
 
 }
@@ -25,9 +25,9 @@ const QMatrix4x4& Sahara::Controller::bindShapeMatrix() const
     return _bindShapeMatrix;
 }
 
-const QStringList& Sahara::Controller::bones() const
+const QStringList& Sahara::Controller::joints() const
 {
-    return _bones;
+    return _joints;
 }
 
 const QList<QMatrix4x4>& Sahara::Controller::inverseBindMatrices() const
@@ -47,50 +47,50 @@ const Sahara::Mesh& Sahara::Controller::mesh() const
 
 void Sahara::Controller::generateVertexBuffers()
 {
-    QList<QList<QPair<int, float>>> verticesBonesAndWeights;
-    int boneMappingsIndex = 0;
-    for (int i = 0; i < _boneCounts.size(); i++) {
-      int numBones = _boneCounts[i];
+    QList<QList<QPair<int, float>>> verticesJointsAndWeights;
+    int jointMappingsIndex = 0;
+    for (int i = 0; i < _jointCounts.size(); i++) {
+      int numJoints = _jointCounts[i];
 
-      QList<QPair<int, float>> vertexBonesAndWeights;
-      for (int j = 0; j < numBones; j++) {
-        vertexBonesAndWeights.append( QPair<int, float>(
-          _boneMappings[boneMappingsIndex],
-          _weights[ _boneMappings[boneMappingsIndex + 1] ]
+      QList<QPair<int, float>> vertexJointsAndWeights;
+      for (int j = 0; j < numJoints; j++) {
+        vertexJointsAndWeights.append( QPair<int, float>(
+          _jointMappings[jointMappingsIndex],
+          _weights[ _jointMappings[jointMappingsIndex + 1] ]
         ) );
-        boneMappingsIndex += 2;
+        jointMappingsIndex += 2;
       }
 
-      verticesBonesAndWeights.append( vertexBonesAndWeights );
+      verticesJointsAndWeights.append( vertexJointsAndWeights );
     }
 
-    QList<float> bonesSourceData;
+    QList<float> jointsSourceData;
     QList<float> weightsSourceData;
 
-    for (int i = 0; i < _boneCounts.size(); i++) {
-        const QList<QPair<int, float>> vertexBonesAndWeights = reduceBones(verticesBonesAndWeights.at(i), 4);
+    for (int i = 0; i < _jointCounts.size(); i++) {
+        const QList<QPair<int, float>> vertexJointsAndWeights = reduceJoints(verticesJointsAndWeights.at(i), 4);
 
-        for (int k = 0; k < vertexBonesAndWeights.size(); k++) {
-            bonesSourceData.append(vertexBonesAndWeights.at(k).first);
-            weightsSourceData.append(vertexBonesAndWeights.at(k).second);
+        for (int k = 0; k < vertexJointsAndWeights.size(); k++) {
+            jointsSourceData.append(vertexJointsAndWeights.at(k).first);
+            weightsSourceData.append(vertexJointsAndWeights.at(k).second);
         }
 
-        for (int k = 0; k < qMax(0, 4 - vertexBonesAndWeights.size()); k++) {
-            bonesSourceData.append(-1);
+        for (int k = 0; k < qMax(0, 4 - vertexJointsAndWeights.size()); k++) {
+            jointsSourceData.append(-1);
             weightsSourceData.append(-1);
         }
     }
 
-    Sahara::Source* bonesSource = new Sahara::Source(bonesSourceData, 4);
+    Sahara::Source* jointsSource = new Sahara::Source(jointsSourceData, 4);
     Sahara::Source* weightsSource = new Sahara::Source(weightsSourceData, 4);
 
-    _mesh->add("bones", bonesSource);
+    _mesh->add("joints", jointsSource);
     _mesh->add("weights", weightsSource);
 
     for (int i = 0; i < _mesh->count(); i++) {
         Sahara::Surface& surface = _mesh->surface(i);
 
-        if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::BONES) ||
+        if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::JOINTS) ||
             !surface.inputs().contains(Sahara::Surface::Input::Semantic::WEIGHTS)) {
             QList<QList<int>> parts;
             int partSize = surface.inputs().size();
@@ -100,8 +100,8 @@ void Sahara::Controller::generateVertexBuffers()
 
             int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
 
-            if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::BONES)) {
-                surface.setInput(Sahara::Surface::Input::Semantic::BONES, "bones", surface.inputs().size());
+            if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::JOINTS)) {
+                surface.setInput(Sahara::Surface::Input::Semantic::JOINTS, "joints", surface.inputs().size());
 
                 for (int j = 0; j < parts.size(); j++) {
                     parts[j].append(parts[j].at(vertexOffset));
@@ -124,29 +124,29 @@ void Sahara::Controller::generateVertexBuffers()
             surface.setElements(elements);
         }
 
-        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::BONES);
+        surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::JOINTS);
         surface.generateVertexBuffer(Sahara::Surface::Input::Semantic::WEIGHTS);
     }
 }
 
-QList<QPair<int, float> > Sahara::Controller::reduceBones(const QList<QPair<int, float> >& bones, const int max)
+QList<QPair<int, float> > Sahara::Controller::reduceJoints(const QList<QPair<int, float> >& joints, const int max)
 {
-    auto sortBones =  [](const QPair<int, float>& b1, const QPair<int, float>& b2) {
-        return b1.second > b2.second;
+    auto sortJoints =  [](const QPair<int, float>& j1, const QPair<int, float>& j2) {
+        return j1.second > j2.second;
     };
 
-    QList<QPair<int, float>> sortedBones = bones;
-    std::sort(sortedBones.begin(), sortedBones.end(), sortBones);
+    QList<QPair<int, float>> sortedJoints = joints;
+    std::sort(sortedJoints.begin(), sortedJoints.end(), sortJoints);
 
-    QList<QPair<int, float>> reducedBones = sortedBones.mid(0, max);
+    QList<QPair<int, float>> reducedJoints = sortedJoints.mid(0, max);
 
     float sum = 0.0f;
-    for (int i = 0; i < reducedBones.size(); i++) {
-        sum += reducedBones[i].second;
+    for (int i = 0; i < reducedJoints.size(); i++) {
+        sum += reducedJoints[i].second;
     }
-    for (int i = 0; i < reducedBones.size(); i++) {
-        reducedBones[i].second /= sum;
+    for (int i = 0; i < reducedJoints.size(); i++) {
+        reducedJoints[i].second /= sum;
     }
 
-    return reducedBones;
+    return reducedJoints;
 }

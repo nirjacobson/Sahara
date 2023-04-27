@@ -21,7 +21,7 @@ namespace Sahara {
                         NORMAL,
                         TEXCOORD,
                         COLOR,
-                        BONES,
+                        JOINTS,
                         WEIGHTS,
                         UNDEFINED
                     };

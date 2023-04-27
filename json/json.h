@@ -7,7 +7,7 @@
 
 #include "common/transform.h"
 #include "common/volume.h"
-#include "scene/asset/bone.h"
+#include "scene/asset/joint.h"
 #include "scene/asset/animation.h"
 #include "scene/asset/animationclip.h"
 #include "scene/asset/armature.h"
@@ -45,8 +45,8 @@ namespace Sahara {
             static QJsonObject fromTransform(const Transform& transform);
             static Transform toTransform(const QJsonObject& object);
 
-            static QJsonObject fromBone(const Bone* bone);
-            static Bone* toBone(const QJsonObject& object);
+            static QJsonObject fromJoint(const Joint* joint);
+            static Joint* toJoint(const QJsonObject& object);
 
             static QJsonObject fromAnimationKeyframe(const Animation::Keyframe& keyframe);
             static Animation::Keyframe toAnimationKeyframe(const QJsonObject& object);
