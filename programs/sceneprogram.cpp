@@ -16,10 +16,12 @@ Sahara::SceneProgram::SceneProgram()
     _render.modelView = program().uniformLocation("uRender.modelView");
     _render.inverseCamera = program().uniformLocation("uRender.inverseCamera");
     _render.projection = program().uniformLocation("uRender.projection");
-    _render.boned = program().uniformLocation("uRender.boned");
 
-    _boneRotations = program().uniformLocation("uBoneRotations");
-    _boneTranslations = program().uniformLocation("uBoneTranslations");
+    for (int i = 0; i < MAX_BONES; i++) {
+        _armature.joints[i].rotation = program().uniformLocation("uArmature.joints["+QString::number(i)+"].rotation");
+        _armature.joints[i].translation = program().uniformLocation("uArmature.joints["+QString::number(i)+"].translation");
+    }
+    _armature.present = program().uniformLocation("uArmature.present");
 
     _lighting.ambientLight.color = program().uniformLocation("uLighting.ambientLight.color");
     _lighting.ambientLight.strength = program().uniformLocation("uLighting.ambientLight.strength");
@@ -74,7 +76,7 @@ void Sahara::SceneProgram::setProjection(const QMatrix4x4& projection)
 
 void Sahara::SceneProgram::setBoned(const bool boned)
 {
-    program().setUniformValue(_render.boned, static_cast<GLint>(boned));
+    program().setUniformValue(_armature.present, static_cast<GLint>(boned));
 
     assert(glGetError() == GL_NO_ERROR);
 }
@@ -88,15 +90,10 @@ void Sahara::SceneProgram::setFocus(const bool focus)
 
 void Sahara::SceneProgram::setBoneTransforms(const QList<Sahara::Transform>& transforms)
 {
-    QVector<QVector4D> rotations;
-    QVector<QVector3D> translations;
-    std::for_each(transforms.begin(), transforms.end(), [&](const Transform& transform) {
-       rotations.append(transform.rotation().toVector4D());
-       translations.append(transform.translation());
-    });
-
-    program().setUniformValueArray(_boneRotations, rotations.data(), rotations.size());
-    program().setUniformValueArray(_boneTranslations, translations.data(), translations.size());
+    for (int i = 0; i < transforms.size(); i++) {
+        program().setUniformValue(_armature.joints[i].rotation, transforms[i].rotation().toVector4D());
+        program().setUniformValue(_armature.joints[i].translation, transforms[i].translation());
+    }
 
     assert(glGetError() == GL_NO_ERROR);
 }

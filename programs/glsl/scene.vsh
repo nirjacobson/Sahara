@@ -19,30 +19,38 @@ struct Render {
     mat4 modelView;
     mat4 inverseCamera;
     mat4 projection;
-    int boned;
+};
+
+struct Joint {
+    vec4 rotation;
+    vec3 translation;
+};
+
+struct Armature {
+    Joint joints[75];
+    int present;
 };
 
 uniform Render uRender;
-uniform vec4 uBoneRotations[75];
-uniform vec3 uBoneTranslations[75];
+uniform Armature uArmature;
 
 vec3 rotate(vec4 q, vec3 p) {
     return p + 2.0 * cross(q.xyz, cross(q.xyz, p) + q.w * p);
 }
 
 void main() {
-    vec3 vertPositionResult;
-    vec3 vertNormalResult;
+    vec3 vertPositionResult = vec3(0);
+    vec3 vertNormalResult = vec3(0);
 
-    if (uRender.boned == 1) {
+    if (uArmature.present == 1) {
         for (int i = 0; i < 4; i++) {
             int index = int(bones[i]);
             if (index == -1) {
                 break;
             }
-            vec3 transformed = rotate(uBoneRotations[index], position) + uBoneTranslations[index];
+            vec3 transformed = rotate(uArmature.joints[index].rotation, position) + uArmature.joints[index].translation;
             vertPositionResult += transformed * weights[i];
-            vertNormalResult += rotate(uBoneRotations[index], normal) * weights[i];
+            vertNormalResult += rotate(uArmature.joints[index].rotation, normal) * weights[i];
         }
     } else {
         vertPositionResult = position;

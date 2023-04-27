@@ -24,7 +24,16 @@ namespace Sahara
                 GLint modelView;
                 GLint inverseCamera;
                 GLint projection;
-                GLint boned;
+            };
+
+            struct JointUniforms {
+                GLint rotation;
+                GLint translation;
+            };
+
+            struct ArmatureUniforms {
+                JointUniforms joints[MAX_BONES];
+                GLint present;
             };
 
             struct AmbientLightUniforms {
@@ -84,8 +93,7 @@ namespace Sahara
 
             RenderUniforms _render;
 
-            GLint _boneRotations;
-            GLint _boneTranslations;
+            ArmatureUniforms _armature;
 
             LightingUniforms _lighting;
             MaterialUniforms _material;
