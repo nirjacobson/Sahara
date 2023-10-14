@@ -1,5 +1,12 @@
 #include "model.h"
 
+#include "instance/instancemesh.h"
+#include "instance/instancecontroller.h"
+
+#include "../QCollada/instance/instancecontroller.h"
+#include "../QCollada/instance/instancegeometry.h"
+#include "../QCollada/asset/common/floatsource.h"
+#include "../QCollada/asset/common/namesource.h"
 
 Sahara::Model::Model()
 {

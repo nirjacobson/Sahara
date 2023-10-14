@@ -44,8 +44,6 @@ void Sahara::VertexBuffer::write(const GLfloat* const data, const int size)
     _buffer.write(0, data, sizeBytes);
     _buffer.release();
 
-    assert(glGetError() == GL_NO_ERROR);
-
     _size = size;
 }
 
