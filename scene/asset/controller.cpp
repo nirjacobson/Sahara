@@ -93,7 +93,13 @@ void Sahara::Controller::generateVertexBuffers()
         if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::JOINTS) ||
             !surface.inputs().contains(Sahara::Surface::Input::Semantic::WEIGHTS)) {
             QList<QList<int>> parts;
-            int partSize = surface.inputs().size();
+            int maxOffset = 0;
+            for (int j = 0; j < surface.inputs().size(); j++) {
+                if (surface.offset(surface.inputs()[j]) > maxOffset) {
+                    maxOffset = surface.offset(surface.inputs()[j]);
+                }
+            }
+            int partSize = maxOffset + 1;
             for (int j = 0; j < surface.elements().size() / partSize; j++) {
                 parts.append(surface.elements().mid(j * partSize, partSize));
             }
@@ -101,7 +107,7 @@ void Sahara::Controller::generateVertexBuffers()
             int vertexOffset = surface.offset(Sahara::Surface::Input::Semantic::POSITION);
 
             if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::JOINTS)) {
-                surface.setInput(Sahara::Surface::Input::Semantic::JOINTS, "joints", surface.inputs().size());
+                surface.setInput(Sahara::Surface::Input::Semantic::JOINTS, "joints", maxOffset + 1);
 
                 for (int j = 0; j < parts.size(); j++) {
                     parts[j].append(parts[j].at(vertexOffset));
@@ -109,7 +115,7 @@ void Sahara::Controller::generateVertexBuffers()
             }
 
             if (!surface.inputs().contains(Sahara::Surface::Input::Semantic::WEIGHTS)) {
-                surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", surface.inputs().size());
+                surface.setInput(Sahara::Surface::Input::Semantic::WEIGHTS, "weights", maxOffset + 2);
 
                 for (int j = 0; j < parts.size(); j++) {
                     parts[j].append(parts[j].at(vertexOffset));

@@ -17,7 +17,7 @@ namespace Sahara
     class SceneProgram : public Program
     {
         public:
-            static constexpr int MAX_JOINTS = 75;
+            static constexpr int MAX_JOINTS = 110;
             static constexpr int MAX_POINT_LIGHTS = 6;
 
             struct RenderUniforms {

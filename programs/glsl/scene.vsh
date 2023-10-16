@@ -27,7 +27,7 @@ struct Joint {
 };
 
 struct Armature {
-    Joint joints[75];
+    Joint joints[110];
     int present;
 };
 

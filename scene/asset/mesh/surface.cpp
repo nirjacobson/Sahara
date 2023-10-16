@@ -102,18 +102,31 @@ void Sahara::Surface::setElements(const QList<int>& elements)
 
 int Sahara::Surface::triangles() const
 {
-    return _elements.size() / _inputs.size() / 3;
+    int maxOffset = 0;
+    for (Input i : _inputs) {
+        if (i.offset() > maxOffset) {
+            maxOffset = i.offset();
+        }
+    }
+    return _elements.size() / (maxOffset + 1) / 3;
 }
 
 void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semantic input)
 {
     const Source* source = _sources[_inputs[input].source()];
 
-    int dataSize = _elements.size() / _inputs.size() * source->stride();
-    GLfloat* data = new GLfloat[static_cast<unsigned long>(dataSize)];
+    int maxOffset = 0;
+    for (Input i : _inputs) {
+        if (i.offset() > maxOffset) {
+            maxOffset = i.offset();
+        }
+    }
+
+    unsigned long dataSize = _elements.size() / (maxOffset + 1) * source->stride();
+    GLfloat* data = new GLfloat[dataSize];
     int dataIndex = 0;
 
-    for (int i = _inputs[input].offset(); i < _elements.size(); i += _inputs.size()) {
+    for (int i = _inputs[input].offset(); i < _elements.size(); i += maxOffset + 1) {
         int index = _elements.at(i);
         QList<float> element = source->at(index);
         for (int j = 0; j < element.size(); j++) {
