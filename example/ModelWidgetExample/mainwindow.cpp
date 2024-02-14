@@ -27,24 +27,51 @@ void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()
 {
     ui->modelWidget->setModel(":/models/chibi.dae");
     ui->modelWidget->setAnimationClip("Idle");
+
+    ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(true);
+    ui->actionChibi->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionScorpion->setChecked(false);
+    ui->actionScorpion->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionTree->setChecked(false);
+    ui->actionScorpion->blockSignals(false);
 }
 
 void Sahara::ModelWidgetExample::MainWindow::actionScorpionTriggered()
 {
     ui->modelWidget->setModel(":/models/scorpion.dae");
     ui->modelWidget->setAnimationClip("Idle");
+
+    ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(false);
+    ui->actionChibi->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionScorpion->setChecked(true);
+    ui->actionScorpion->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionTree->setChecked(false);
+    ui->actionScorpion->blockSignals(false);
 }
 
 void Sahara::ModelWidgetExample::MainWindow::actionTreeTriggered()
 {
     ui->modelWidget->setModel(":/models/tree.dae");
+
+    ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(false);
+    ui->actionChibi->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionScorpion->setChecked(false);
+    ui->actionScorpion->blockSignals(false);
+
+    ui->actionScorpion->blockSignals(true);
     ui->actionTree->setChecked(true);
+    ui->actionScorpion->blockSignals(false);
 }
