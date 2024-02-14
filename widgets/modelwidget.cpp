@@ -39,11 +39,13 @@ void Sahara::ModelWidget::setModel(const QString& path)
     dialValueChanged();
 
     if (_model->animationClipNames().size() > 1) {
+        ui->animationComboBox->blockSignals(true);
         ui->animationComboBox->clear();
 
         for (const QString& animationClipName : _model->animationClipNames()) {
             ui->animationComboBox->addItem(animationClipName);
         }
+        ui->animationComboBox->blockSignals(false);
 
         showAnimationsUI(true);
     } else {
@@ -58,7 +60,9 @@ QStringList Sahara::ModelWidget::animationClipNames() const
 
 void Sahara::ModelWidget::setAnimationClip(const QString& name)
 {
+   ui->animationComboBox->blockSignals(true);
    ui->animationComboBox->setCurrentText(name);
+   ui->animationComboBox->blockSignals(false);
 }
 
 void Sahara::ModelWidget::showAnimationsUI(const bool visible)
