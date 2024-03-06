@@ -40,7 +40,9 @@ namespace Sahara {
                     int _offset;
             };
 
-            Surface(const SourceDict& sourceDict, const QString& material);
+            Surface(QVulkanWindow *window, const SourceDict& sourceDict, const QString& material);
+
+            int count() const;
 
             const QString& material() const;
 
@@ -57,12 +59,11 @@ namespace Sahara {
             void generateVertexBuffer(const Input::Semantic input);
 
         private:
-
+            QVulkanWindow* _vulkanWindow;
             const SourceDict& _sources;
             QString _material;
             QMap<Input::Semantic, Input> _inputs;
             QList<int> _elements;
-
     };
 
 }

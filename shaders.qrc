@@ -1,10 +1,16 @@
 <RCC>
     <qresource prefix="/">
-        <file>programs/glsl/display.fsh</file>
-        <file>programs/glsl/display.vsh</file>
-        <file>programs/glsl/grid.fsh</file>
-        <file>programs/glsl/grid.vsh</file>
-        <file>programs/glsl/scene.fsh</file>
-        <file>programs/glsl/scene.vsh</file>
+        <file>programs/glsl/display.frag</file>
+        <file>programs/glsl/display.vert</file>
+        <file>programs/glsl/grid.frag</file>
+        <file>programs/glsl/grid.vert</file>
+        <file>programs/glsl/scene.frag</file>
+        <file>programs/glsl/scene.vert</file>
+        <file>programs/spir-v/display.frag.spv</file>
+        <file>programs/spir-v/display.vert.spv</file>
+        <file>programs/spir-v/grid.frag.spv</file>
+        <file>programs/spir-v/grid.vert.spv</file>
+        <file>programs/spir-v/scene.frag.spv</file>
+        <file>programs/spir-v/scene.vert.spv</file>
     </qresource>
 </RCC>

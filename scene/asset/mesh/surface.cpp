@@ -63,11 +63,17 @@ Sahara::Surface::Input::Semantic Sahara::Surface::Input::semanticFromString(cons
     return Sahara::Surface::Input::UNDEFINED;
 }
 
-Sahara::Surface::Surface(const SourceDict& sourceDict, const QString& material)
-    : _sources(sourceDict)
+Sahara::Surface::Surface(QVulkanWindow* window, const SourceDict& sourceDict, const QString& material)
+    : _vulkanWindow(window)
+    , _sources(sourceDict)
     , _material(material)
 {
 
+}
+
+int Sahara::Surface::count() const
+{
+    return _sources.first()->count();
 }
 
 const QString&Sahara::Surface::material() const
@@ -134,9 +140,8 @@ void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semanti
         }
     }
 
-    VertexBuffer vertexBuffer;
+    VertexBuffer vertexBuffer(_vulkanWindow);
     vertexBuffer.write(data, dataSize);
-    vertexBuffer.setStride(source->stride());
 
     delete [] data;
 

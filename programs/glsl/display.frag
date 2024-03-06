@@ -1,21 +1,14 @@
-#version 300 es
-#undef lowp
-#undef mediump
-#undef highp
+#version 450
 
-precision highp float;
+layout(location = 0) in vec3 vertPosition;
+layout(location = 1) in vec3 vertNormal;
 
-in vec3 vertPosition;
-in vec3 vertNormal;
+layout(push_constant) uniform FragmentRender {
+    layout(offset = 128) vec3 cameraPosition;
+    layout(offset = 144) int focus;
+} uFragmentRender;
 
-out vec4 color;
-
-struct FragmentRender {
-    vec3 cameraPosition;
-    int focus;
-};
-
-uniform FragmentRender uFragmentRender;
+layout(location = 0) out vec4 color;
 
 void main() {
     vec3 diffuse;

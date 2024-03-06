@@ -24,20 +24,6 @@ add_library(Sahara SHARED
   common/volume.h
   json/json.cpp
   json/json.h
-  programs/glsl/display.fsh
-  programs/glsl/display.vsh
-  programs/glsl/grid.fsh
-  programs/glsl/grid.vsh
-  programs/glsl/scene.fsh
-  programs/glsl/scene.vsh
-  programs/displayprogram.cpp
-  programs/displayprogram.h
-  programs/gridprogram.cpp
-  programs/gridprogram.h
-  programs/program.cpp
-  programs/program.h
-  programs/sceneprogram.cpp
-  programs/sceneprogram.h
   render/display/cameradisplay.cpp
   render/display/cameradisplay.h
   render/display/display.cpp
@@ -100,8 +86,6 @@ add_library(Sahara SHARED
   scene/scene.h
   widgets/scenewidget/cameracontrol.cpp
   widgets/scenewidget/cameracontrol.h
-  widgets/scenewidget/scenewidget.cpp
-  widgets/scenewidget/scenewidget.h
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
@@ -116,6 +100,27 @@ add_library(Sahara SHARED
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
+  pipelines/displaypipeline.h pipelines/displaypipeline.cpp
+  programs/glsl/display.frag
+  programs/glsl/display.vert
+  programs/glsl/grid.frag
+  programs/glsl/grid.vert
+  programs/glsl/scene.frag
+  programs/glsl/scene.vert
+  programs/spir-v/display.frag.spv
+  programs/spir-v/display.vert.spv
+  programs/spir-v/grid.frag.spv
+  programs/spir-v/grid.vert.spv
+  programs/spir-v/scene.frag.spv
+  programs/spir-v/scene.vert.spv
+  pipelines/pipeline.h pipelines/pipeline.cpp
+  pipelines/gridpipeline.h pipelines/gridpipeline.cpp
+  pipelines/scenepipeline.h pipelines/scenepipeline.cpp
+  vulkanutil.h vulkanutil.cpp
+  render/withuniform.h render/withuniform.cpp
+  widgets/scenewidget/scenewindow.h widgets/scenewidget/scenewindow.cpp
+  widgets/scenewidget/scenewidget.h widgets/scenewidget/scenewidget.cpp
+
 )
 
 target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets)

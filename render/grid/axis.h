@@ -11,14 +11,19 @@ namespace Sahara {
     class Axis : public WithVertexBuffers
     {
         public:
-            Axis(const char axis, const int length);
+            Axis(QVulkanWindow *window, const char axis, const int length);
 
         private:
+            QVulkanWindow* _vulkanWindow;
             char _axis;
             int _length;
 
             void initPositionBuffer();
             void initColorBuffer();
+
+            // WithVertexBuffers interface
+        public:
+            int count() const;
     };
 
 }

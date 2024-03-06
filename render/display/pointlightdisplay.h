@@ -10,9 +10,11 @@ namespace Sahara {
 class PointLightDisplay : public Display
     {
         public:
-            PointLightDisplay();
+            PointLightDisplay(QVulkanWindow *window);
 
+            int count() const;
         private:
+            QVulkanWindow* _vulkanWindow;
             void initBuffers();
     };
 

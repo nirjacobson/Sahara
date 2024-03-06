@@ -11,7 +11,7 @@ namespace Sahara {
     class Grid : public WithVertexBuffers
     {
         public:
-            Grid(const int length);
+            Grid(QVulkanWindow *window, const int length);
 
             int length() const;
 
@@ -19,7 +19,11 @@ namespace Sahara {
             Axis& yAxis();
             Axis& zAxis();
 
+            int count() const;
+
         private:
+            QVulkanWindow* _vulkanWindow;
+
             int _length;
             Axis _xAxis;
             Axis _yAxis;

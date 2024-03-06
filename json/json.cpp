@@ -1,4 +1,5 @@
 #include "json.h"
+#include "render/renderer.h"
 
 Sahara::JSON::JSON()
 {
@@ -283,14 +284,14 @@ QJsonObject Sahara::JSON::fromArmature(const Sahara::Armature* armature)
     return object;
 }
 
-Sahara::Armature* Sahara::JSON::toArmature(const QJsonObject& object)
+Sahara::Armature* Sahara::JSON::toArmature(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Armature");
     QString id = object["id"].toString();
 
     Joint* root = toJoint(object["root"].toObject());
 
-    return new Armature(id, root);
+    return new Armature(renderer, id, root);
 }
 
 QJsonObject Sahara::JSON::fromCamera(const Sahara::Camera* camera)
@@ -434,14 +435,14 @@ QJsonObject Sahara::JSON::fromImage(const Sahara::Image* image)
     return object;
 }
 
-Sahara::Image*Sahara::JSON::toImage(const QJsonObject& object)
+Sahara::Image*Sahara::JSON::toImage(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Image");
     QString id = object["id"].toString();
 
     QString uri = object["uri"].toString();
 
-    return new Image(id, uri);
+    return new Image(renderer, id, uri);
 }
 
 QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
@@ -469,7 +470,7 @@ QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
     return object;
 }
 
-Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahara::Model& model)
+Sahara::Material*Sahara::JSON::toMaterial(Renderer* renderer, const QJsonObject& object, const Sahara::Model& model)
 {
     assert(object["_type"] == "Material");
     QString id = object["id"].toString();
@@ -483,9 +484,9 @@ Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahar
     if (object.contains("image")) {
         Image* image = model.images()[object["image"].toString()];
 
-        return new Material(id, emission, ambient, image, specular, shininess);
+        return new Material(renderer, id, emission, ambient, image, specular, shininess);
     } else {
-        return new Material(id, emission, ambient, diffuse, specular, shininess);
+        return new Material(renderer, id, emission, ambient, diffuse, specular, shininess);
     }
 }
 
@@ -597,7 +598,7 @@ QJsonObject Sahara::JSON::fromSurface(const Sahara::Surface* surface)
     return object;
 }
 
-Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara::Mesh& mesh)
+Sahara::Surface*Sahara::JSON::toSurface(QVulkanWindow* window, const QJsonObject& object, const Sahara::Mesh& mesh)
 {
     assert(object["_type"] == "Surface");
 
@@ -618,7 +619,7 @@ Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara:
         elements.append(elementsArray.at(i).toInt());
     }
 
-    Surface* surface = new Surface(mesh._sources, material);
+    Surface* surface = new Surface(window, mesh._sources, material);
     surface->_inputs = inputs;
     surface->_elements = elements;
 
@@ -652,12 +653,12 @@ QJsonObject Sahara::JSON::fromMesh(const Sahara::Mesh* mesh)
     return object;
 }
 
-Sahara::Mesh*Sahara::JSON::toMesh(const QJsonObject& object)
+Sahara::Mesh*Sahara::JSON::toMesh(QVulkanWindow* window, const QJsonObject& object)
 {
     assert(object["_type"] == "Mesh");
     QString id = object["id"].toString();
 
-    Mesh* mesh = new Mesh(id);
+    Mesh* mesh = new Mesh(window, id);
 
     QJsonObject sourcesObject = object["sources"].toObject();
     SourceDict sources;
@@ -669,7 +670,7 @@ Sahara::Mesh*Sahara::JSON::toMesh(const QJsonObject& object)
     QJsonArray surfacesArray = object["surfaces"].toArray();
     QList<Surface*> surfaces;
     for (int i = 0; i < surfacesArray.size(); i++) {
-        surfaces.append(toSurface(surfacesArray.at(i).toObject(), *mesh));
+        surfaces.append(toSurface(window, surfacesArray.at(i).toObject(), *mesh));
     }
     mesh->_surfaces = surfaces;
 
@@ -742,13 +743,13 @@ QJsonObject Sahara::JSON::fromInstanceController(const Sahara::InstanceControlle
     return object;
 }
 
-Sahara::InstanceController*Sahara::JSON::toInstanceController(const QJsonObject& object, const Sahara::Model& model)
+Sahara::InstanceController*Sahara::JSON::toInstanceController(Renderer* renderer, const QJsonObject& object, const Sahara::Model& model)
 {
     assert(object["_type"] == "InstanceController");
 
     Controller* controller = model.controllers()[object["controller"].toString()];
 
-    InstanceController* instanceController = new InstanceController(&model.armature(), {}, {}, controller);
+    InstanceController* instanceController = new InstanceController(renderer, &model.armature(), {}, {}, controller);
     instanceController->_armature = model._armature;
 
     toInstance(object, instanceController, model);
@@ -847,7 +848,7 @@ QJsonObject Sahara::JSON::fromModel(const Sahara::Model* model)
     return object;
 }
 
-Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
+Sahara::Model*Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Model");
 
@@ -859,21 +860,21 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
     QJsonObject imagesObject = object["images"].toObject();
     ImageDict images;
     for (QJsonObject::iterator i = imagesObject.begin(); i != imagesObject.end(); i++) {
-        images[i.key()] = toImage(i.value().toObject());
+        images[i.key()] = toImage(renderer, i.value().toObject());
     }
     model->_images = images;
 
     QJsonObject materialsObject = object["materials"].toObject();
     MaterialDict materials;
     for (QJsonObject::iterator i = materialsObject.begin(); i != materialsObject.end(); i++) {
-        materials[i.key()] = toMaterial(i.value().toObject(), *model);
+        materials[i.key()] = toMaterial(renderer, i.value().toObject(), *model);
     }
     model->_materials = materials;
 
     QJsonObject meshesObject = object["meshes"].toObject();
     MeshDict meshes;
     for (QJsonObject::iterator i = meshesObject.begin(); i != meshesObject.end(); i++) {
-        meshes[i.key()] = toMesh(i.value().toObject());
+        meshes[i.key()] = toMesh(renderer->window(), i.value().toObject());
     }
     model->_meshes = meshes;
 
@@ -886,7 +887,7 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
 
     if (object.contains("armature")) {
         QJsonObject armatureObject = object["armature"].toObject();
-        Armature* armature = toArmature(armatureObject);
+        Armature* armature = toArmature(renderer, armatureObject);
         model->_armature = armature;
 
         QJsonObject animationsObject = object["animations"].toObject();
@@ -918,7 +919,7 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
         if (instanceObject["_type"] == "InstanceMesh") {
             instances.append( toInstanceMesh(instanceObject, *model) );
         } else if (instanceObject["_type"] == "InstanceController") {
-            instances.append( toInstanceController(instanceObject, *model) );
+            instances.append( toInstanceController(renderer, instanceObject, *model) );
         }
     }
     model->_instances = instances;
@@ -1014,7 +1015,7 @@ QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
     return object;
 }
 
-Sahara::Scene* Sahara::JSON::toScene(const QJsonObject& object)
+Sahara::Scene* Sahara::JSON::toScene(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Scene");
 
@@ -1028,11 +1029,11 @@ Sahara::Scene* Sahara::JSON::toScene(const QJsonObject& object)
         } else if (itemObject["_type"] == "Camera") {
             items.insert(id, toCamera(itemObject));
         } else if (itemObject["_type"] == "Model") {
-            items.insert(id, toModel(itemObject));
+            items.insert(id, toModel(renderer, itemObject));
         }
     }
 
-    Scene* scene = new Scene;
+    Scene* scene = new Scene(renderer);
     scene->_root = toNode(object["root"].toObject(), items);
 
     scene->_root->depthFirst([&](Node& node) {

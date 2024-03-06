@@ -48,7 +48,7 @@ namespace Sahara {
       const AnimationClipDict& animationClips() const;
       const Armature& armature() const;
 
-      static Model* fromCollada(const QString& path);
+      static Model* fromCollada(Renderer* renderer, const QString& path);
 
       QStringList animationClipNames() const;
       void setAnimationClip(const QString& name);
@@ -71,13 +71,13 @@ namespace Sahara {
       Armature* _armature;
       AnimationClip* _animationClip;
 
-      static Model* parseColladaModel(const QString& path);
-      static ImageDict parseColladaModelImages(const QCollada::Collada& collada, const QString& path);
-      static MaterialDict parseColladaModelMaterials(const QCollada::Collada& collada, const ImageDict& images);
-      static MeshDict parseColladaModelGeometries(const QCollada::Collada& collada, Volume& volume);
+      static Model* parseColladaModel(Renderer* renderer, const QString& path);
+      static ImageDict parseColladaModelImages(Renderer* renderer, const QCollada::Collada& collada, const QString& path);
+      static MaterialDict parseColladaModelMaterials(Renderer* renderer, const QCollada::Collada& collada, const ImageDict& images);
+      static MeshDict parseColladaModelGeometries(QVulkanWindow* window, const QCollada::Collada& collada, Volume& volume);
       static ControllerDict parseColladaModelControllers(const QCollada::Collada& collada, MeshDict& meshes);
-      static QList<Instance*> parseColladaVisualScene(const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr);
-      static Armature* parseColladaArmatureNode(const QCollada::Node& rootNode);
+      static QList<Instance*> parseColladaVisualScene(Renderer* renderer, const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr);
+      static Armature* parseColladaArmatureNode(Renderer* renderer, const QCollada::Node& rootNode);
       static Joint* parseColladaJointNode(const QCollada::Node& jointNode);
       static AnimationDict parseColladaModelAnimations(const QCollada::Collada& collada, Armature& armature);
       static AnimationClipDict parseColladaModelAnimationClips(const QCollada::Collada& collada, const AnimationDict& animations);

@@ -2,9 +2,12 @@
 #define SAHARA_VERTEXBUFFER_H
 
 #include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
+#include <QVulkanDeviceFunctions>
+#include <QVulkanWindow>
 #include <QtDebug>
 #include <QMap>
+
+#include "vulkanutil.h"
 
 namespace Sahara
 {
@@ -12,22 +15,21 @@ namespace Sahara
     class VertexBuffer
     {
         public:
-            VertexBuffer();
+            VertexBuffer(); // in order to support containers
+            VertexBuffer(QVulkanWindow *window);
             ~VertexBuffer();
 
-            int stride() const;
-            int size() const;
-            int count() const;
+            VkBuffer buffer() const;
 
-            void bind();
-            void release();
-            void write(const GLfloat* const data, const int size);
-            void setStride(const int stride);
+            void write(const float * const data, const uint32_t size);
 
         private:
-            QOpenGLBuffer _buffer;
-            int _stride;
-            int _size;
+            QVulkanWindow* _window;
+            QVulkanDeviceFunctions* _deviceFunctions;
+            VkBuffer _buffer;
+            VkDeviceMemory _memory;
+
+            bool _haveBuffer;
     };
 
     typedef QMap<QString, VertexBuffer> VertexBufferDict;

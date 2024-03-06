@@ -3,16 +3,18 @@
 
 #include "asset.h"
 #include "joint.h"
+#include "vulkanutil.h"
 
 namespace Sahara
 {
+    class Renderer;
 
     class Armature : public Asset
     {
         friend class JSON;
 
         public:
-            Armature(const QString& id, Joint* const root);
+            Armature(Renderer* renderer, const QString& id, Joint* const root);
             ~Armature();
 
             const Joint& root() const;

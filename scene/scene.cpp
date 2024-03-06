@@ -1,7 +1,9 @@
 #include "scene.h"
+#include "render/renderer.h"
 
-Sahara::Scene::Scene()
+Sahara::Scene::Scene(Renderer *renderer)
   : _root(new Node("Root", nullptr, QMatrix4x4()))
+  , _renderer(renderer)
   , _cameraNode(new Node(
                   "Camera",
                   new Camera("Camera", Camera::Mode::Perspective, 90, 7.31429f, 1.3333f, 1, 100),
@@ -9,7 +11,8 @@ Sahara::Scene::Scene()
                     0.9271839f, -0.1403301f, 0.3473292f, 5, 0, 0.9271839f, 0.3746066f, 5, -0.3746066f, -0.3473292f, 0.8596699f, 10, 0, 0, 0, 1
                   )))
 {
-  _root->addChild(_cameraNode);
+    _root->addChild(_cameraNode);
+    _lightingUniformBuffers = renderer->createLightingUniformBuffers();
 }
 
 Sahara::Scene::~Scene()
@@ -24,6 +27,8 @@ Sahara::Scene::~Scene()
     delete model;
   }
   delete _root;
+
+  _renderer->destroyUniformBuffers(_lightingUniformBuffers);
 }
 
 const Sahara::Node& Sahara::Scene::root() const
@@ -114,6 +119,53 @@ const Sahara::AmbientLight &Sahara::Scene::ambientLight() const
 Sahara::AmbientLight& Sahara::Scene::ambientLight()
 {
     return _ambientLight;
+}
+
+const QList<VkDescriptorSet>& Sahara::Scene::descriptorSets() const
+{
+    return _lightingUniformBuffers.bufferDescriptorSets;
+}
+
+void Sahara::Scene::updateUniform() const
+{
+    ScenePipeline::Lighting lighting{
+        .ambientLight = {
+            .color = {
+                _ambientLight.color().redF(),
+                _ambientLight.color().greenF(),
+                _ambientLight.color().blueF(),
+            },
+            .strength = _ambientLight.strength()
+        },
+        .pointLightCount = 0
+    };
+
+    _root->depthFirst([&](const Node& node) {
+        const PointLight* pointLight;
+        if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
+            lighting.pointLights[lighting.pointLightCount++] = {
+                .position = {
+                    node.globalPosition().x(),
+                    node.globalPosition().y(),
+                    node.globalPosition().z()
+                },
+                .color = {
+                    pointLight->color().redF(),
+                    pointLight->color().greenF(),
+                    pointLight->color().blueF()
+                },
+                .constantAttenuation = pointLight->constantAttenuation(),
+                .linearAttenuation = pointLight->linearAttenuation(),
+                .quadraticAttenuation = pointLight->quadraticAttenuation()
+            };
+        }
+        return false;
+    });
+
+    for (int i = 0; i < _lightingUniformBuffers.buffers.size(); i++) {
+        memcpy(_lightingUniformBuffers.buffersMapped[i], &lighting, sizeof(ScenePipeline::Lighting));
+    }
+
 }
 
 

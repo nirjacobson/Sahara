@@ -1,7 +1,8 @@
 #include "mesh.h"
 
-Sahara::Mesh::Mesh(const QString& id)
+Sahara::Mesh::Mesh(QVulkanWindow* window, const QString& id)
     : Asset(id)
+    , _vulkanWindow(window)
 {
 
 }
@@ -38,7 +39,7 @@ Sahara::Surface&Sahara::Mesh::surface(const int i)
 
 Sahara::Surface& Sahara::Mesh::add(const QString& material)
 {
-    Surface* surface = new Surface(_sources, material);
+    Surface* surface = new Surface(_vulkanWindow, _sources, material);
     _surfaces.append(surface);
 
     return *surface;

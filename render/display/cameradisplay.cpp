@@ -1,7 +1,8 @@
 #include "cameradisplay.h"
 
 
-Sahara::CameraDisplay::CameraDisplay()
+Sahara::CameraDisplay::CameraDisplay(QVulkanWindow* window)
+    : _vulkanWindow(window)
 {
     initBuffers();
 }
@@ -41,12 +42,10 @@ void Sahara::CameraDisplay::initBuffers()
       dataIndex++;
     }
 
-    VertexBuffer positionBuffer;
-    positionBuffer.setStride(3);
+    VertexBuffer positionBuffer(_vulkanWindow);
     positionBuffer.write(positionData, numFloats);
 
-    VertexBuffer normalBuffer;
-    normalBuffer.setStride(3);
+    VertexBuffer normalBuffer(_vulkanWindow);
     normalBuffer.write(normalData, numFloats);
 
     delete [] positionData;
@@ -54,4 +53,9 @@ void Sahara::CameraDisplay::initBuffers()
 
     addVertexBuffer("position", positionBuffer);
     addVertexBuffer("normal", normalBuffer);
+}
+
+int Sahara::CameraDisplay::count() const
+{
+    return 15;
 }

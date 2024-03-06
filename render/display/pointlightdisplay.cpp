@@ -1,8 +1,14 @@
 #include "pointlightdisplay.h"
 
-Sahara::PointLightDisplay::PointLightDisplay()
+Sahara::PointLightDisplay::PointLightDisplay(QVulkanWindow* window)
+    : _vulkanWindow(window)
 {
     initBuffers();
+}
+
+int Sahara::PointLightDisplay::count() const
+{
+    return 852;
 }
 
 void Sahara::PointLightDisplay::initBuffers()
@@ -40,12 +46,10 @@ void Sahara::PointLightDisplay::initBuffers()
       dataIndex++;
     }
 
-    VertexBuffer positionBuffer;
-    positionBuffer.setStride(3);
+    VertexBuffer positionBuffer(_vulkanWindow);
     positionBuffer.write(positionData, numFloats);
 
-    VertexBuffer normalBuffer;
-    normalBuffer.setStride(3);
+    VertexBuffer normalBuffer(_vulkanWindow);
     normalBuffer.write(normalData, numFloats);
 
     delete [] positionData;

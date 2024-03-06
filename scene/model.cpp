@@ -3,6 +3,8 @@
 #include "instance/instancemesh.h"
 #include "instance/instancecontroller.h"
 
+#include "render/renderer.h"
+
 #include "../QCollada/instance/instancecontroller.h"
 #include "../QCollada/instance/instancegeometry.h"
 #include "../QCollada/asset/common/floatsource.h"
@@ -77,9 +79,9 @@ const Sahara::Armature& Sahara::Model::armature() const
   return *_armature;
 }
 
-Sahara::Model* Sahara::Model::fromCollada(const QString& path)
+Sahara::Model* Sahara::Model::fromCollada(Renderer* renderer, const QString& path)
 {
-  return parseColladaModel(path);
+  return parseColladaModel(renderer, path);
 }
 
 QStringList Sahara::Model::animationClipNames() const
@@ -124,17 +126,17 @@ void Sahara::Model::animate(const float time)
   }
 }
 
-Sahara::Model* Sahara::Model::parseColladaModel(const QString& path)
+Sahara::Model* Sahara::Model::parseColladaModel(Renderer* renderer, const QString& path)
 {
   QCollada::Collada collada = QCollada::Collada::parse(path);
   Sahara::Model* model = new Model();
 
-  ImageDict images = parseColladaModelImages(collada, QFileInfo(path).dir().path());
-  MaterialDict materials = parseColladaModelMaterials(collada, images);
-  MeshDict meshes = parseColladaModelGeometries(collada, model->_volume);
+  ImageDict images = parseColladaModelImages(renderer, collada, QFileInfo(path).dir().path());
+  MaterialDict materials = parseColladaModelMaterials(renderer, collada, images);
+  MeshDict meshes = parseColladaModelGeometries(renderer->window(), collada, model->_volume);
   ControllerDict controllers = parseColladaModelControllers(collada, meshes);
   Armature* armature;
-  QList<Sahara::Instance*> instances = parseColladaVisualScene(collada, materials, meshes, controllers, &armature);
+  QList<Sahara::Instance*> instances = parseColladaVisualScene(renderer, collada, materials, meshes, controllers, &armature);
   Sahara::AnimationDict animations = parseColladaModelAnimations(collada, *armature);
   Sahara::AnimationClipDict animationClips = parseColladaModelAnimationClips(collada, animations);
 
@@ -151,14 +153,14 @@ Sahara::Model* Sahara::Model::parseColladaModel(const QString& path)
   return model;
 }
 
-Sahara::ImageDict Sahara::Model::parseColladaModelImages(const QCollada::Collada& collada, const QString& path)
+Sahara::ImageDict Sahara::Model::parseColladaModelImages(Renderer* renderer, const QCollada::Collada& collada, const QString& path)
 {
   Sahara::ImageDict images;
 
   for (auto it = collada.images().begin(); it != collada.images().end(); it++) {
     QString id = it.key();
     QCollada::Image* image = it.value();
-    Sahara::Image* modelImage = new Sahara::Image(id, QDir::cleanPath(path + QDir::separator() + image->initFrom()));
+    Sahara::Image* modelImage = new Sahara::Image(renderer, id, QDir::cleanPath(path + QDir::separator() + image->initFrom()));
 
     images.insert(id, modelImage);
   }
@@ -166,7 +168,7 @@ Sahara::ImageDict Sahara::Model::parseColladaModelImages(const QCollada::Collada
   return images;
 }
 
-Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::Collada& collada, const Sahara::ImageDict& images)
+Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(Renderer* renderer, const QCollada::Collada& collada, const Sahara::ImageDict& images)
 {
   Sahara::MaterialDict materials;
 
@@ -181,6 +183,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
         QString imageId = effect->sampler2D()->source();
         Sahara::Image* image = images[imageId];
         modelMaterial = new Sahara::Material(
+          renderer,
           id,
           effect->phong().emission(),
           effect->phong().ambient(),
@@ -189,6 +192,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
           effect->phong().shininess());
       } else {
         modelMaterial = new Sahara::Material(
+          renderer,
           id,
           effect->phong().emission(),
           effect->phong().ambient(),
@@ -204,7 +208,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
   return materials;
 }
 
-Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Collada& collada, Volume& volume)
+Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(QVulkanWindow* window, const QCollada::Collada& collada, Volume& volume)
 {
   MeshDict meshes;
 
@@ -214,7 +218,7 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(const QCollada::Coll
   for (auto it = collada.geometries().begin(); it != collada.geometries().end(); it++) {
     QString id = it.key();
     QCollada::Geometry* geometry = it.value();
-    Sahara::Mesh* modelMesh = new Sahara::Mesh(id);
+    Sahara::Mesh* modelMesh = new Sahara::Mesh(window, id);
 
     for (const QCollada::Triangles& triangles : geometry->mesh().triangles()) {
       Surface& meshSurface = modelMesh->add(triangles.material());
@@ -343,7 +347,7 @@ Sahara::ControllerDict Sahara::Model::parseColladaModelControllers(const QCollad
   return controllers;
 }
 
-QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr)
+QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(Renderer* renderer, const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr)
 {
   QList<Instance*> instances;
   Sahara::Armature* armature = nullptr;
@@ -371,14 +375,14 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
         Sahara::Controller* controller = controllers[instanceController->url().mid(1)];
         const QCollada::Node* armatureNode = visualScene->resolve(instanceController->skeleton());
         if (armature == nullptr)
-          armature = parseColladaArmatureNode(*armatureNode);
+          armature = parseColladaArmatureNode(renderer, *armatureNode);
 
         QMap<QString, Material*> controllerInstanceMaterials;
         for (const QCollada::InstanceMaterial& instanceMaterial : instanceController->instanceMaterials()) {
           controllerInstanceMaterials.insert(instanceMaterial.symbol(), materials[ instanceMaterial.target().mid(1) ]);
         }
 
-        Sahara::InstanceController* controllerInstance = new InstanceController(armature, controllerInstanceMaterials, transformStack.top(), controller);
+        Sahara::InstanceController* controllerInstance = new InstanceController(renderer, armature, controllerInstanceMaterials, transformStack.top(), controller);
         instances.append(controllerInstance);
       }
 
@@ -393,9 +397,9 @@ QList<Sahara::Instance*> Sahara::Model::parseColladaVisualScene(const QCollada::
   return instances;
 }
 
-Sahara::Armature* Sahara::Model::parseColladaArmatureNode(const QCollada::Node& rootNode)
+Sahara::Armature* Sahara::Model::parseColladaArmatureNode(Renderer* renderer, const QCollada::Node& rootNode)
 {
-  Sahara::Armature* armature = new Sahara::Armature("Armature", parseColladaJointNode(rootNode));
+  Sahara::Armature* armature = new Sahara::Armature(renderer, "Armature", parseColladaJointNode(rootNode));
 
   return armature;
 }

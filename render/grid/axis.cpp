@@ -1,7 +1,8 @@
 #include "axis.h"
 
-Sahara::Axis::Axis(const char axis, const int length)
-    : _axis(axis)
+Sahara::Axis::Axis(QVulkanWindow* window, const char axis, const int length)
+    : _vulkanWindow(window)
+    , _axis(axis)
     , _length(length)
 {
     initPositionBuffer();
@@ -116,8 +117,7 @@ void Sahara::Axis::initPositionBuffer()
         }
     }
 
-    VertexBuffer positionBuffer;
-    positionBuffer.setStride(3);
+    VertexBuffer positionBuffer(_vulkanWindow);
     positionBuffer.write(data, numFloats);
 
     delete [] data;
@@ -151,11 +151,15 @@ void Sahara::Axis::initColorBuffer()
         data[dataIndex++] = color.z();
     }
 
-    VertexBuffer colorBuffer;
-    colorBuffer.setStride(3);
+    VertexBuffer colorBuffer(_vulkanWindow);
     colorBuffer.write(data, numFloats);
 
     delete [] data;
 
     addVertexBuffer("color", colorBuffer);
+}
+
+int Sahara::Axis::count() const
+{
+    return 24;
 }

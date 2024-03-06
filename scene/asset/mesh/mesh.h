@@ -14,7 +14,7 @@ namespace Sahara
         friend class JSON;
 
         public:
-            Mesh(const QString& id);
+            Mesh(QVulkanWindow *window, const QString& id);
             ~Mesh();
 
             QStringList sources() const;
@@ -27,6 +27,7 @@ namespace Sahara
             int triangles() const;
 
         private:
+            QVulkanWindow* _vulkanWindow;
             SourceDict _sources;
             QList<Surface*> _surfaces;
     };

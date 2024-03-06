@@ -2,29 +2,35 @@
 #define SAHARA_IMAGE_H
 
 #include <QImage>
-#include <QOpenGLTexture>
 
 #include "asset.h"
+#include "vulkanutil.h"
+#include "../../render/withuniform.h"
 
 namespace Sahara
 {
+    class Renderer;
 
-    class Image : public Asset
+    class Image : public Asset, public WithUniform
     {
         friend class JSON;
 
         public:
-            Image(const QString& id, const QString& uri);
+            Image(Renderer* renderer, const QString& id, const QString& uri);
             ~Image();
 
-            void bind();
-            void release();
+            const QList<VkDescriptorSet>& descriptorSets() const;
 
             const QString& uri() const;
 
+            void updateUniform() const {};
+
         private:
             QString _uri;
-            QOpenGLTexture _texture;
+            VkImage _image;
+            VkDeviceMemory _imageMemory;
+            VkImageView _imageView;
+            QList<VkDescriptorSet> _descriptorSets;
     };
 
 }

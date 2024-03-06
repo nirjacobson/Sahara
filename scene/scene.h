@@ -8,15 +8,18 @@
 #include "asset/light/ambientlight.h"
 #include "model.h"
 #include "node/node.h"
+#include "vulkanutil.h"
+#include "../render/withuniform.h"
 
 namespace Sahara {
+  class Renderer;
 
-  class Scene
+  class Scene : public WithUniform
   {
     friend class JSON;
 
     public:
-      Scene();
+      Scene(Renderer* renderer);
       ~Scene();
 
       const Node& root() const;
@@ -40,7 +43,13 @@ namespace Sahara {
       const AmbientLight& ambientLight() const;
       AmbientLight& ambientLight();
 
+      const QList<VkDescriptorSet>& descriptorSets() const;
+
+      void updateUniform() const;
+
     private:
+      Renderer* _renderer;
+
       AmbientLight _ambientLight;
 
       Node* _root;
@@ -50,6 +59,8 @@ namespace Sahara {
       QMap<QString, Camera*> _cameras;
       QMap<QString, Light*> _lights;
       QMap<QString, Model*> _models;
+
+      VulkanUtil::UniformBuffers _lightingUniformBuffers;
   };
 
 }

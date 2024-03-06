@@ -3,7 +3,15 @@
 
 Sahara::VertexBuffer::VertexBuffer()
 {
-    _buffer.create();
+
+}
+
+Sahara::VertexBuffer::VertexBuffer(QVulkanWindow* window)
+    : _window(window)
+    , _deviceFunctions(window->vulkanInstance()->deviceFunctions(window->device()))
+    , _haveBuffer(false)
+{
+
 }
 
 Sahara::VertexBuffer::~VertexBuffer()
@@ -11,43 +19,37 @@ Sahara::VertexBuffer::~VertexBuffer()
 
 }
 
-int Sahara::VertexBuffer::stride() const
+VkBuffer Sahara::VertexBuffer::buffer() const
 {
-    return _stride;
+    return _buffer;
 }
 
-int Sahara::VertexBuffer::size() const
+void Sahara::VertexBuffer::write(const float* const data, const uint32_t size)
 {
-    return _size;
+    VkBuffer oldBuffer = _buffer;
+    VkDeviceMemory oldMemory = _memory;
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    VulkanUtil::createBuffer(_window, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, _window->hostVisibleMemoryIndex(), stagingBuffer, stagingBufferMemory);
+
+    void* stagingMapped;
+    _deviceFunctions->vkMapMemory(_window->device(), stagingBufferMemory, 0, size, 0, &stagingMapped);
+    memcpy(stagingMapped, data, size);
+    _deviceFunctions->vkUnmapMemory(_window->device(), stagingBufferMemory);
+
+    VulkanUtil::createBuffer(_window, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _window->deviceLocalMemoryIndex(), _buffer, _memory);
+    VulkanUtil::copyBuffer(_window, stagingBuffer, _buffer, size);
+
+    _deviceFunctions->vkDestroyBuffer(_window->device(), stagingBuffer, nullptr);
+    _deviceFunctions->vkFreeMemory(_window->device(), stagingBufferMemory, nullptr);
+
+    if (_haveBuffer) {
+        _deviceFunctions->vkQueueWaitIdle(_window->graphicsQueue());
+        _deviceFunctions->vkDestroyBuffer(_window->device(), oldBuffer, nullptr);
+        _deviceFunctions->vkFreeMemory(_window->device(), oldMemory, nullptr);
+    }
+
+    _haveBuffer = true;
 }
 
-int Sahara::VertexBuffer::count() const
-{
-    return _size / _stride;
-}
-
-void Sahara::VertexBuffer::bind()
-{
-    _buffer.bind();
-}
-
-void Sahara::VertexBuffer::release()
-{
-    _buffer.release();
-}
-
-void Sahara::VertexBuffer::write(const GLfloat* const data, const int size)
-{
-    int sizeBytes = static_cast<int>(sizeof(GLfloat)) * size;
-    _buffer.bind();
-    _buffer.allocate(sizeBytes);
-    _buffer.write(0, data, sizeBytes);
-    _buffer.release();
-
-    _size = size;
-}
-
-void Sahara::VertexBuffer::setStride(const int stride)
-{
-    _stride = stride;
-}

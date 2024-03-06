@@ -8,10 +8,16 @@ namespace Sahara {
     class CameraDisplay : public Display
     {
         public:
-            CameraDisplay();
+            CameraDisplay(QVulkanWindow* window);
 
         private:
+            QVulkanWindow* _vulkanWindow;
+
             void initBuffers();
+
+            // WithVertexBuffers interface
+        public:
+            int count() const;
     };
 
 }

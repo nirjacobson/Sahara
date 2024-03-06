@@ -1,10 +1,11 @@
 #include "grid.h"
 
-Sahara::Grid::Grid(const int length)
-    : _length(length)
-    , _xAxis('x', length)
-    , _yAxis('y', length)
-    , _zAxis('z', length)
+Sahara::Grid::Grid(QVulkanWindow* window, const int length)
+    : _vulkanWindow(window)
+    , _length(length)
+    , _xAxis(window, 'x', length)
+    , _yAxis(window, 'y', length)
+    , _zAxis(window, 'z', length)
 {
     initPositionBuffer();
     initColorBuffer();
@@ -30,9 +31,14 @@ Sahara::Axis&Sahara::Grid::zAxis()
     return _zAxis;
 }
 
+int Sahara::Grid::count() const
+{
+    return 2 * 4 * _length;
+}
+
 void Sahara::Grid::initPositionBuffer()
 {
-    int numFloats = 2 * _length * 4 * 3;
+    int numFloats = 2 * _length * 5 * 3;
     GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
@@ -62,7 +68,7 @@ void Sahara::Grid::initPositionBuffer()
         };
 
         vertices = {
-            topLeft, bottomLeft, bottomRight, topRight
+            topLeft, bottomLeft, bottomRight, topRight, topLeft
         };
 
         for (int j = 0; j < vertices.size(); j++) {
@@ -95,7 +101,7 @@ void Sahara::Grid::initPositionBuffer()
         };
 
         vertices = {
-            topLeft, bottomLeft, bottomRight, topRight
+            topLeft, bottomLeft, bottomRight, topRight, topLeft
         };
 
         for (int j = 0; j < vertices.size(); j++) {
@@ -105,8 +111,7 @@ void Sahara::Grid::initPositionBuffer()
         }
     }
 
-    VertexBuffer positionBuffer;
-    positionBuffer.setStride(3);
+    VertexBuffer positionBuffer(_vulkanWindow);
     positionBuffer.write(data, numFloats);
 
     delete [] data;
@@ -127,8 +132,7 @@ void Sahara::Grid::initColorBuffer()
         }
     }
 
-    VertexBuffer colorBuffer;
-    colorBuffer.setStride(3);
+    VertexBuffer colorBuffer(_vulkanWindow);
     colorBuffer.write(data, numFloats);
 
     delete [] data;

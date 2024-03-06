@@ -3,11 +3,13 @@
 
 #include <QStack>
 #include <QMatrix4x4>
-#include <QOpenGLFunctions>
+#include <QVulkanWindowRenderer>
+#include <QVulkanDeviceFunctions>
+#include <QElapsedTimer>
 
-#include "../programs/sceneprogram.h"
-#include "../programs/gridprogram.h"
-#include "../programs/displayprogram.h"
+#include "../pipelines/scenepipeline.h"
+#include "../pipelines/gridpipeline.h"
+#include "../pipelines/displaypipeline.h"
 #include "../scene/scene.h"
 #include "../scene/model.h"
 #include "../scene/asset/mesh/surface.h"
@@ -16,16 +18,20 @@
 #include "display/cameradisplay.h"
 #include "scene/instance/instancemesh.h"
 #include "scene/instance/instancecontroller.h"
+#include "scene/asset/light/pointlight.h"
+#include "vulkanutil.h"
 
 namespace Sahara {
 
-    class Renderer
+    class Renderer : public QVulkanWindowRenderer
     {
         public:
-            Renderer();
+            Renderer(QVulkanWindow* vulkanWindow);
             ~Renderer();
 
-            void render(Scene& scene, const float time);
+            // void render(const float time);
+
+            void setScene(Scene* scene);
 
             bool showGrid() const;
             void showGrid(const bool visible);
@@ -36,10 +42,40 @@ namespace Sahara {
             bool showCameras() const;
             void showCameras(const bool visible);
 
+            void pause();
+            void resume();
+
+            float fps() const;
+
+            QVulkanWindow* window();
+
+            void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkImage &image, VkDeviceMemory &imageMemory);
+            VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+            QList<VkDescriptorSet> createImageDescriptorSets(VkImageView imageView);
+
+            void copyImage(const QImage& image, VkImage vkImage);
+
+            VulkanUtil::UniformBuffers createArmatureUniformBuffers();
+            VulkanUtil::UniformBuffers createMaterialUniformBuffers();
+            VulkanUtil::UniformBuffers createLightingUniformBuffers();
+            void destroyUniformBuffers(VulkanUtil::UniformBuffers& buffers);
+
         private:
-            SceneProgram _sceneProgram;
-            GridProgram _gridProgram;
-            DisplayProgram _displayProgram;
+            QVulkanWindow* _vulkanWindow;
+            QVulkanDeviceFunctions* _deviceFunctions;
+
+            ScenePipeline _scenePipeline;
+            ScenePipeline _scenePipelineWire;
+            GridPipeline _gridPipeline;
+            GridPipeline _gridPipelineWire;
+            DisplayPipeline _displayPipeline;
+
+            QElapsedTimer _frameTime;
+            float _fps;
+
+            Scene* _scene;
+
+            bool _paused;
 
             Grid _grid;
             bool _showGrid;
@@ -50,6 +86,9 @@ namespace Sahara {
             PointLightDisplay _pointLightDisplay;
             CameraDisplay _cameraDisplay;
 
+            template <typename T>
+            VulkanUtil::UniformBuffers getUniformBuffers(Pipeline& pipeline, uint32_t binding);
+
             void renderScene(Scene& scene, const float time);
             void renderGrid(Scene& scene);
             void renderPointLight(Scene& scene, const QMatrix4x4& modelView, const bool focus);
@@ -59,6 +98,25 @@ namespace Sahara {
 
             void processSceneLighting(Scene& scene);
             void processControllerInstanceArmature(InstanceController& controllerInstance);
+
+            VulkanUtil::UniformBuffers _renderUniformBuffers;
+
+            void recordGrid(Scene& scene);
+            void recordDisplay(Scene& scene, Display& display, const QMatrix4x4& modelView, const bool focus);
+            void recordPointLight(Scene& scene, const QMatrix4x4 &modelView, const bool focus);
+            void recordCamera(Scene& scene, const QMatrix4x4 &modelView, const bool focus);
+            void recordScene(Scene& scene, const float time);
+            void recordSurface(Sahara::Surface& surface, Instance& instance, const bool focus);
+            void recordModel(Sahara::Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
+
+            void record(const float time);
+            // QVulkanWindowRenderer interface
+        public:
+            void startNextFrame();
+
+            // QVulkanWindowRenderer interface
+        public:
+            void initSwapChainResources();
     };
 
 }

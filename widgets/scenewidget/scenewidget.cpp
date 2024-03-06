@@ -1,41 +1,92 @@
 #include "scenewidget.h"
 
-Sahara::SceneWidget::SceneWidget(QWidget* parent)
-    : QOpenGLWidget(parent)
-    , _scene(new Scene)
-    , _showFPS(true)
-    , _flyThrough(false)
+Sahara::SceneWidget::SceneWidget(QWidget *parent)
+    : QWidget{parent}
+    , _scene(nullptr)
+    , _renderer(nullptr)
 {
-    connect(&_timer, &QTimer::timeout, this, &SceneWidget::frame);
+    _instance.setLayers({ "VK_LAYER_KHRONOS_validation" });
+    if (!_instance.create())
+        qFatal("Failed to create Vulkan instance: %d", _instance.errorCode());
+
+    _window.setVulkanInstance(&_instance);
+
+    connect(&_window, &SceneWindow::rendererCreated, this, &SceneWidget::rendererCreated);
+
+    QWidget *wrapper = QWidget::createWindowContainer(&_window);
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(wrapper);
+    setLayout(layout);
+
+    connect(&_timer, &QTimer::timeout, this, &SceneWidget::updateCameraControl);
+    _timer.setInterval(1000 / 60);
+
     setMouseTracking(true);
 }
 
 Sahara::SceneWidget::~SceneWidget()
 {
-    makeCurrent();
-    delete _renderer;
     delete _scene;
-    doneCurrent();
 }
 
-Sahara::Scene& Sahara::SceneWidget::scene()
+Sahara::Scene &Sahara::SceneWidget::scene()
 {
     return *_scene;
 }
 
 void Sahara::SceneWidget::newScene()
 {
-    delete _scene;
-    _scene = new Scene;
-    _scene->camera().setAspect(static_cast<float>(width()) / height());
+    _scene = new Scene(_renderer);
+    _renderer->setScene(_scene);
+}
 
-    emit sceneLoaded();
+void Sahara::SceneWidget::rendererCreated(QVulkanWindowRenderer* renderer)
+{
+    _renderer = dynamic_cast<Renderer*>(renderer);
+    newScene();
+
+    _timer.start();
+
+    emit initialized();
+}
+
+void Sahara::SceneWidget::updateCameraControl()
+{
+    if (_flyThrough) {
+        _cameraControl.update(_scene->cameraNode());
+        emit cameraMotion();
+    }
+}
+
+void Sahara::SceneWidget::paintEvent(QPaintEvent *event)
+{
+    static float fps = _fps;
+    static int i = 0;
+    i = (i + 1) % 15;
+
+    if (_renderer) {
+        _fps = _renderer->fps();
+
+        if (i == 0) {
+            fps = _fps;
+        }
+
+        if (_showFPS) {
+            QPainter painter(this);
+            painter.drawText(16, height() - 16, QString::number(fps, 'f', 0)+" FPS");
+        }
+    }
 }
 
 void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
 {
-    delete _scene;
+    Scene* s = _scene;
     _scene = scene;
+    _renderer->setScene(_scene);
+
+    delete s;
+
     _scene->camera().setAspect(static_cast<float>(width()) / height());
 
     emit sceneLoaded();
@@ -48,12 +99,12 @@ void Sahara::SceneWidget::flyThrough(const bool on)
 
 void Sahara::SceneWidget::pause()
 {
-    _timer.stop();
+    _renderer->pause();
 }
 
 void Sahara::SceneWidget::resume()
 {
-    _timer.start();
+    _renderer->resume();
 }
 
 bool Sahara::SceneWidget::showGrid() const
@@ -106,62 +157,27 @@ void Sahara::SceneWidget::showCameras(const bool visible)
     _renderer->showCameras(visible);
 }
 
-void Sahara::SceneWidget::initializeGL()
+Sahara::Renderer *Sahara::SceneWidget::renderer()
 {
-    initializeOpenGLFunctions();
-
-    _renderer = new Renderer;
-
-    _timer.setInterval(1000 / 60);
-
-    _time.start();
-    _timer.start();
-
-    emit initialized();
-}
-
-void Sahara::SceneWidget::paintGL()
-{
-    static double fps = _fps;
-    static int i = 0;
-    i = (i + 1) % 15;
-
-    glEnable(GL_DEPTH_TEST);
-    _renderer->render(*_scene, _time.elapsed() / 1000.0f);
-    _fps = 1000.0 / _frameTime.restart();
-
-    if (i == 0) {
-        fps = _fps;
-    }
-
-    if (_showFPS) {
-        QPainter painter(this);
-        painter.drawText(16, height() - 16, QString::number(fps, 'f', 0)+" FPS");
-    }
-}
-
-void Sahara::SceneWidget::resizeGL(int w, int h)
-{
-    _scene->camera().setAspect(static_cast<float>(w) / h);
-    emit sizeChanged(QSize(w, h));
+    return _renderer;
 }
 
 void Sahara::SceneWidget::keyPressEvent(QKeyEvent* event)
 {
     if (_flyThrough) {
         switch (event->key()) {
-            case Qt::Key_W:
-                _cameraControl.accelerateForward(true);
-                break;
-            case Qt::Key_A:
-                _cameraControl.accelerateLeft(true);
-                break;
-            case Qt::Key_S:
-                _cameraControl.accelerateBackward(true);
-                break;
-            case Qt::Key_D:
-                _cameraControl.accelerateRight(true);
-                break;
+        case Qt::Key_W:
+            _cameraControl.accelerateForward(true);
+            break;
+        case Qt::Key_A:
+            _cameraControl.accelerateLeft(true);
+            break;
+        case Qt::Key_S:
+            _cameraControl.accelerateBackward(true);
+            break;
+        case Qt::Key_D:
+            _cameraControl.accelerateRight(true);
+            break;
         }
     }
 
@@ -176,18 +192,18 @@ void Sahara::SceneWidget::keyReleaseEvent(QKeyEvent* event)
         return;
 
     switch (event->key()) {
-        case Qt::Key_W:
-            _cameraControl.accelerateForward(false);
-            break;
-        case Qt::Key_A:
-            _cameraControl.accelerateLeft(false);
-            break;
-        case Qt::Key_S:
-            _cameraControl.accelerateBackward(false);
-            break;
-        case Qt::Key_D:
-            _cameraControl.accelerateRight(false);
-            break;
+    case Qt::Key_W:
+        _cameraControl.accelerateForward(false);
+        break;
+    case Qt::Key_A:
+        _cameraControl.accelerateLeft(false);
+        break;
+    case Qt::Key_S:
+        _cameraControl.accelerateBackward(false);
+        break;
+    case Qt::Key_D:
+        _cameraControl.accelerateRight(false);
+        break;
     }
 }
 
@@ -218,11 +234,3 @@ void Sahara::SceneWidget::mouseMoveEvent(QMouseEvent* event)
     emit mouseMoved(normalizedPos);
 }
 
-void Sahara::SceneWidget::frame()
-{
-    if (_flyThrough) {
-        _cameraControl.update(_scene->cameraNode());
-        emit cameraMotion();
-    }
-    update();
-}

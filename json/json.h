@@ -57,7 +57,7 @@ namespace Sahara {
             static AnimationClip* toAnimationClip(const QJsonObject& object, Model& model);
 
             static QJsonObject fromArmature(const Armature* armature);
-            static Armature* toArmature(const QJsonObject& object);
+            static Armature* toArmature(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromCamera(const Camera* camera);
             static Camera* toCamera(const QJsonObject& object);
@@ -66,10 +66,10 @@ namespace Sahara {
             static Controller* toController(const QJsonObject& object, const Model& model);
 
             static QJsonObject fromImage(const Image* image);
-            static Image* toImage(const QJsonObject& object);
+            static Image* toImage(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromMaterial(const Material* material);
-            static Material* toMaterial(const QJsonObject& object, const Model& model);
+            static Material* toMaterial(Renderer* renderer, const QJsonObject& object, const Model& model);
 
             static QJsonObject fromPointLight(const PointLight* pointLight);
             static PointLight* toPointLight(const QJsonObject& object);
@@ -81,28 +81,28 @@ namespace Sahara {
             static Surface::Input toSurfaceInput(const QJsonObject& object);
 
             static QJsonObject fromSurface(const Surface* surface);
-            static Surface* toSurface(const QJsonObject& object, const Mesh& mesh);
+            static Surface* toSurface(QVulkanWindow* window, const QJsonObject& object, const Mesh& mesh);
 
             static QJsonObject fromMesh(const Mesh* mesh);
-            static Mesh* toMesh(const QJsonObject& object);
+            static Mesh* toMesh(QVulkanWindow* window, const QJsonObject& object);
 
             static QJsonObject fromInstanceMesh(const InstanceMesh* instanceMesh);
             static InstanceMesh* toInstanceMesh(const QJsonObject& object, const Model& model);
 
             static QJsonObject fromInstanceController(const InstanceController* instanceController);
-            static InstanceController* toInstanceController(const QJsonObject& object, const Model& model);
+            static InstanceController* toInstanceController(Renderer* renderer, const QJsonObject& object, const Model& model);
 
             static QJsonObject fromVolume(const Volume& volume);
             static Volume toVolume(const QJsonObject& object);
 
             static QJsonObject fromModel(const Model* model);
-            static Model* toModel(const QJsonObject& object);
+            static Model* toModel(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromNode(const Node* node);
             static Node* toNode(const QJsonObject& object, const QMap<QString, NodeItem*>& items);
 
             static QJsonObject fromScene(const Scene* scene);
-            static Scene* toScene(const QJsonObject& object);
+            static Scene* toScene(Renderer* renderer, const QJsonObject& object);
 
         private:
             static QJsonObject fromInstance(const Instance* instance);

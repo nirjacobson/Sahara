@@ -1,25 +1,33 @@
 #include "material.h"
+#include "render/renderer.h"
 
-Sahara::Material::Material(const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
+Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
     : Asset(id)
+    , _renderer(renderer)
     , _emission(emission)
     , _ambient(ambient)
     , _diffuse(diffuse)
     , _specular(specular)
     , _shininess(shininess)
 {
-
+    _uniformBuffers = renderer->createMaterialUniformBuffers();
 }
 
-Sahara::Material::Material(const QString& id, const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
+Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
     : Asset(id)
+    , _renderer(renderer)
     , _emission(emission)
     , _ambient(ambient)
     , _image(image)
     , _specular(specular)
     , _shininess(shininess)
 {
+    _uniformBuffers = renderer->createMaterialUniformBuffers();
+}
 
+Sahara::Material::~Material()
+{
+    _renderer->destroyUniformBuffers(_uniformBuffers);
 }
 
 const QColor& Sahara::Material::emission() const
@@ -80,4 +88,45 @@ const std::optional<Sahara::Image*>& Sahara::Material::image() const
 std::optional<Sahara::Image*>& Sahara::Material::image()
 {
     return _image;
+}
+
+const QList<VkDescriptorSet>& Sahara::Material::descriptorSets() const
+{
+    return _uniformBuffers.bufferDescriptorSets;
+}
+
+void Sahara::Material::updateUniform() const
+{
+    ScenePipeline::Material material{
+        .emission = {
+            _emission.redF(),
+            _emission.greenF(),
+            _emission.blueF(),
+            _emission.alphaF()
+        },
+        .ambient = {
+            _ambient.redF(),
+            _ambient.greenF(),
+            _ambient.blueF(),
+            _ambient.alphaF()
+        },
+        .diffuse = {
+            _diffuse.redF(),
+            _diffuse.greenF(),
+            _diffuse.blueF(),
+            _diffuse.alphaF()
+        },
+        .specular = {
+            _specular.redF(),
+            _specular.greenF(),
+            _specular.blueF(),
+            _specular.alphaF()
+        },
+        .shininess = _shininess,
+        .textured = _image.has_value()
+    };
+
+    for (int i = 0; i < _uniformBuffers.buffers.size(); i++) {
+        memcpy(_uniformBuffers.buffersMapped[i], &material, sizeof(ScenePipeline::Material));
+    }
 }

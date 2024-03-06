@@ -1,7 +1,7 @@
 #include "armature.h"
+#include "render/renderer.h"
 
-
-Sahara::Armature::Armature(const QString& id, Sahara::Joint* const root)
+Sahara::Armature::Armature(Renderer* renderer, const QString& id, Sahara::Joint* const root)
     : Asset(id)
     , _root(root)
 {
@@ -45,3 +45,4 @@ const Sahara::Joint* Sahara::Armature::getJointByName(const QString& name) const
 
     return joint;
 }
+
