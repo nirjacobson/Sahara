@@ -1,16 +1,17 @@
-#ifndef SCENEPIPELINE_H
-#define SCENEPIPELINE_H
+#ifndef ANIMATEDPIPELINE_H
+#define ANIMATEDPIPELINE_H
 
 #include "pipeline.h"
 #include "vulkanutil.h"
 
-class ScenePipeline : public Pipeline
+class AnimatedPipeline : public Pipeline
 {
 public:
-    ~ScenePipeline();
+    ~AnimatedPipeline();
 
     struct PushConstants {
         alignas(16) float modelView[16];
+        alignas(16) int articulated;
         alignas(16) float cameraPosition[3];
         alignas(16) int focus;
     };
@@ -18,6 +19,15 @@ public:
     struct Render {
         alignas(16) float inverseCamera[16];
         alignas(16) float projection[16];
+    };
+
+    struct Joint {
+        float rotation[4];
+        float translation[3];
+    };
+
+    struct Armature {
+        alignas(16) Joint joints[110];
     };
 
     struct AmbientLight {
@@ -28,7 +38,9 @@ public:
     struct PointLight {
         float position[3];
         float color[3];
-        float attenuation[3];
+        float constantAttenuation;
+        float linearAttenuation;
+        float quadraticAttenuation;
     };
 
     struct Lighting {
@@ -46,7 +58,7 @@ public:
         alignas(16) int textured;
     };
 
-    ScenePipeline(QVulkanWindow* vulkanWindow, VkPolygonMode polygonMode);
+    AnimatedPipeline(QVulkanWindow* vulkanWindow, VkPolygonMode polygonMode);
 
     void init();
     uint32_t binding(const QString &vertexAttribute) const;
@@ -59,6 +71,8 @@ private:
         float position[3];
         float normal[3];
         float texcoord[2];
+        float joints[4];
+        float weights[4];
     };
 
     QVulkanWindow* _vulkanWindow;
@@ -70,4 +84,4 @@ private:
     QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions();
 };
 
-#endif // SCENEPIPELINE_H
+#endif // ANIMATEDPIPELINE_H

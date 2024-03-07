@@ -111,8 +111,8 @@ void Sahara::Grid::initPositionBuffer()
         }
     }
 
-    VertexBuffer positionBuffer(_vulkanWindow);
-    positionBuffer.write(data, numFloats);
+    VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
+    positionBuffer->write(data, numFloats);
 
     delete [] data;
 
@@ -132,8 +132,8 @@ void Sahara::Grid::initColorBuffer()
         }
     }
 
-    VertexBuffer colorBuffer(_vulkanWindow);
-    colorBuffer.write(data, numFloats);
+    VertexBuffer* colorBuffer = new VertexBuffer(_vulkanWindow);
+    colorBuffer->write(data, numFloats);
 
     delete [] data;
 

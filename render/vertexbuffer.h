@@ -15,7 +15,6 @@ namespace Sahara
     class VertexBuffer
     {
         public:
-            VertexBuffer(); // in order to support containers
             VertexBuffer(QVulkanWindow *window);
             ~VertexBuffer();
 
@@ -32,7 +31,7 @@ namespace Sahara
             bool _haveBuffer;
     };
 
-    typedef QMap<QString, VertexBuffer> VertexBufferDict;
+    typedef QMap<QString, VertexBuffer*> VertexBufferDict;
 }
 
 #endif // SAHARA_VERTEXBUFFER_H

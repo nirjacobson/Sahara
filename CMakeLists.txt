@@ -26,7 +26,6 @@ add_library(Sahara SHARED
   json/json.h
   render/display/cameradisplay.cpp
   render/display/cameradisplay.h
-  render/display/display.cpp
   render/display/display.h
   render/display/pointlightdisplay.cpp
   render/display/pointlightdisplay.h
@@ -113,6 +112,7 @@ add_library(Sahara SHARED
   programs/spir-v/grid.vert.spv
   programs/spir-v/scene.frag.spv
   programs/spir-v/scene.vert.spv
+  programs/spir-v/animated.vert.spv
   pipelines/pipeline.h pipelines/pipeline.cpp
   pipelines/gridpipeline.h pipelines/gridpipeline.cpp
   pipelines/scenepipeline.h pipelines/scenepipeline.cpp
@@ -120,6 +120,8 @@ add_library(Sahara SHARED
   render/withuniform.h render/withuniform.cpp
   widgets/scenewidget/scenewindow.h widgets/scenewidget/scenewindow.cpp
   widgets/scenewidget/scenewidget.h widgets/scenewidget/scenewidget.cpp
+  pipelines/animatedpipeline.h
+  pipelines/animatedpipeline.cpp
 
 )
 

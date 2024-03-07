@@ -7,9 +7,7 @@ namespace Sahara {
 
 class Display : public WithVertexBuffers
     {
-        public:
-            Display();
-            virtual ~Display();
+
     };
 
 }

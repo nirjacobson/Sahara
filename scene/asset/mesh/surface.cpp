@@ -140,8 +140,8 @@ void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semanti
         }
     }
 
-    VertexBuffer vertexBuffer(_vulkanWindow);
-    vertexBuffer.write(data, dataSize);
+    VertexBuffer* vertexBuffer = new VertexBuffer(_vulkanWindow);
+    vertexBuffer->write(data, dataSize * sizeof(float));
 
     delete [] data;
 

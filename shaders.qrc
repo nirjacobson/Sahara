@@ -12,5 +12,7 @@
         <file>programs/spir-v/grid.vert.spv</file>
         <file>programs/spir-v/scene.frag.spv</file>
         <file>programs/spir-v/scene.vert.spv</file>
+        <file>programs/glsl/animated.vert</file>
+        <file>programs/spir-v/animated.vert.spv</file>
     </qresource>
 </RCC>

@@ -1,11 +1,5 @@
 #include "vertexbuffer.h"
 
-
-Sahara::VertexBuffer::VertexBuffer()
-{
-
-}
-
 Sahara::VertexBuffer::VertexBuffer(QVulkanWindow* window)
     : _window(window)
     , _deviceFunctions(window->vulkanInstance()->deviceFunctions(window->device()))
@@ -16,7 +10,11 @@ Sahara::VertexBuffer::VertexBuffer(QVulkanWindow* window)
 
 Sahara::VertexBuffer::~VertexBuffer()
 {
-
+    if (_haveBuffer) {
+        _deviceFunctions->vkQueueWaitIdle(_window->graphicsQueue());
+        _deviceFunctions->vkDestroyBuffer(_window->device(), _buffer, nullptr);
+        _deviceFunctions->vkFreeMemory(_window->device(), _memory, nullptr);
+    }
 }
 
 VkBuffer Sahara::VertexBuffer::buffer() const

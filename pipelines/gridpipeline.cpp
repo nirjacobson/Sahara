@@ -6,9 +6,9 @@ GridPipeline::GridPipeline(QVulkanWindow* vulkanWindow, VkPrimitiveTopology topo
 
 }
 
-void GridPipeline::create()
+void GridPipeline::init()
 {
-    Pipeline::createStandard();
+    Pipeline::initStandard();
 }
 
 uint32_t GridPipeline::binding(const QString &vertexAttribute) const
@@ -35,7 +35,7 @@ QList<VkVertexInputBindingDescription> GridPipeline::getVertexInputBindingDescri
     return QList<VkVertexInputBindingDescription>{ positionDesc, colorDesc };
 }
 
-QList<VkDescriptorSetLayoutBinding> GridPipeline::getDescriptorSetLayoutBindings()
+QList<QList<VkDescriptorSetLayoutBinding> > GridPipeline::getDescriptorSetLayoutBindings()
 {
     VkDescriptorSetLayoutBinding vertexRenderLayoutBinding{
         .binding = 0,
@@ -45,7 +45,7 @@ QList<VkDescriptorSetLayoutBinding> GridPipeline::getDescriptorSetLayoutBindings
         .pImmutableSamplers = nullptr
     };
 
-    return QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding };
+    return { QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding } };
 }
 
 QList<VkVertexInputAttributeDescription> GridPipeline::getVertexInputAttributeDescriptions()

@@ -6,6 +6,13 @@ Sahara::WithVertexBuffers::WithVertexBuffers()
 
 }
 
+Sahara::WithVertexBuffers::~WithVertexBuffers()
+{
+    for (VertexBuffer* vb : _vertexBuffers.values()) {
+        delete vb;
+    }
+}
+
 const Sahara::VertexBufferDict &Sahara::WithVertexBuffers::vertexBuffers() const
 {
     return _vertexBuffers;
@@ -24,12 +31,12 @@ QList<VkBuffer> Sahara::WithVertexBuffers::buffersByBinding(const Pipeline &pipe
         return pipeline.binding(vb1) < pipeline.binding(vb2);
     });
     for (const QString& name : vertexBufferNames) {
-        vertexBuffersSorted.append(_vertexBuffers[name].buffer());
+        vertexBuffersSorted.append(_vertexBuffers[name]->buffer());
     }
     return vertexBuffersSorted;
 }
 
-void Sahara::WithVertexBuffers::addVertexBuffer(const QString &name, const VertexBuffer& vertexBuffer)
+void Sahara::WithVertexBuffers::addVertexBuffer(const QString &name, VertexBuffer* vertexBuffer)
 {
     _vertexBuffers.insert(name, vertexBuffer);
 }

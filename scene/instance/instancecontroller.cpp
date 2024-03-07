@@ -54,7 +54,7 @@ void Sahara::InstanceController::updateUniform() const
         jointTransforms.push_back(transform);
     }
 
-    ScenePipeline::Armature armature;
+    AnimatedPipeline::Armature armature;
     for (int i = 0; i < jointTransforms.size(); i++) {
         QVector4D vec4 = jointTransforms[i].rotation().toVector4D();
         QVector3D vec3 = jointTransforms[i].translation();
@@ -74,6 +74,6 @@ void Sahara::InstanceController::updateUniform() const
     }
 
     for (int i = 0; i < _uniformBuffers.buffers.size(); i++) {
-        memcpy(_uniformBuffers.buffersMapped[i], &armature, sizeof(ScenePipeline::Armature));
+        memcpy(_uniformBuffers.buffersMapped[i], &armature, sizeof(AnimatedPipeline::Armature));
     }
 }

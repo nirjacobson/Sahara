@@ -6,10 +6,10 @@ layout(location = 2) in vec2 vertTexcoord;
 
 layout(location = 0) out vec4 Color;
 
-layout(push_constant) uniform PushConstants {
-    layout(offset = 80) uniform vec3 cameraPosition;
-    layout(offset = 96) uniform int focus;
-} uPushConstants;
+layout(push_constant) uniform PushConstantsFrag {
+    layout(offset = 64) vec3 cameraPosition;
+    layout(offset = 80) int focus;
+} uPushConstantsFrag;
 
 struct AmbientLight {
     vec3 color;
@@ -19,18 +19,16 @@ struct AmbientLight {
 struct PointLight {
     vec3 position;
     vec3 color;
-    float constantAttenuation;
-    float linearAttenuation;
-    float quadraticAttenuation;
+    vec3 attenuation;
 };
 
-layout(binding = 2) uniform Lighting {
+layout(set = 1, binding = 0) uniform Lighting {
     layout(offset = 0) AmbientLight ambientLight;
-    layout(offset = 16) PointLight pointLights[6];
-    layout(offset = 240) int pointLightCount;
+    layout(offset = 16) int pointLightCount;
+    layout(offset = 32) PointLight pointLights[6];
 } uLighting;
 
-layout(binding = 3) uniform Material {
+layout(set = 2, binding = 0) uniform Material {
     layout(offset = 0) vec4 emission;
     layout(offset = 16) vec4 ambient;
     layout(offset = 32) vec4 diffuse;
@@ -39,12 +37,12 @@ layout(binding = 3) uniform Material {
     layout(offset = 80) int textured;
 } uMaterial;
 
-layout(binding = 4) uniform sampler2D uSampler;
+layout(set = 3, binding = 0) uniform sampler2D uSampler;
 
 void main() {
     vec3 normal = normalize(vertNormal);
 
-    if (uPushConstants.focus == 0) {
+    if (uPushConstantsFrag.focus == 0) {
         vec4 d;
         if (uMaterial.textured > 0) {
             d = texture(uSampler, vertTexcoord);
@@ -62,7 +60,7 @@ void main() {
 
             vec3 toLight = uLighting.pointLights[i].position - vertPosition;
             vec3 toLightN = normalize(toLight);
-            vec3 toCamera = normalize(uPushConstants.cameraPosition - vertPosition);
+            vec3 toCamera = normalize(uPushConstantsFrag.cameraPosition - vertPosition);
             vec3 reflection = reflect(-toLightN, normal);
 
             float diff = max(dot(normal, toLightN), 0.0);
@@ -73,10 +71,15 @@ void main() {
             }
             vec3 specular = spec * uMaterial.specular.rgb;
 
-            float distancetoLight = length(toLight);
-            float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + (uLighting.pointLights[i].quadraticAttenuation * distancetoLight)) * distancetoLight);
+            float dist = length(toLight);
+            float l = uLighting.pointLights[i].attenuation[1];
+            float q = uLighting.pointLights[i].attenuation[2] * dist;
+            float lqd = (l + q) * dist;
+            float c = uLighting.pointLights[i].attenuation[0];
 
-            outputColor += (attenuation * (diffuse + specular)) * uLighting.pointLights[i].color;;
+            float attenuation = 1.0 / (c + lqd);
+
+            outputColor += attenuation * ((diffuse + specular) * uLighting.pointLights[i].color);
         }
 
         vec3 gamma = vec3(1.0/2.2);

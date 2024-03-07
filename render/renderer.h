@@ -7,6 +7,7 @@
 #include <QVulkanDeviceFunctions>
 #include <QElapsedTimer>
 
+#include "../pipelines/animatedpipeline.h"
 #include "../pipelines/scenepipeline.h"
 #include "../pipelines/gridpipeline.h"
 #include "../pipelines/displaypipeline.h"
@@ -23,8 +24,10 @@
 
 namespace Sahara {
 
-    class Renderer : public QVulkanWindowRenderer
+    class Renderer : public QObject, public QVulkanWindowRenderer
     {
+        Q_OBJECT
+
         public:
             Renderer(QVulkanWindow* vulkanWindow);
             ~Renderer();
@@ -60,15 +63,24 @@ namespace Sahara {
             VulkanUtil::UniformBuffers createLightingUniformBuffers();
             void destroyUniformBuffers(VulkanUtil::UniformBuffers& buffers);
 
+        signals:
+            void ready();
+
         private:
             QVulkanWindow* _vulkanWindow;
             QVulkanDeviceFunctions* _deviceFunctions;
 
-            ScenePipeline _scenePipeline;
-            ScenePipeline _scenePipelineWire;
-            GridPipeline _gridPipeline;
-            GridPipeline _gridPipelineWire;
-            DisplayPipeline _displayPipeline;
+            ScenePipeline* _scenePipeline;
+            ScenePipeline* _scenePipelineWire;
+            GridPipeline* _gridPipeline;
+            GridPipeline* _gridPipelineWire;
+            DisplayPipeline* _displayPipeline;
+
+            QImage _emptyImage;
+            VkImage _emptyImageVk;
+            VkImageView _emptyImageView;
+            VkDeviceMemory _emptyImageMemory;
+            QList<VkDescriptorSet> _emptyImageDescriptorSets;
 
             QElapsedTimer _frameTime;
             float _fps;
@@ -77,17 +89,17 @@ namespace Sahara {
 
             bool _paused;
 
-            Grid _grid;
+            Grid* _grid;
             bool _showGrid;
             bool _showAxes;
             bool _showLights;
             bool _showCameras;
 
-            PointLightDisplay _pointLightDisplay;
-            CameraDisplay _cameraDisplay;
+            PointLightDisplay* _pointLightDisplay;
+            CameraDisplay* _cameraDisplay;
 
             template <typename T>
-            VulkanUtil::UniformBuffers getUniformBuffers(Pipeline& pipeline, uint32_t binding);
+            VulkanUtil::UniformBuffers getUniformBuffers(Pipeline& pipeline, uint32_t set, uint32_t binding);
 
             void renderScene(Scene& scene, const float time);
             void renderGrid(Scene& scene);
@@ -99,7 +111,9 @@ namespace Sahara {
             void processSceneLighting(Scene& scene);
             void processControllerInstanceArmature(InstanceController& controllerInstance);
 
-            VulkanUtil::UniformBuffers _renderUniformBuffers;
+            VulkanUtil::UniformBuffers _renderUniformBuffersGrid;
+            VulkanUtil::UniformBuffers _renderUniformBuffersDisplay;
+            VulkanUtil::UniformBuffers _renderUniformBuffersScene;
 
             void recordGrid(Scene& scene);
             void recordDisplay(Scene& scene, Display& display, const QMatrix4x4& modelView, const bool focus);
@@ -113,10 +127,9 @@ namespace Sahara {
             // QVulkanWindowRenderer interface
         public:
             void startNextFrame();
-
-            // QVulkanWindowRenderer interface
-        public:
             void initSwapChainResources();
+            void initResources();
+            void releaseResources();
     };
 
 }

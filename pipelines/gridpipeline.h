@@ -13,7 +13,7 @@ public:
 
     GridPipeline(QVulkanWindow *vulkanWindow, VkPrimitiveTopology topology);
 
-    void create();
+    void init();
     uint32_t binding(const QString &vertexAttribute) const;
 
 private:
@@ -23,7 +23,7 @@ private:
     };
 
     QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions();
-    QList<VkDescriptorSetLayoutBinding> getDescriptorSetLayoutBindings();
+    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings();
     QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions();
 };
 

@@ -6,9 +6,9 @@ DisplayPipeline::DisplayPipeline(QVulkanWindow* vulkanWindow)
 
 }
 
-void DisplayPipeline::create()
+void DisplayPipeline::init()
 {
-    Pipeline::create<PushConstants>();
+    Pipeline::init<PushConstants>();
 }
 
 uint32_t DisplayPipeline::binding(const QString &vertexAttribute) const
@@ -35,7 +35,7 @@ QList<VkVertexInputBindingDescription> DisplayPipeline::getVertexInputBindingDes
     return QList<VkVertexInputBindingDescription>{ positionDesc, normalDesc };
 }
 
-QList<VkDescriptorSetLayoutBinding> DisplayPipeline::getDescriptorSetLayoutBindings()
+QList<QList<VkDescriptorSetLayoutBinding> > DisplayPipeline::getDescriptorSetLayoutBindings()
 {
     VkDescriptorSetLayoutBinding vertexRenderLayoutBinding{
         .binding = 0,
@@ -45,7 +45,7 @@ QList<VkDescriptorSetLayoutBinding> DisplayPipeline::getDescriptorSetLayoutBindi
         .pImmutableSamplers = nullptr
     };
 
-    return QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding };
+    return { QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding } };
 }
 
 QList<VkVertexInputAttributeDescription> DisplayPipeline::getVertexInputAttributeDescriptions()

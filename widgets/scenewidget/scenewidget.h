@@ -71,13 +71,14 @@ namespace Sahara {
 
     private slots:
         void rendererCreated(QVulkanWindowRenderer* renderer);
+        void rendererReady();
         void updateCameraControl();
 
     signals:
 
         // QWidget interface
     protected:
-        void paintEvent(QPaintEvent *event) override;
+        // void paintEvent(QPaintEvent *event) override;
     };
 }
 

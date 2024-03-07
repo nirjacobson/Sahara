@@ -19,7 +19,6 @@ public:
             buffers.resize(size);
             buffersMemory.resize(size);
             buffersMapped.resize(size);
-            bufferDescriptorSets.resize(size);
         }
     };
 

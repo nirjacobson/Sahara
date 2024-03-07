@@ -8,8 +8,8 @@ const QList<VkDynamicState> Pipeline::dynamicStates = {
 Pipeline::Pipeline(QVulkanWindow* vulkanWindow, const QString& vertShaderPath, const QString& fragShaderPath, const VkPrimitiveTopology topology, const VkPolygonMode polygonMode)
     : _vulkanWindow(vulkanWindow)
     , _deviceFunctions(vulkanWindow->vulkanInstance()->deviceFunctions(vulkanWindow->device()))
-    , _vertShaderPath(vertShaderPath)
-    , _fragShaderPath(fragShaderPath)
+    , _vertShaderPath(":/programs/spir-v/"+vertShaderPath)
+    , _fragShaderPath(":/programs/spir-v/"+fragShaderPath)
     , _topology(topology)
     , _polygonMode(polygonMode)
 {
@@ -19,15 +19,23 @@ Pipeline::Pipeline(QVulkanWindow* vulkanWindow, const QString& vertShaderPath, c
 Pipeline::~Pipeline()
 {
     _deviceFunctions->vkDestroyDescriptorPool(_vulkanWindow->device(), _descriptorPool, nullptr);
-    _deviceFunctions->vkDestroyDescriptorSetLayout(_vulkanWindow->device(), _dsLayout, nullptr);
+    for (const auto& dsLayout : _dsLayouts) {
+        _deviceFunctions->vkDestroyDescriptorSetLayout(_vulkanWindow->device(), dsLayout, nullptr);
+    }
     _deviceFunctions->vkDestroyPipeline(_vulkanWindow->device(), _pipeline, nullptr);
     _deviceFunctions->vkDestroyPipelineLayout(_vulkanWindow->device(), _pipelineLayout, nullptr);
 }
 
-QList<VkDescriptorSet> Pipeline::createBufferDescriptorSets(uint32_t binding, const QList<VkBuffer>& buffers, VkDeviceSize size)
+void Pipeline::create()
+{
+    createDescriptorPool();
+    init();
+}
+
+QList<VkDescriptorSet> Pipeline::createBufferDescriptorSets(uint32_t set, uint32_t binding, const QList<VkBuffer>& buffers, VkDeviceSize size)
 {
     uint32_t concurrentFrames = _vulkanWindow->concurrentFrameCount();
-    QList<VkDescriptorSetLayout> layouts(concurrentFrames, _dsLayout);
+    QList<VkDescriptorSetLayout> layouts(concurrentFrames, _dsLayouts[set]);
 
     VkDescriptorSetAllocateInfo allocInfo{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -66,10 +74,10 @@ QList<VkDescriptorSet> Pipeline::createBufferDescriptorSets(uint32_t binding, co
     return descriptorSets;
 }
 
-QList<VkDescriptorSet> Pipeline::createImageDescriptorSets(uint32_t binding, VkSampler sampler, VkImageView imageView)
+QList<VkDescriptorSet> Pipeline::createImageDescriptorSets(uint32_t set, uint32_t binding, VkSampler sampler, VkImageView imageView)
 {
     uint32_t concurrentFrames = _vulkanWindow->concurrentFrameCount();
-    QList<VkDescriptorSetLayout> layouts(concurrentFrames, _dsLayout);
+    QList<VkDescriptorSetLayout> layouts(concurrentFrames, _dsLayouts[set]);
 
     VkDescriptorSetAllocateInfo allocInfo{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -141,16 +149,20 @@ VkShaderModule Pipeline::createShaderModule(const QString &name)
 
 void Pipeline::createDescriptorPool()
 {
-    QList<VkDescriptorSetLayoutBinding> layoutBindings = getDescriptorSetLayoutBindings();
+    uint32_t concurrentFrames = _vulkanWindow->concurrentFrameCount();
+
+    QList<QList<VkDescriptorSetLayoutBinding>> layoutBindings = getDescriptorSetLayoutBindings();
 
     QList<VkDescriptorPoolSize> descPoolSizes;
     for (int i = 0; i < layoutBindings.size(); i++) {
-        descPoolSizes.append({ layoutBindings[i].descriptorType, static_cast<uint32_t>(_vulkanWindow->concurrentFrameCount()) });
+        for (int j = 0; j < layoutBindings[i].size(); j++) {
+            descPoolSizes.append({ layoutBindings[i][j].descriptorType, 4 * concurrentFrames * layoutBindings[i][j].descriptorCount });
+        }
     }
 
     VkDescriptorPoolCreateInfo descPoolInfo{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-        .maxSets = static_cast<uint32_t>(_vulkanWindow->concurrentFrameCount()),
+        .maxSets = 16,
         .poolSizeCount = static_cast<uint32_t>(descPoolSizes.size()),
         .pPoolSizes = descPoolSizes.data()
     };
@@ -160,18 +172,25 @@ void Pipeline::createDescriptorPool()
     }
 }
 
-void Pipeline::createDescriptorLayout()
+void Pipeline::createDescriptorSetLayouts()
 {
-    QList<VkDescriptorSetLayoutBinding> vertexRenderLayoutBindings = getDescriptorSetLayoutBindings();
+    QList<QList<VkDescriptorSetLayoutBinding>> layoutBindings = getDescriptorSetLayoutBindings();
 
-    VkDescriptorSetLayoutCreateInfo layoutInfo{
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = static_cast<uint32_t>(vertexRenderLayoutBindings.size()),
-        .pBindings = vertexRenderLayoutBindings.data(),
-    };
+    QList<VkDescriptorSetLayout> layouts(layoutBindings.size());
 
-    if (_deviceFunctions->vkCreateDescriptorSetLayout(_vulkanWindow->device(), &layoutInfo, nullptr, &_dsLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor set layout.");
+    for (int i = 0; i < layoutBindings.size(); i++) {
+        VkDescriptorSetLayoutCreateInfo layoutInfo{
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+            .bindingCount = static_cast<uint32_t>(layoutBindings[i].size()),
+            .pBindings = layoutBindings[i].data(),
+        };
+
+        if (_deviceFunctions->vkCreateDescriptorSetLayout(_vulkanWindow->device(), &layoutInfo, nullptr, &layouts[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create descriptor set layout.");
+        }
     }
+
+    _dsLayouts = layouts;
 }
+
 

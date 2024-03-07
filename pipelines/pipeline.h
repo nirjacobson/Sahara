@@ -14,11 +14,13 @@ public:
     Pipeline(QVulkanWindow *vulkanWindow, const QString &vertShaderPath, const QString &fragShaderPath, const VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, const VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL);
     ~Pipeline();
 
-    virtual void create() = 0;
+    void create();
+
+    virtual void init() = 0;
     virtual uint32_t binding(const QString& vertexAttribute) const = 0;
 
-    QList<VkDescriptorSet> createBufferDescriptorSets(uint32_t binding, const QList<VkBuffer> &buffers, VkDeviceSize size);
-    QList<VkDescriptorSet> createImageDescriptorSets(uint32_t binding, VkSampler sampler, VkImageView imageView);
+    QList<VkDescriptorSet> createBufferDescriptorSets(uint32_t set, uint32_t binding, const QList<VkBuffer> &buffers, VkDeviceSize size);
+    QList<VkDescriptorSet> createImageDescriptorSets(uint32_t set, uint32_t binding, VkSampler sampler, VkImageView imageView);
     VkPipeline pipeline() const;
     VkPipelineLayout pipelineLayout() const;
 
@@ -28,7 +30,7 @@ private:
     QVulkanWindow* _vulkanWindow;
     QVulkanDeviceFunctions* _deviceFunctions;
     VkDescriptorPool _descriptorPool;
-    VkDescriptorSetLayout _dsLayout;
+    QList<VkDescriptorSetLayout> _dsLayouts;
     QString _vertShaderPath;
     QString _fragShaderPath;
     VkPrimitiveTopology _topology;
@@ -37,19 +39,19 @@ private:
     VkPipeline _pipeline;
 
     virtual QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() = 0;
-    virtual QList<VkDescriptorSetLayoutBinding> getDescriptorSetLayoutBindings() = 0;
+    virtual QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() = 0;
     virtual QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() = 0;
 
     VkShaderModule createShaderModule(const QString& name);
 
     void createDescriptorPool();
-    void createDescriptorLayout();
+    void createDescriptorSetLayouts();
 
 protected:
-    void createStandard()
+    void initStandard()
     {
         createDescriptorPool();
-        createDescriptorLayout();
+        createDescriptorSetLayouts();
 
         VkShaderModule vertShaderModule = createShaderModule(_vertShaderPath);
         VkShaderModule fragShaderModule = createShaderModule(_fragShaderPath);
@@ -148,8 +150,8 @@ protected:
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-            .setLayoutCount = 1,
-            .pSetLayouts = &_dsLayout,
+            .setLayoutCount = static_cast<uint32_t>(_dsLayouts.size()),
+            .pSetLayouts = _dsLayouts.data(),
             .pushConstantRangeCount = 0,
             .pPushConstantRanges = nullptr
         };
@@ -195,10 +197,12 @@ protected:
         _deviceFunctions->vkDestroyShaderModule(_vulkanWindow->device(), fragShaderModule, NULL);
         _deviceFunctions->vkDestroyShaderModule(_vulkanWindow->device(), vertShaderModule, NULL);
     }
+
     template <typename P>
-    void create()
+    void init()
     {
-        createDescriptorLayout();
+        createDescriptorPool();
+        createDescriptorSetLayouts();
 
         VkShaderModule vertShaderModule = createShaderModule(_vertShaderPath);
         VkShaderModule fragShaderModule = createShaderModule(_fragShaderPath);
@@ -303,8 +307,8 @@ protected:
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-            .setLayoutCount = 1,
-            .pSetLayouts = &_dsLayout,
+            .setLayoutCount = static_cast<uint32_t>(_dsLayouts.size()),
+            .pSetLayouts = _dsLayouts.data(),
             .pushConstantRangeCount = 1,
             .pPushConstantRanges = &pushConstants
         };

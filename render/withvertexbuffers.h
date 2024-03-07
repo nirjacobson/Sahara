@@ -9,6 +9,7 @@ namespace Sahara {
     {
         public:
             WithVertexBuffers();
+            ~WithVertexBuffers();
 
             const VertexBufferDict& vertexBuffers() const;
             VertexBufferDict& vertexBuffers();
@@ -18,7 +19,7 @@ namespace Sahara {
             virtual int count() const = 0;
 
         protected:
-            void addVertexBuffer(const QString& name, const VertexBuffer& vertexBuffer);
+            void addVertexBuffer(const QString& name, VertexBuffer *vertexBuffer);
 
         private:
             VertexBufferDict _vertexBuffers;

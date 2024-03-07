@@ -1,31 +1,19 @@
 #include "renderer.h"
 
-Sahara::Renderer::Renderer(QVulkanWindow* vulkanWindow)
+Sahara::Renderer::Renderer(QVulkanWindow *vulkanWindow)
     : _vulkanWindow(vulkanWindow)
-    , _deviceFunctions(vulkanWindow->vulkanInstance()->deviceFunctions(vulkanWindow->device()))
-    , _grid(vulkanWindow, 32)
-    , _showGrid(false)
-    , _showAxes(true)
-    , _showLights(true)
-    , _showCameras(true)
-    , _scenePipeline(vulkanWindow, VK_POLYGON_MODE_FILL)
-    , _scenePipelineWire(vulkanWindow, VK_POLYGON_MODE_LINE)
-    , _gridPipeline(vulkanWindow, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP)
-    , _gridPipelineWire(vulkanWindow, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP)
-    , _displayPipeline(vulkanWindow)
     , _scene(nullptr)
     , _paused(false)
-    , _fps(0)
-    , _pointLightDisplay(vulkanWindow)
-    , _cameraDisplay(vulkanWindow)
+    , _showGrid(false)
+    , _showLights(false)
 {
-    // can use any pipeline here because the render uniform block is the same
-    _renderUniformBuffers = getUniformBuffers<GridPipeline::Render>(_gridPipeline, 0);
+
 }
 
 Sahara::Renderer::~Renderer()
 {
-    destroyUniformBuffers(_renderUniformBuffers);
+    _deviceFunctions->vkDestroyImageView(_vulkanWindow->device(), _emptyImageView, nullptr);
+    _deviceFunctions->vkDestroyImage(_vulkanWindow->device(), _emptyImageVk, nullptr);
 }
 
 void Sahara::Renderer::setScene(Scene* scene)
@@ -112,7 +100,7 @@ VkImageView Sahara::Renderer::createImageView(VkImage image, VkFormat format, Vk
 
 QList<VkDescriptorSet> Sahara::Renderer::createImageDescriptorSets(VkImageView imageView)
 {
-    return _scenePipeline.createImageDescriptorSets(imageView);
+    return _scenePipeline->createImageDescriptorSets(imageView);
 }
 
 void Sahara::Renderer::copyImage(const QImage& image, VkImage vkImage)
@@ -139,17 +127,18 @@ void Sahara::Renderer::copyImage(const QImage& image, VkImage vkImage)
 
 VulkanUtil::UniformBuffers Sahara::Renderer::createArmatureUniformBuffers()
 {
-    return getUniformBuffers<ScenePipeline::Armature>(_scenePipeline, 1);
+    // return getUniformBuffers<ScenePipeline::Armature>(*_scenePipeline, 1);
+    return {};
 }
 
 VulkanUtil::UniformBuffers Sahara::Renderer::createMaterialUniformBuffers()
 {
-    return getUniformBuffers<ScenePipeline::Material>(_scenePipeline, 3);
+    return getUniformBuffers<ScenePipeline::Material>(*_scenePipeline, 2, 0);
 }
 
 VulkanUtil::UniformBuffers Sahara::Renderer::createLightingUniformBuffers()
 {
-    return getUniformBuffers<ScenePipeline::Lighting>(_scenePipeline, 2);
+    return getUniformBuffers<ScenePipeline::Lighting>(*_scenePipeline, 1, 0);
 }
 
 void Sahara::Renderer::destroyUniformBuffers(VulkanUtil::UniformBuffers &buffers)
@@ -162,10 +151,9 @@ void Sahara::Renderer::destroyUniformBuffers(VulkanUtil::UniformBuffers &buffers
 }
 
 template <typename T>
-VulkanUtil::UniformBuffers Sahara::Renderer::getUniformBuffers(Pipeline &pipeline, uint32_t binding)
+VulkanUtil::UniformBuffers Sahara::Renderer::getUniformBuffers(Pipeline &pipeline, uint32_t set, uint32_t binding)
 {
     int concurrentFrames = _vulkanWindow->concurrentFrameCount();
-
     VulkanUtil::UniformBuffers buffers;
     buffers.resize(concurrentFrames);
 
@@ -173,43 +161,43 @@ VulkanUtil::UniformBuffers Sahara::Renderer::getUniformBuffers(Pipeline &pipelin
         VulkanUtil::createBuffer(_vulkanWindow, sizeof(T), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, _vulkanWindow->hostVisibleMemoryIndex(), buffers.buffers[i], buffers.buffersMemory[i]);
         _deviceFunctions->vkMapMemory(_vulkanWindow->device(), buffers.buffersMemory[i], 0, sizeof(T), 0, &buffers.buffersMapped[i]);
     }
-    buffers.bufferDescriptorSets = pipeline.createBufferDescriptorSets(binding, buffers.buffers, sizeof(GridPipeline::Render));
+    buffers.bufferDescriptorSets = pipeline.createBufferDescriptorSets(set, binding, buffers.buffers, sizeof(T));
 
     return buffers;
 }
 
 void Sahara::Renderer::recordGrid(Scene &scene)
 {
-    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipelineWire.pipeline());
-    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipelineWire.pipelineLayout(), 0, 1, &_renderUniformBuffers.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipelineWire->pipeline());
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipelineWire->pipelineLayout(), 0, 1, &_renderUniformBuffersGrid.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
 
-    QList<VkBuffer> vertexBuffers = _grid.buffersByBinding(_gridPipelineWire);
+    QList<VkBuffer> vertexBuffers = _grid->buffersByBinding(*_gridPipelineWire);
     QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
     _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
 
-    for (int i = 0; i < 2 * _grid.length(); i++) {
+    for (int i = 0; i < 2 * _grid->length(); i++) {
         _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), 5, 1, 5 * i, 0);
     }
 
     if (_showAxes) {
-        _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipeline.pipeline());
-        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipeline.pipelineLayout(), 0, 1, &_renderUniformBuffers.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+        _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipeline->pipeline());
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _gridPipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersGrid.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
 
-        QList<VkBuffer> vertexBuffers = _grid.xAxis().buffersByBinding(_gridPipeline);
+        QList<VkBuffer> vertexBuffers = _grid->xAxis().buffersByBinding(*_gridPipeline);
         QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
         _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
         for (int i = 0; i < 6; i++) {
             _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), 4, 1, 4 * i, 0);
         }
 
-        vertexBuffers = _grid.yAxis().buffersByBinding(_gridPipeline);
+        vertexBuffers = _grid->yAxis().buffersByBinding(*_gridPipeline);
         offsets = QList<VkDeviceSize>(vertexBuffers.size(), 0);
         _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
         for (int i = 0; i < 6; i++) {
             _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), 4, 1, 4 * i, 0);
         }
 
-        vertexBuffers = _grid.zAxis().buffersByBinding(_gridPipeline);
+        vertexBuffers = _grid->zAxis().buffersByBinding(*_gridPipeline);
         offsets = QList<VkDeviceSize>(vertexBuffers.size(), 0);
         _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
         for (int i = 0; i < 6; i++) {
@@ -220,12 +208,12 @@ void Sahara::Renderer::recordGrid(Scene &scene)
 
 void Sahara::Renderer::recordDisplay(Scene &scene, Display &display, const QMatrix4x4 &modelView, const bool focus)
 {
-    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _displayPipeline.pipeline());
-    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _displayPipeline.pipelineLayout(), 0, 1, &_renderUniformBuffers.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _displayPipeline->pipeline());
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _displayPipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersDisplay.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
 
     float modelViewF[16];
-    modelView.copyDataTo(modelViewF);
-    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
+    modelView.transposed().copyDataTo(modelViewF);
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
 
     QVector3D cameraPosVec = scene.cameraNode().globalPosition();
     float cameraPositionF[] = {
@@ -233,12 +221,12 @@ void Sahara::Renderer::recordDisplay(Scene &scene, Display &display, const QMatr
         cameraPosVec.y(),
         cameraPosVec.z()
     };
-    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, cameraPosition), sizeof(cameraPositionF), cameraPositionF);
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, cameraPosition), sizeof(cameraPositionF), cameraPositionF);
 
     int f = focus;
-    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, focus), sizeof(f), &f);
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _displayPipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(DisplayPipeline::PushConstants, focus), sizeof(f), &f);
 
-    QList<VkBuffer> vertexBuffers = display.buffersByBinding(_displayPipeline);
+    QList<VkBuffer> vertexBuffers = display.buffersByBinding(*_displayPipeline);
     QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
     _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
 
@@ -249,12 +237,12 @@ void Sahara::Renderer::recordDisplay(Scene &scene, Display &display, const QMatr
 
 void Sahara::Renderer::recordPointLight(Scene &scene, const QMatrix4x4& modelView, const bool focus)
 {
-    recordDisplay(scene, _pointLightDisplay, modelView, focus);
+    recordDisplay(scene, *_pointLightDisplay, modelView, focus);
 }
 
 void Sahara::Renderer::recordCamera(Scene &scene, const QMatrix4x4 &modelView, const bool focus)
 {
-    recordDisplay(scene, _cameraDisplay, modelView, focus);
+    recordDisplay(scene, *_cameraDisplay, modelView, focus);
 }
 
 void Sahara::Renderer::recordScene(Scene &scene, const float time)
@@ -265,9 +253,6 @@ void Sahara::Renderer::recordScene(Scene &scene, const float time)
 
     scene.updateUniform();
 
-    VkDescriptorSet descriptorSet = scene.descriptorSets()[_vulkanWindow->currentFrame()];
-    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline.pipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
-
     QStack<QMatrix4x4> transforms;
     transforms.push(QMatrix4x4());
     scene.root().depthFirst([&](Node& node) {
@@ -277,19 +262,19 @@ void Sahara::Renderer::recordScene(Scene &scene, const float time)
        Camera* camera;
        if ((model = dynamic_cast<Model*>(&node.item()))) {
            recordModel(*model, transforms, false, time);
-           if (node.hasFocus()) {
-               recordModel(*model, transforms, true, time);
-           }
+           // if (node.hasFocus()) {
+           //     recordModel(*model, transforms, true, time);
+           // }
        } else {
-           if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-               if (_showLights) {
-                   recordPointLight(scene, transforms.top(), node.hasFocus());
-               }
-           } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-               if (_showCameras && &node != &scene.cameraNode()) {
-                   recordCamera(scene, transforms.top(), node.hasFocus());
-               }
-           }
+           // if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+           //     if (_showLights) {
+           //         recordPointLight(scene, transforms.top(), node.hasFocus());
+           //     }
+           // } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+           //     if (_showCameras && &node != &scene.cameraNode()) {
+           //         recordCamera(scene, transforms.top(), node.hasFocus());
+           //     }
+           // }
        }
 
        return false;
@@ -306,14 +291,17 @@ void Sahara::Renderer::recordSurface(Surface &surface, Instance &instance, const
     material.updateUniform();
 
     VkDescriptorSet descriptorSet = material.descriptorSets()[_vulkanWindow->currentFrame()];
-    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline.pipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 2, 1, &descriptorSet, 0, nullptr);
 
     if (material.image().has_value()) {
         VkDescriptorSet descriptorSet = (*material.image())->descriptorSets()[_vulkanWindow->currentFrame()];
-        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline.pipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 3, 1, &descriptorSet, 0, nullptr);
+    } else {
+        VkDescriptorSet descriptorSet = _emptyImageDescriptorSets[_vulkanWindow->currentFrame()];
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 3, 1, &descriptorSet, 0, nullptr);
     }
 
-    QList<VkBuffer> vertexBuffers = surface.buffersByBinding(_scenePipeline);
+    QList<VkBuffer> vertexBuffers = surface.buffersByBinding(*_scenePipeline);
     QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
     _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
 
@@ -322,11 +310,21 @@ void Sahara::Renderer::recordSurface(Surface &surface, Instance &instance, const
 
 void Sahara::Renderer::recordModel(Model &model, QStack<QMatrix4x4> &transformStack, const bool focus, const float time)
 {
-    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, (focus ? _scenePipelineWire : _scenePipeline).pipeline());
-    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline.pipelineLayout(), 0, 1, &_renderUniformBuffers.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, (focus ? _scenePipelineWire : _scenePipeline)->pipeline());
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersScene.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+
+    VkDescriptorSet descriptorSet = _scene->descriptorSets()[_vulkanWindow->currentFrame()];
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 1, 1, &descriptorSet, 0, nullptr);
+
+    float cp[3] = {
+        _scene->cameraNode().globalPosition().x(),
+        _scene->cameraNode().globalPosition().y(),
+        _scene->cameraNode().globalPosition().z(),
+    };
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, cameraPosition), sizeof(cp), cp);
 
     int f = focus;
-    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, focus), sizeof(f), &f);
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, focus), sizeof(f), &f);
 
     model.animate(time);
 
@@ -334,25 +332,19 @@ void Sahara::Renderer::recordModel(Model &model, QStack<QMatrix4x4> &transformSt
         transformStack.push(transformStack.top() * instance->transform());
 
         float modelViewF[16];
-        transformStack.top().copyDataTo(modelViewF);
-        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
+        transformStack.top().transposed().copyDataTo(modelViewF);
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
         InstanceMesh* meshInstance;
         InstanceController* controllerInstance;
         if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
-            int articulated = false;
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, articulated), sizeof(articulated), &articulated);
-
             for (int i = 0; i < meshInstance->mesh().count(); i++) {
                 recordSurface(meshInstance->mesh().surface(i), *meshInstance, focus);
             }
         } else if ((controllerInstance = dynamic_cast<InstanceController*>(instance))) {
-            int articulated = true;
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _scenePipeline.pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, articulated), sizeof(articulated), &articulated);
-
             controllerInstance->updateUniform();
 
             VkDescriptorSet descriptorSet = controllerInstance->descriptorSets()[_vulkanWindow->currentFrame()];
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline.pipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 4, 1, &descriptorSet, 0, nullptr);
 
             for (int i = 0; i < controllerInstance->controller().mesh().count(); i++) {
                 recordSurface(controllerInstance->controller().mesh().surface(i), *controllerInstance, focus);
@@ -367,9 +359,11 @@ void Sahara::Renderer::record(const float time)
 {
     // Update Render uniform used in all pipelines
     GridPipeline::Render render;
-    _scene->cameraNode().globalTransform().inverted().copyDataTo(render.inverseCamera);
-    (_vulkanWindow->clipCorrectionMatrix() * _scene->camera().projection()).copyDataTo(render.projection);
-    memcpy(_renderUniformBuffers.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(GridPipeline::Render));
+    _scene->cameraNode().globalTransform().inverted().transposed().copyDataTo(render.inverseCamera);
+    (_vulkanWindow->clipCorrectionMatrix() * _scene->camera().projection()).transposed().copyDataTo(render.projection);
+    memcpy(_renderUniformBuffersGrid.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(GridPipeline::Render));
+    memcpy(_renderUniformBuffersDisplay.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(GridPipeline::Render));
+    memcpy(_renderUniformBuffersScene.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(GridPipeline::Render));
 
     recordScene(*_scene, time);
 }
@@ -609,10 +603,13 @@ void Sahara::Renderer::startNextFrame()
         const QSize sz = _vulkanWindow->swapChainImageSize();
 
         VkClearColorValue clearColor = {{ 0.5f, 0.75f, 0.86f, 1.0f }};
-        VkClearDepthStencilValue clearDS = { 1, 0 };
-        VkClearValue clearValues[3];
+        VkClearDepthStencilValue clearDS{
+            .depth = 1.0f,
+            .stencil = 0
+        };
+        VkClearValue clearValues[2];
         memset(clearValues, 0, sizeof(clearValues));
-        clearValues[0].color = clearValues[2].color = clearColor;
+        clearValues[0].color = clearColor;
         clearValues[1].depthStencil = clearDS;
 
         VkRenderPassBeginInfo rpBeginInfo;
@@ -622,7 +619,7 @@ void Sahara::Renderer::startNextFrame()
         rpBeginInfo.framebuffer = _vulkanWindow->currentFramebuffer();
         rpBeginInfo.renderArea.extent.width = sz.width();
         rpBeginInfo.renderArea.extent.height = sz.height();
-        rpBeginInfo.clearValueCount = _vulkanWindow->sampleCountFlagBits() > VK_SAMPLE_COUNT_1_BIT ? 3 : 2;
+        rpBeginInfo.clearValueCount = 2;
         rpBeginInfo.pClearValues = clearValues;
         VkCommandBuffer cmdBuf = _vulkanWindow->currentCommandBuffer();
         _deviceFunctions->vkCmdBeginRenderPass(cmdBuf, &rpBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -651,6 +648,8 @@ void Sahara::Renderer::startNextFrame()
 
         record(0);
 
+        _deviceFunctions->vkCmdEndRenderPass(cmdBuf);
+
         _vulkanWindow->frameReady();
 
         if (!_paused) {
@@ -665,7 +664,63 @@ void Sahara::Renderer::initSwapChainResources()
 {
     // Update Render uniform used in all pipelines
     GridPipeline::Render render;
-    _scene->cameraNode().globalTransform().inverted().copyDataTo(render.inverseCamera);
-    (_vulkanWindow->clipCorrectionMatrix() * _scene->camera().projection()).copyDataTo(render.projection);
-    memcpy(_renderUniformBuffers.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(GridPipeline::Render));
+    _scene->camera().setAspect((float)_vulkanWindow->width() / _vulkanWindow->height());
+    _scene->cameraNode().globalTransform().inverted().transposed().copyDataTo(render.inverseCamera);
+    (_vulkanWindow->clipCorrectionMatrix() * _scene->camera().projection()).transposed().copyDataTo(render.projection);
+
+    for (int i = 0; i < _renderUniformBuffersGrid.buffers.size(); i++) {
+        memcpy(_renderUniformBuffersGrid.buffersMapped[i], &render, sizeof(GridPipeline::Render));
+        memcpy(_renderUniformBuffersDisplay.buffersMapped[i], &render, sizeof(GridPipeline::Render));
+        memcpy(_renderUniformBuffersScene.buffersMapped[i], &render, sizeof(ScenePipeline::Render));
+    }
+}
+
+void Sahara::Renderer::initResources()
+{
+    _deviceFunctions = _vulkanWindow->vulkanInstance()->deviceFunctions(_vulkanWindow->device());
+
+    _scenePipeline = new ScenePipeline(_vulkanWindow, VK_POLYGON_MODE_FILL);
+    _scenePipelineWire = new ScenePipeline(_vulkanWindow, VK_POLYGON_MODE_LINE);
+    _gridPipeline = new GridPipeline(_vulkanWindow, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
+    _gridPipelineWire = new GridPipeline(_vulkanWindow, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP);
+    _displayPipeline = new DisplayPipeline(_vulkanWindow);
+
+    _scenePipeline->create();
+    _scenePipelineWire->create();
+    _gridPipeline->create();
+    _gridPipelineWire->create();
+    _displayPipeline->create();
+
+    _pointLightDisplay = new PointLightDisplay(_vulkanWindow);
+    _cameraDisplay = new CameraDisplay(_vulkanWindow);
+    _grid = new Grid(_vulkanWindow, 32);
+
+    _renderUniformBuffersGrid = getUniformBuffers<GridPipeline::Render>(*_gridPipeline, 0, 0);
+    _renderUniformBuffersDisplay = getUniformBuffers<DisplayPipeline::Render>(*_displayPipeline, 0, 0);
+    _renderUniformBuffersScene = getUniformBuffers<ScenePipeline::Render>(*_scenePipeline, 0, 0);
+
+    createImage(1, 1, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, _emptyImageVk, _emptyImageMemory);
+    _emptyImageView = createImageView(_emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    _emptyImageDescriptorSets = createImageDescriptorSets(_emptyImageView);
+    VulkanUtil::transitionImageLayout(_vulkanWindow, _emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    VulkanUtil::transitionImageLayout(_vulkanWindow, _emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    emit ready();
+}
+
+void Sahara::Renderer::releaseResources()
+{
+    destroyUniformBuffers(_renderUniformBuffersScene);
+    destroyUniformBuffers(_renderUniformBuffersDisplay);
+    destroyUniformBuffers(_renderUniformBuffersGrid);
+
+    delete _scene;
+    delete _grid;
+    delete _cameraDisplay;
+    delete _pointLightDisplay;
+    delete _displayPipeline;
+    delete _gridPipelineWire;
+    delete _gridPipeline;
+    delete _scenePipelineWire;
+    delete _scenePipeline;
 }

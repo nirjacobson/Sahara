@@ -42,11 +42,11 @@ void Sahara::CameraDisplay::initBuffers()
       dataIndex++;
     }
 
-    VertexBuffer positionBuffer(_vulkanWindow);
-    positionBuffer.write(positionData, numFloats);
+    VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
+    positionBuffer->write(positionData, numFloats);
 
-    VertexBuffer normalBuffer(_vulkanWindow);
-    normalBuffer.write(normalData, numFloats);
+    VertexBuffer* normalBuffer = new VertexBuffer(_vulkanWindow);
+    normalBuffer->write(normalData, numFloats);
 
     delete [] positionData;
     delete [] normalData;

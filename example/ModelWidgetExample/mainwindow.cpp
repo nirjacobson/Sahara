@@ -20,7 +20,7 @@ Sahara::ModelWidgetExample::MainWindow::~MainWindow()
 
 void Sahara::ModelWidgetExample::MainWindow::modelWidgetInitialized()
 {
-    ui->actionChibi->trigger();
+    // ui->actionChibi->trigger();
 }
 
 void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()
