@@ -10,12 +10,6 @@ Sahara::Renderer::Renderer(QVulkanWindow *vulkanWindow)
 
 }
 
-Sahara::Renderer::~Renderer()
-{
-    _deviceFunctions->vkDestroyImageView(_vulkanWindow->device(), _emptyImageView, nullptr);
-    _deviceFunctions->vkDestroyImage(_vulkanWindow->device(), _emptyImageVk, nullptr);
-}
-
 void Sahara::Renderer::setScene(Scene* scene)
 {
     _scene = scene;
@@ -101,6 +95,13 @@ VkImageView Sahara::Renderer::createImageView(VkImage image, VkFormat format, Vk
 QList<VkDescriptorSet> Sahara::Renderer::createImageDescriptorSets(VkImageView imageView)
 {
     return _scenePipeline->createImageDescriptorSets(imageView);
+}
+
+void Sahara::Renderer::destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView)
+{
+    _deviceFunctions->vkDestroyImageView(_vulkanWindow->device(), imageView, nullptr);
+    _deviceFunctions->vkDestroyImage(_vulkanWindow->device(), image, nullptr);
+    _deviceFunctions->vkFreeMemory(_vulkanWindow->device(), memory, nullptr);
 }
 
 void Sahara::Renderer::copyImage(const QImage& image, VkImage vkImage)
@@ -251,7 +252,7 @@ void Sahara::Renderer::recordScene(Scene &scene, const float time)
         recordGrid(scene);
     }
 
-    scene.updateUniform();
+    scene.updateUniform(_vulkanWindow->currentFrame());
 
     QStack<QMatrix4x4> transforms;
     transforms.push(QMatrix4x4());
@@ -288,7 +289,7 @@ void Sahara::Renderer::recordSurface(Surface &surface, Instance &instance, const
 {
     const Material& material = instance.getMaterial(surface.material());
 
-    material.updateUniform();
+    material.updateUniform(_vulkanWindow->currentFrame());
 
     VkDescriptorSet descriptorSet = material.descriptorSets()[_vulkanWindow->currentFrame()];
     _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 2, 1, &descriptorSet, 0, nullptr);
@@ -297,7 +298,7 @@ void Sahara::Renderer::recordSurface(Surface &surface, Instance &instance, const
         VkDescriptorSet descriptorSet = (*material.image())->descriptorSets()[_vulkanWindow->currentFrame()];
         _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 3, 1, &descriptorSet, 0, nullptr);
     } else {
-        VkDescriptorSet descriptorSet = _emptyImageDescriptorSets[_vulkanWindow->currentFrame()];
+        VkDescriptorSet descriptorSet = _emptyImage->descriptorSets()[_vulkanWindow->currentFrame()];
         _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 3, 1, &descriptorSet, 0, nullptr);
     }
 
@@ -341,7 +342,7 @@ void Sahara::Renderer::recordModel(Model &model, QStack<QMatrix4x4> &transformSt
                 recordSurface(meshInstance->mesh().surface(i), *meshInstance, focus);
             }
         } else if ((controllerInstance = dynamic_cast<InstanceController*>(instance))) {
-            controllerInstance->updateUniform();
+            controllerInstance->updateUniform(_vulkanWindow->currentFrame());
 
             VkDescriptorSet descriptorSet = controllerInstance->descriptorSets()[_vulkanWindow->currentFrame()];
             _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _scenePipeline->pipelineLayout(), 4, 1, &descriptorSet, 0, nullptr);
@@ -699,17 +700,15 @@ void Sahara::Renderer::initResources()
     _renderUniformBuffersDisplay = getUniformBuffers<DisplayPipeline::Render>(*_displayPipeline, 0, 0);
     _renderUniformBuffersScene = getUniformBuffers<ScenePipeline::Render>(*_scenePipeline, 0, 0);
 
-    createImage(1, 1, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, _emptyImageVk, _emptyImageMemory);
-    _emptyImageView = createImageView(_emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
-    _emptyImageDescriptorSets = createImageDescriptorSets(_emptyImageView);
-    VulkanUtil::transitionImageLayout(_vulkanWindow, _emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    VulkanUtil::transitionImageLayout(_vulkanWindow, _emptyImageVk, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    _emptyImage = new Image(this, "empty", "");
 
     emit ready();
 }
 
 void Sahara::Renderer::releaseResources()
 {
+    delete _emptyImage;
+
     destroyUniformBuffers(_renderUniformBuffersScene);
     destroyUniformBuffers(_renderUniformBuffersDisplay);
     destroyUniformBuffers(_renderUniformBuffersGrid);

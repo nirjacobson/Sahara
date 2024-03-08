@@ -4,9 +4,10 @@
 
 Sahara::Image::Image(Renderer *renderer, const QString &id, const QString &uri)
     : Asset(id)
+    , _renderer(renderer)
     , _uri(uri)
 {
-    QImage image = QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored();
+    QImage image = uri.isEmpty() ? QImage(1, 1, QImage::Format_RGBA8888) : QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored();
 
     renderer->createImage(image.width(), image.height(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, _image, _imageMemory);
     renderer->copyImage(image, _image);
@@ -18,7 +19,7 @@ Sahara::Image::Image(Renderer *renderer, const QString &id, const QString &uri)
 
 Sahara::Image::~Image()
 {
-
+    _renderer->destroyImage(_image, _imageMemory, _imageView);
 }
 
 const QList<VkDescriptorSet>& Sahara::Image::descriptorSets() const

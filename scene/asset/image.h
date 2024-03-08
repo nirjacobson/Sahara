@@ -23,9 +23,10 @@ namespace Sahara
 
             const QString& uri() const;
 
-            void updateUniform() const {};
+            void updateUniform(const uint32_t currentFrame) const { }
 
         private:
+            Renderer* _renderer;
             QString _uri;
             VkImage _image;
             VkDeviceMemory _imageMemory;

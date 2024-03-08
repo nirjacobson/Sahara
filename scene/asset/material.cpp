@@ -95,7 +95,7 @@ const QList<VkDescriptorSet>& Sahara::Material::descriptorSets() const
     return _uniformBuffers.bufferDescriptorSets;
 }
 
-void Sahara::Material::updateUniform() const
+void Sahara::Material::updateUniform(const uint32_t currentFrame) const
 {
     ScenePipeline::Material material{
         .emission = {
@@ -126,7 +126,5 @@ void Sahara::Material::updateUniform() const
         .textured = _image.has_value()
     };
 
-    for (int i = 0; i < _uniformBuffers.buffers.size(); i++) {
-        memcpy(_uniformBuffers.buffersMapped[i], &material, sizeof(ScenePipeline::Material));
-    }
+    memcpy(_uniformBuffers.buffersMapped[currentFrame], &material, sizeof(ScenePipeline::Material));
 }

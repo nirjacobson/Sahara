@@ -126,7 +126,7 @@ const QList<VkDescriptorSet>& Sahara::Scene::descriptorSets() const
     return _lightingUniformBuffers.bufferDescriptorSets;
 }
 
-void Sahara::Scene::updateUniform() const
+void Sahara::Scene::updateUniform(const uint32_t currentFrame) const
 {
     ScenePipeline::Lighting lighting{
         .ambientLight = {
@@ -164,9 +164,7 @@ void Sahara::Scene::updateUniform() const
         return false;
     });
 
-    for (int i = 0; i < _lightingUniformBuffers.buffers.size(); i++) {
-        memcpy(_lightingUniformBuffers.buffersMapped[i], &lighting, sizeof(ScenePipeline::Lighting));
-    }
+    memcpy(_lightingUniformBuffers.buffersMapped[currentFrame], &lighting, sizeof(ScenePipeline::Lighting));
 
 }
 

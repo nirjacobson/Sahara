@@ -35,7 +35,7 @@ const QList<VkDescriptorSet> &Sahara::InstanceController::descriptorSets() const
     return _uniformBuffers.bufferDescriptorSets;
 }
 
-void Sahara::InstanceController::updateUniform() const
+void Sahara::InstanceController::updateUniform(const uint32_t currentFrame) const
 {
     QList<Transform> jointTransforms;
     for (int i = 0; i < _controller->joints().size(); i++) {
@@ -73,7 +73,5 @@ void Sahara::InstanceController::updateUniform() const
         };
     }
 
-    for (int i = 0; i < _uniformBuffers.buffers.size(); i++) {
-        memcpy(_uniformBuffers.buffersMapped[i], &armature, sizeof(AnimatedPipeline::Armature));
-    }
+    memcpy(_uniformBuffers.buffersMapped[currentFrame], &armature, sizeof(AnimatedPipeline::Armature));
 }

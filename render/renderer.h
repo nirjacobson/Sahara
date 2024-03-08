@@ -30,7 +30,6 @@ namespace Sahara {
 
         public:
             Renderer(QVulkanWindow* vulkanWindow);
-            ~Renderer();
 
             // void render(const float time);
 
@@ -56,6 +55,8 @@ namespace Sahara {
             VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
             QList<VkDescriptorSet> createImageDescriptorSets(VkImageView imageView);
 
+            void destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView);
+
             void copyImage(const QImage& image, VkImage vkImage);
 
             VulkanUtil::UniformBuffers createArmatureUniformBuffers();
@@ -76,11 +77,7 @@ namespace Sahara {
             GridPipeline* _gridPipelineWire;
             DisplayPipeline* _displayPipeline;
 
-            QImage _emptyImage;
-            VkImage _emptyImageVk;
-            VkImageView _emptyImageView;
-            VkDeviceMemory _emptyImageMemory;
-            QList<VkDescriptorSet> _emptyImageDescriptorSets;
+            Image* _emptyImage;
 
             QElapsedTimer _frameTime;
             float _fps;
