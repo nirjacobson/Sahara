@@ -27,8 +27,8 @@ void Sahara::PointLightDisplay::initBuffers()
 
     int vertices = elements.size() / 2;
     int numFloats = vertices*3;
-    GLfloat* positionData = new GLfloat[static_cast<unsigned long>(numFloats)];
-    GLfloat* normalData = new GLfloat[static_cast<unsigned long>(numFloats)];
+    float* positionData = new float[static_cast<unsigned long>(numFloats)];
+    float* normalData = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     for (int i = 0; i < vertices; i++) {

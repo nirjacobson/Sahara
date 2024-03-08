@@ -239,9 +239,9 @@ Sahara::MeshDict Sahara::Model::parseColladaModelGeometries(QVulkanWindow* windo
 
             if (semantic == QCollada::Triangles::Semantic::VERTEX) {
                 for (int i = 0; i < floatSource.accessor().count(); i++) {
-                    GLfloat x = floatSource.data().at(i * floatSource.accessor().stride() + 0);
-                    GLfloat y = floatSource.data().at(i * floatSource.accessor().stride() + 1);
-                    GLfloat z = floatSource.data().at(i * floatSource.accessor().stride() + 2);
+                    float x = floatSource.data().at(i * floatSource.accessor().stride() + 0);
+                    float y = floatSource.data().at(i * floatSource.accessor().stride() + 1);
+                    float z = floatSource.data().at(i * floatSource.accessor().stride() + 2);
 
                     if (x < lowerVertex.x())
                         lowerVertex.setX(x);

@@ -1,7 +1,6 @@
 #ifndef SAHARA_VERTEXBUFFER_H
 #define SAHARA_VERTEXBUFFER_H
 
-#include <QOpenGLBuffer>
 #include <QVulkanDeviceFunctions>
 #include <QVulkanWindow>
 #include <QtDebug>

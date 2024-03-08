@@ -12,7 +12,7 @@ Sahara::Axis::Axis(QVulkanWindow* window, const char axis, const int length)
 void Sahara::Axis::initPositionBuffer()
 {
     int numFloats = 6 * 4 * 3;
-    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
+    float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D topLeft, bottomLeft, topRight, bottomRight;
@@ -129,7 +129,7 @@ void Sahara::Axis::initColorBuffer()
 {
     int vertices = 6 * 4;
     int numFloats = vertices * 3;
-    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
+    float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D color;

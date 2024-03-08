@@ -39,7 +39,7 @@ int Sahara::Grid::count() const
 void Sahara::Grid::initPositionBuffer()
 {
     int numFloats = 2 * _length * 5 * 3;
-    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
+    float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     QVector3D topLeft, bottomLeft, topRight, bottomRight;
@@ -123,7 +123,7 @@ void Sahara::Grid::initColorBuffer()
 {
     int vertices = 2 * _length * 4;
     int numFloats = vertices * 3;
-    GLfloat* data = new GLfloat[static_cast<unsigned long>(numFloats)];
+    float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
     for (int i = 0; i < vertices; i++) {

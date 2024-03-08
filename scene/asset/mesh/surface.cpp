@@ -129,7 +129,7 @@ void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semanti
     }
 
     unsigned long dataSize = _elements.size() / (maxOffset + 1) * source->stride();
-    GLfloat* data = new GLfloat[dataSize];
+    float* data = new float[dataSize];
     int dataIndex = 0;
 
     for (int i = _inputs[input].offset(); i < _elements.size(); i += maxOffset + 1) {
