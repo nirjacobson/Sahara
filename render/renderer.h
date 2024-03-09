@@ -31,8 +31,6 @@ namespace Sahara {
         public:
             Renderer(QVulkanWindow* vulkanWindow);
 
-            // void render(const float time);
-
             void setScene(Scene* scene);
 
             bool showGrid() const;
@@ -108,16 +106,6 @@ namespace Sahara {
             VulkanUtil::UniformBuffers getUniformBuffers(Pipeline& pipeline, uint32_t set, uint32_t binding);
             void releaseUniformBuffers(Pipeline &pipeline, const VulkanUtil::UniformBuffers& buffers);
 
-            void renderScene(Scene& scene, const float time);
-            void renderGrid(Scene& scene);
-            void renderPointLight(Scene& scene, const QMatrix4x4& modelView, const bool focus);
-            void renderCamera(Scene& scene, const QMatrix4x4& modelView, const bool focus);
-            void renderModel(Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
-            void renderSurface(Surface& surface, Sahara::Instance& instance, const bool focus);
-
-            void processSceneLighting(Scene& scene);
-            void processControllerInstanceArmature(InstanceController& controllerInstance);
-
             VulkanUtil::UniformBuffers _renderUniformBuffersGrid;
             VulkanUtil::UniformBuffers _renderUniformBuffersDisplay;
             VulkanUtil::UniformBuffers _renderUniformBuffersScene;
@@ -132,6 +120,7 @@ namespace Sahara {
             void recordModel(Sahara::Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
 
             void record(const float time);
+
             // QVulkanWindowRenderer interface
         public:
             void startNextFrame();
