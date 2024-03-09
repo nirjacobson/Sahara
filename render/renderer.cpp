@@ -8,7 +8,7 @@ Sahara::Renderer::Renderer(QVulkanWindow *vulkanWindow)
     , _showAxes(true)
     , _showLights(true)
     , _showCameras(true)
-    , _showFPS(false)
+    , _showFPS(true)
 {
 
 }
