@@ -77,9 +77,9 @@ const Sahara::Armature& Sahara::Model::armature() const
   return *_armature;
 }
 
-Sahara::Model* Sahara::Model::fromCollada(const QString& path)
+Sahara::Model* Sahara::Model::fromCollada(Renderer* renderer, const QString& path)
 {
-  return parseColladaModel(path);
+  return parseColladaModel(renderer, path);
 }
 
 QStringList Sahara::Model::animationClipNames() const
@@ -124,7 +124,7 @@ void Sahara::Model::animate(const float time)
   }
 }
 
-Sahara::Model* Sahara::Model::parseColladaModel(const QString& path)
+Sahara::Model* Sahara::Model::parseColladaModel(Renderer* renderer, const QString& path)
 {
   QCollada::Collada collada = QCollada::Collada::parse(path);
   Sahara::Model* model = new Model();

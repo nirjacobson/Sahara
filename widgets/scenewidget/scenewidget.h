@@ -44,6 +44,8 @@ namespace Sahara {
             bool showCameras() const;
             void showCameras(const bool visible);
 
+            Renderer* renderer();
+
         signals:
             void initialized() const;
             void sizeChanged(QSize size);

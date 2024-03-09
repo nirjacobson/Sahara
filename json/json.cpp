@@ -1014,7 +1014,7 @@ QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
     return object;
 }
 
-Sahara::Scene* Sahara::JSON::toScene(const QJsonObject& object)
+Sahara::Scene* Sahara::JSON::toScene(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Scene");
 

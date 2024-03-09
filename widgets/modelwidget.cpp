@@ -31,7 +31,7 @@ void Sahara::ModelWidget::setModel(const QString& path)
         delete _modelNode;
     }
 
-    _model = Model::fromCollada(path);
+    _model = Model::fromCollada(ui->sceneWidget->renderer(), path);
     float scale = static_cast<float>(ui->scaleDial->value()) / ui->scaleDial->maximum();
     _modelNode = new Node(QFileInfo(path).baseName(), _model, QMatrix4x4(QMatrix3x3() * scale));
 

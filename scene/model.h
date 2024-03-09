@@ -27,6 +27,8 @@ namespace Sahara {
   typedef QMap<QString, Animation*> AnimationDict;
   typedef QMap<QString, AnimationClip*> AnimationClipDict;
 
+  class Renderer;
+
   class Model : public NodeItem
   {
     friend class JSON;
@@ -48,7 +50,7 @@ namespace Sahara {
       const AnimationClipDict& animationClips() const;
       const Armature& armature() const;
 
-      static Model* fromCollada(const QString& path);
+      static Model* fromCollada(Renderer* renderer, const QString& path);
 
       QStringList animationClipNames() const;
       void setAnimationClip(const QString& name);
@@ -71,7 +73,7 @@ namespace Sahara {
       Armature* _armature;
       AnimationClip* _animationClip;
 
-      static Model* parseColladaModel(const QString& path);
+      static Model* parseColladaModel(Renderer* renderer, const QString& path);
       static ImageDict parseColladaModelImages(const QCollada::Collada& collada, const QString& path);
       static MaterialDict parseColladaModelMaterials(const QCollada::Collada& collada, const ImageDict& images);
       static MeshDict parseColladaModelGeometries(const QCollada::Collada& collada, Volume& volume);

@@ -102,7 +102,7 @@ namespace Sahara {
             static Node* toNode(const QJsonObject& object, const QMap<QString, NodeItem*>& items);
 
             static QJsonObject fromScene(const Scene* scene);
-            static Scene* toScene(const QJsonObject& object);
+            static Scene* toScene(Renderer* renderer, const QJsonObject& object);
 
         private:
             static QJsonObject fromInstance(const Instance* instance);

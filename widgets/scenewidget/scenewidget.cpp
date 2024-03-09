@@ -106,6 +106,11 @@ void Sahara::SceneWidget::showCameras(const bool visible)
     _renderer->showCameras(visible);
 }
 
+Sahara::Renderer *Sahara::SceneWidget::renderer()
+{
+    return _renderer;
+}
+
 void Sahara::SceneWidget::initializeGL()
 {
     initializeOpenGLFunctions();
