@@ -21,6 +21,7 @@ public:
 
     QList<VkDescriptorSet> createBufferDescriptorSets(uint32_t set, uint32_t binding, const QList<VkBuffer> &buffers, VkDeviceSize size);
     QList<VkDescriptorSet> createImageDescriptorSets(uint32_t set, uint32_t binding, VkSampler sampler, VkImageView imageView);
+    void freeDescriptorSets(const QList<VkDescriptorSet>& descriptorSets);
     VkPipeline pipeline() const;
     VkPipelineLayout pipelineLayout() const;
 

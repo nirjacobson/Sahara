@@ -115,6 +115,11 @@ QList<VkDescriptorSet> Pipeline::createImageDescriptorSets(uint32_t set, uint32_
     return descriptorSets;
 }
 
+void Pipeline::freeDescriptorSets(const QList<VkDescriptorSet> &descriptorSets)
+{
+    _deviceFunctions->vkFreeDescriptorSets(_vulkanWindow->device(), _descriptorPool, descriptorSets.size(), descriptorSets.data());
+}
+
 VkPipeline Pipeline::pipeline() const
 {
     return _pipeline;
@@ -162,6 +167,7 @@ void Pipeline::createDescriptorPool()
 
     VkDescriptorPoolCreateInfo descPoolInfo{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
         .maxSets = 16,
         .poolSizeCount = static_cast<uint32_t>(descPoolSizes.size()),
         .pPoolSizes = descPoolSizes.data()

@@ -28,7 +28,7 @@ Sahara::Scene::~Scene()
   }
   delete _root;
 
-  _renderer->destroyUniformBuffers(_lightingUniformBuffers);
+  _renderer->destroyLightingUniformBuffers(_lightingUniformBuffers);
 }
 
 const Sahara::Node& Sahara::Scene::root() const

@@ -22,6 +22,7 @@ Sahara::Image::Image(Renderer *renderer, const QString &id, const QString &uri)
 
 Sahara::Image::~Image()
 {
+    _renderer->freeImageDescriptorSets(_descriptorSets);
     _renderer->destroyImage(_image, _imageMemory, _imageView);
 }
 

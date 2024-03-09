@@ -54,6 +54,7 @@ namespace Sahara {
             void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkImage &image, VkDeviceMemory &imageMemory);
             VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
             QList<VkDescriptorSet> createImageDescriptorSets(VkImageView imageView);
+            void freeImageDescriptorSets(const QList<VkDescriptorSet>& descriptorSets);
 
             void destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView);
 
@@ -62,7 +63,9 @@ namespace Sahara {
             VulkanUtil::UniformBuffers createArmatureUniformBuffers();
             VulkanUtil::UniformBuffers createMaterialUniformBuffers();
             VulkanUtil::UniformBuffers createLightingUniformBuffers();
-            void destroyUniformBuffers(VulkanUtil::UniformBuffers& buffers);
+            void destroyArmatureUniformBuffers(const VulkanUtil::UniformBuffers& buffers);
+            void destroyMaterialUniformBuffers(const VulkanUtil::UniformBuffers& buffers);
+            void destroyLightingUniformBuffers(const VulkanUtil::UniformBuffers& buffers);
 
         signals:
             void ready();
@@ -103,6 +106,7 @@ namespace Sahara {
 
             template <typename T>
             VulkanUtil::UniformBuffers getUniformBuffers(Pipeline& pipeline, uint32_t set, uint32_t binding);
+            void releaseUniformBuffers(Pipeline &pipeline, const VulkanUtil::UniformBuffers& buffers);
 
             void renderScene(Scene& scene, const float time);
             void renderGrid(Scene& scene);

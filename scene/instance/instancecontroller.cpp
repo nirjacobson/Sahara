@@ -12,7 +12,7 @@ Sahara::InstanceController::InstanceController(Renderer* renderer, const Armatur
 
 Sahara::InstanceController::~InstanceController()
 {
-    _renderer->destroyUniformBuffers(_uniformBuffers);
+    _renderer->destroyArmatureUniformBuffers(_uniformBuffers);
 }
 
 Sahara::Controller& Sahara::InstanceController::controller()

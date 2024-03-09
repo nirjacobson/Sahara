@@ -27,7 +27,7 @@ Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& 
 
 Sahara::Material::~Material()
 {
-    _renderer->destroyUniformBuffers(_uniformBuffers);
+    _renderer->destroyMaterialUniformBuffers(_uniformBuffers);
 }
 
 const QColor& Sahara::Material::emission() const

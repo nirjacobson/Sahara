@@ -99,6 +99,12 @@ QList<VkDescriptorSet> Sahara::Renderer::createImageDescriptorSets(VkImageView i
     return _scenePipeline->createImageDescriptorSets(imageView);
 }
 
+void Sahara::Renderer::freeImageDescriptorSets(const QList<VkDescriptorSet> &descriptorSets)
+{
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _scenePipeline->freeDescriptorSets(descriptorSets);
+}
+
 void Sahara::Renderer::destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView)
 {
     _deviceFunctions->vkDestroyImageView(_vulkanWindow->device(), imageView, nullptr);
@@ -143,8 +149,43 @@ VulkanUtil::UniformBuffers Sahara::Renderer::createLightingUniformBuffers()
     return getUniformBuffers<ScenePipeline::Lighting>(*_scenePipeline, 1, 0);
 }
 
-void Sahara::Renderer::destroyUniformBuffers(VulkanUtil::UniformBuffers &buffers)
+void Sahara::Renderer::destroyArmatureUniformBuffers(const VulkanUtil::UniformBuffers &buffers)
 {
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _animatedPipeline->freeDescriptorSets(buffers.bufferDescriptorSets);
+    for (int i = 0; i < buffers.buffers.size(); i++) {
+        _deviceFunctions->vkUnmapMemory(_vulkanWindow->device(), buffers.buffersMemory[i]);
+        _deviceFunctions->vkDestroyBuffer(_vulkanWindow->device(), buffers.buffers[i], nullptr);
+        _deviceFunctions->vkFreeMemory(_vulkanWindow->device(), buffers.buffersMemory[i], nullptr);
+    }
+}
+
+void Sahara::Renderer::destroyMaterialUniformBuffers(const VulkanUtil::UniformBuffers &buffers)
+{
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _scenePipeline->freeDescriptorSets(buffers.bufferDescriptorSets);
+    for (int i = 0; i < buffers.buffers.size(); i++) {
+        _deviceFunctions->vkUnmapMemory(_vulkanWindow->device(), buffers.buffersMemory[i]);
+        _deviceFunctions->vkDestroyBuffer(_vulkanWindow->device(), buffers.buffers[i], nullptr);
+        _deviceFunctions->vkFreeMemory(_vulkanWindow->device(), buffers.buffersMemory[i], nullptr);
+    }
+}
+
+void Sahara::Renderer::destroyLightingUniformBuffers(const VulkanUtil::UniformBuffers &buffers)
+{
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _scenePipeline->freeDescriptorSets(buffers.bufferDescriptorSets);
+    for (int i = 0; i < buffers.buffers.size(); i++) {
+        _deviceFunctions->vkUnmapMemory(_vulkanWindow->device(), buffers.buffersMemory[i]);
+        _deviceFunctions->vkDestroyBuffer(_vulkanWindow->device(), buffers.buffers[i], nullptr);
+        _deviceFunctions->vkFreeMemory(_vulkanWindow->device(), buffers.buffersMemory[i], nullptr);
+    }
+}
+
+void Sahara::Renderer::releaseUniformBuffers(Pipeline& pipeline, const VulkanUtil::UniformBuffers &buffers)
+{
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _scenePipeline->freeDescriptorSets(buffers.bufferDescriptorSets);
     for (int i = 0; i < buffers.buffers.size(); i++) {
         _deviceFunctions->vkUnmapMemory(_vulkanWindow->device(), buffers.buffersMemory[i]);
         _deviceFunctions->vkDestroyBuffer(_vulkanWindow->device(), buffers.buffers[i], nullptr);
@@ -757,10 +798,10 @@ void Sahara::Renderer::releaseResources()
 
     delete _emptyImage;
 
-    destroyUniformBuffers(_renderUniformBuffersAnimated);
-    destroyUniformBuffers(_renderUniformBuffersScene);
-    destroyUniformBuffers(_renderUniformBuffersDisplay);
-    destroyUniformBuffers(_renderUniformBuffersGrid);
+    releaseUniformBuffers(*_animatedPipeline, _renderUniformBuffersAnimated);
+    releaseUniformBuffers(*_scenePipeline, _renderUniformBuffersScene);
+    releaseUniformBuffers(*_displayPipeline, _renderUniformBuffersDisplay);
+    releaseUniformBuffers(*_gridPipeline, _renderUniformBuffersGrid);
 
     delete _scene;
     delete _grid;
