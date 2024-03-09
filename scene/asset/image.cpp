@@ -7,7 +7,10 @@ Sahara::Image::Image(Renderer *renderer, const QString &id, const QString &uri)
     , _renderer(renderer)
     , _uri(uri)
 {
-    QImage image = uri.isEmpty() ? QImage(1, 1, QImage::Format_RGBA8888) : QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored();
+    QImage image = (uri.isEmpty()
+                       ? QImage(1, 1, QImage::Format_RGBA8888)
+                        : QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored())
+                    .convertToFormat(QImage::Format::Format_RGBA8888);
 
     renderer->createImage(image.width(), image.height(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, _image, _imageMemory);
     renderer->copyImage(image, _image);

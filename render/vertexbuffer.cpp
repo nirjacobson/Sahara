@@ -56,6 +56,6 @@ void Sahara::VertexBuffer::write(const float* const data, const uint32_t size, i
 
 uint32_t Sahara::VertexBuffer::count() const
 {
-    return _size / _stride;
+    return _size / (_stride * sizeof(float));
 }
 
