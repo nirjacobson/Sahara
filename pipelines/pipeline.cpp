@@ -158,11 +158,24 @@ void Pipeline::createDescriptorPool()
 
     QList<QList<VkDescriptorSetLayoutBinding>> layoutBindings = getDescriptorSetLayoutBindings();
 
-    QList<VkDescriptorPoolSize> descPoolSizes;
+    QSet<VkDescriptorType> descriptorTypes;
     for (int i = 0; i < layoutBindings.size(); i++) {
         for (int j = 0; j < layoutBindings[i].size(); j++) {
-            descPoolSizes.append({ layoutBindings[i][j].descriptorType, 4 * concurrentFrames * layoutBindings[i][j].descriptorCount });
+            descriptorTypes.insert(layoutBindings[i][j].descriptorType);
         }
+    }
+
+    QMap<VkDescriptorType, uint32_t> descriptorCounts;
+    for (int i = 0; i < layoutBindings.size(); i++) {
+        for (int j = 0; j < layoutBindings[i].size(); j++) {
+            VkDescriptorType descriptorType = layoutBindings[i][j].descriptorType;
+            descriptorCounts[descriptorType] += layoutBindings[i][j].descriptorCount;
+        }
+    }
+
+    QList<VkDescriptorPoolSize> descPoolSizes;
+    for (auto d = descriptorCounts.begin(); d != descriptorCounts.end(); ++d) {
+        descPoolSizes.append({d.key(), 16 * concurrentFrames * d.value() });
     }
 
     VkDescriptorPoolCreateInfo descPoolInfo{

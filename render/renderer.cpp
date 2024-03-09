@@ -185,7 +185,7 @@ void Sahara::Renderer::destroyLightingUniformBuffers(const VulkanUtil::UniformBu
 void Sahara::Renderer::releaseUniformBuffers(Pipeline& pipeline, const VulkanUtil::UniformBuffers &buffers)
 {
     _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
-    _scenePipeline->freeDescriptorSets(buffers.bufferDescriptorSets);
+    pipeline.freeDescriptorSets(buffers.bufferDescriptorSets);
     for (int i = 0; i < buffers.buffers.size(); i++) {
         _deviceFunctions->vkUnmapMemory(_vulkanWindow->device(), buffers.buffersMemory[i]);
         _deviceFunctions->vkDestroyBuffer(_vulkanWindow->device(), buffers.buffers[i], nullptr);
