@@ -48,12 +48,6 @@ namespace Sahara {
         void mousePressed(QVector2D ndc);
         void sceneLoaded();
 
-    protected:
-        void keyPressEvent(QKeyEvent* event) override;
-        void keyReleaseEvent(QKeyEvent* event) override;
-        void mousePressEvent(QMouseEvent* event) override;
-        void mouseMoveEvent(QMouseEvent* event) override;
-
     private:
         Scene* _scene;
         QVulkanInstance _instance;
@@ -62,7 +56,6 @@ namespace Sahara {
 
         bool _showFPS;
 
-        bool _flyThrough;
         CameraControl _cameraControl;
 
         double _fps;
@@ -75,6 +68,14 @@ namespace Sahara {
         void updateCameraControl();
 
     signals:
+
+        // QWidget interface
+    protected:
+        void keyPressEvent(QKeyEvent *event);
+
+        // QWidget interface
+    protected:
+        void keyReleaseEvent(QKeyEvent *event);
     };
 }
 

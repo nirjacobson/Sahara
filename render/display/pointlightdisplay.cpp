@@ -47,10 +47,10 @@ void Sahara::PointLightDisplay::initBuffers()
     }
 
     VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
-    positionBuffer->write(positionData, numFloats, 3);
+    positionBuffer->write(positionData, numFloats * sizeof(float), 3);
 
     VertexBuffer* normalBuffer = new VertexBuffer(_vulkanWindow);
-    normalBuffer->write(normalData, numFloats, 3);
+    normalBuffer->write(normalData, numFloats * sizeof(float), 3);
 
     delete [] positionData;
     delete [] normalData;

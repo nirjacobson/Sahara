@@ -5,7 +5,9 @@ Sahara::Renderer::Renderer(QVulkanWindow *vulkanWindow)
     , _scene(nullptr)
     , _paused(false)
     , _showGrid(false)
-    , _showLights(false)
+    , _showAxes(true)
+    , _showLights(true)
+    , _showCameras(true)
 {
 
 }
@@ -230,9 +232,7 @@ void Sahara::Renderer::recordDisplay(Scene &scene, Display &display, const QMatr
     QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
     _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
 
-    for (int i = 0; i < display.count() / 3; i++) {
-        _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), 4, 1, 0, 0);
-    }
+    _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), display.vertexBuffers().first()->count(), 1, 0, 0);
 }
 
 void Sahara::Renderer::recordPointLight(Scene &scene, const QMatrix4x4& modelView, const bool focus)
@@ -262,19 +262,19 @@ void Sahara::Renderer::recordScene(Scene &scene, const float time)
        Camera* camera;
        if ((model = dynamic_cast<Model*>(&node.item()))) {
            recordModel(*model, transforms, false, time);
-           // if (node.hasFocus()) {
-           //     recordModel(*model, transforms, true, time);
-           // }
+           if (node.hasFocus()) {
+               recordModel(*model, transforms, true, time);
+           }
        } else {
-           // if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-           //     if (_showLights) {
-           //         recordPointLight(scene, transforms.top(), node.hasFocus());
-           //     }
-           // } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-           //     if (_showCameras && &node != &scene.cameraNode()) {
-           //         recordCamera(scene, transforms.top(), node.hasFocus());
-           //     }
-           // }
+           if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+               if (_showLights) {
+                   recordPointLight(scene, transforms.top(), node.hasFocus());
+               }
+           } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+               if (_showCameras && &node != &scene.cameraNode()) {
+                   recordCamera(scene, transforms.top(), node.hasFocus());
+               }
+           }
        }
 
        return false;

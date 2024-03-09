@@ -33,7 +33,7 @@ Sahara::Axis&Sahara::Grid::zAxis()
 
 int Sahara::Grid::count() const
 {
-    return 2 * 4 * _length;
+    return 2 * 5 * _length;
 }
 
 void Sahara::Grid::initPositionBuffer()
@@ -112,7 +112,7 @@ void Sahara::Grid::initPositionBuffer()
     }
 
     VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
-    positionBuffer->write(data, numFloats, 3);
+    positionBuffer->write(data, numFloats * sizeof(float), 3);
 
     delete [] data;
 
@@ -121,7 +121,7 @@ void Sahara::Grid::initPositionBuffer()
 
 void Sahara::Grid::initColorBuffer()
 {
-    int vertices = 2 * _length * 4;
+    int vertices = 2 * _length * 5;
     int numFloats = vertices * 3;
     float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
@@ -133,7 +133,7 @@ void Sahara::Grid::initColorBuffer()
     }
 
     VertexBuffer* colorBuffer = new VertexBuffer(_vulkanWindow);
-    colorBuffer->write(data, numFloats, 3);
+    colorBuffer->write(data, numFloats * sizeof(float), 3);
 
     delete [] data;
 

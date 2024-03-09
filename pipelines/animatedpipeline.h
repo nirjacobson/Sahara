@@ -11,7 +11,6 @@ public:
 
     struct PushConstants {
         alignas(16) float modelView[16];
-        alignas(16) int articulated;
         alignas(16) float cameraPosition[4];
         alignas(16) int focus;
     };

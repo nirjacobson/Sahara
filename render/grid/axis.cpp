@@ -11,7 +11,7 @@ Sahara::Axis::Axis(QVulkanWindow* window, const char axis, const int length)
 
 void Sahara::Axis::initPositionBuffer()
 {
-    int numFloats = 6 * 4 * 3;
+    int numFloats = 6 * 5 * 3;
     float* data = new float[static_cast<unsigned long>(numFloats)];
     int dataIndex = 0;
 
@@ -41,7 +41,7 @@ void Sahara::Axis::initPositionBuffer()
     };
 
     vertices = {
-        topLeft, bottomLeft, topRight, bottomRight
+        topLeft, bottomLeft, topRight, bottomRight, topLeft
     };
 
     for (int i = 0; i < vertices.size(); i++) {
@@ -85,7 +85,7 @@ void Sahara::Axis::initPositionBuffer()
     };
 
     vertices = {
-        topLeft, bottomLeft, topRight, bottomRight
+        topLeft, bottomLeft, topRight, bottomRight, topLeft
     };
 
     for (int i = 0; i < vertices.size(); i++) {
@@ -106,7 +106,7 @@ void Sahara::Axis::initPositionBuffer()
         bottomRight = faceRotation.map(bottomRight);
 
         vertices = {
-            topLeft, bottomLeft, topRight, bottomRight
+            topLeft, bottomLeft, topRight, bottomRight, topLeft
         };
 
         for (int j = 0; j < vertices.size(); j++) {
@@ -118,7 +118,7 @@ void Sahara::Axis::initPositionBuffer()
     }
 
     VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
-    positionBuffer->write(data, numFloats, 3);
+    positionBuffer->write(data, numFloats * sizeof(float), 3);
 
     delete [] data;
 
@@ -152,7 +152,7 @@ void Sahara::Axis::initColorBuffer()
     }
 
     VertexBuffer* colorBuffer = new VertexBuffer(_vulkanWindow);
-    colorBuffer->write(data, numFloats, 3);
+    colorBuffer->write(data, numFloats * sizeof(float), 3);
 
     delete [] data;
 

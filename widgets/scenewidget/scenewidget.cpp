@@ -4,6 +4,7 @@ Sahara::SceneWidget::SceneWidget(QWidget *parent)
     : QWidget{parent}
     , _scene(nullptr)
     , _renderer(nullptr)
+    , _window(_cameraControl)
 {
     _instance.setLayers({ "VK_LAYER_KHRONOS_validation" });
     if (!_instance.create())
@@ -12,6 +13,9 @@ Sahara::SceneWidget::SceneWidget(QWidget *parent)
     _window.setVulkanInstance(&_instance);
 
     connect(&_window, &SceneWindow::rendererCreated, this, &SceneWidget::rendererCreated);
+    connect(&_window, &SceneWindow::keyPressed, this, &SceneWidget::keyPressed);
+    connect(&_window, &SceneWindow::mouseMoved, this, &SceneWidget::mouseMoved);
+    connect(&_window, &SceneWindow::mousePressed, this, &SceneWidget::mousePressed);
 
     QWidget *wrapper = QWidget::createWindowContainer(&_window);
     QVBoxLayout* layout = new QVBoxLayout;
@@ -21,8 +25,6 @@ Sahara::SceneWidget::SceneWidget(QWidget *parent)
 
     connect(&_timer, &QTimer::timeout, this, &SceneWidget::updateCameraControl);
     _timer.setInterval(1000 / 60);
-
-    setMouseTracking(true);
 }
 
 Sahara::SceneWidget::~SceneWidget()
@@ -58,9 +60,60 @@ void Sahara::SceneWidget::rendererReady()
 
 void Sahara::SceneWidget::updateCameraControl()
 {
-    if (_flyThrough) {
+    if (_window.flyThrough()) {
         _cameraControl.update(_scene->cameraNode());
         emit cameraMotion();
+    }
+}
+
+void Sahara::SceneWidget::keyPressEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat())
+        return;
+
+    if (_window.flyThrough()) {
+        switch (event->key()) {
+        case Qt::Key_W:
+            _cameraControl.accelerateForward(true);
+            break;
+        case Qt::Key_A:
+            _cameraControl.accelerateLeft(true);
+            break;
+        case Qt::Key_S:
+            _cameraControl.accelerateBackward(true);
+            break;
+        case Qt::Key_D:
+            _cameraControl.accelerateRight(true);
+            break;
+        }
+    }
+
+    emit keyPressed(event);
+
+    QWidget::keyPressEvent(event);
+}
+
+void Sahara::SceneWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat())
+        return;
+
+    if (!_window.flyThrough())
+        return;
+
+    switch (event->key()) {
+    case Qt::Key_W:
+        _cameraControl.accelerateForward(false);
+        break;
+    case Qt::Key_A:
+        _cameraControl.accelerateLeft(false);
+        break;
+    case Qt::Key_S:
+        _cameraControl.accelerateBackward(false);
+        break;
+    case Qt::Key_D:
+        _cameraControl.accelerateRight(false);
+        break;
     }
 }
 
@@ -79,7 +132,8 @@ void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
 
 void Sahara::SceneWidget::flyThrough(const bool on)
 {
-    _flyThrough = on;
+    _window.setKeyboardGrabEnabled(true);
+    _window.flyThrough(on);
 }
 
 void Sahara::SceneWidget::pause()
@@ -146,76 +200,3 @@ Sahara::Renderer *Sahara::SceneWidget::renderer()
 {
     return _renderer;
 }
-
-void Sahara::SceneWidget::keyPressEvent(QKeyEvent* event)
-{
-    if (_flyThrough) {
-        switch (event->key()) {
-        case Qt::Key_W:
-            _cameraControl.accelerateForward(true);
-            break;
-        case Qt::Key_A:
-            _cameraControl.accelerateLeft(true);
-            break;
-        case Qt::Key_S:
-            _cameraControl.accelerateBackward(true);
-            break;
-        case Qt::Key_D:
-            _cameraControl.accelerateRight(true);
-            break;
-        }
-    }
-
-    emit keyPressed(event);
-
-    QWidget::keyPressEvent(event);
-}
-
-void Sahara::SceneWidget::keyReleaseEvent(QKeyEvent* event)
-{
-    if (!_flyThrough)
-        return;
-
-    switch (event->key()) {
-    case Qt::Key_W:
-        _cameraControl.accelerateForward(false);
-        break;
-    case Qt::Key_A:
-        _cameraControl.accelerateLeft(false);
-        break;
-    case Qt::Key_S:
-        _cameraControl.accelerateBackward(false);
-        break;
-    case Qt::Key_D:
-        _cameraControl.accelerateRight(false);
-        break;
-    }
-}
-
-void Sahara::SceneWidget::mousePressEvent(QMouseEvent* event)
-{
-    QVector2D normalizedPos;
-    normalizedPos.setX( 2 * (static_cast<float>(event->pos().x()) / width()) - 1 );
-    normalizedPos.setY(1 - 2 * (static_cast<float>(event->pos().y()) / height()) );
-
-    if (_flyThrough) {
-        _cameraControl.reset();
-        _flyThrough = false;
-    }
-
-    emit mousePressed(normalizedPos);
-}
-
-void Sahara::SceneWidget::mouseMoveEvent(QMouseEvent* event)
-{
-    QVector2D normalizedPos;
-    normalizedPos.setX( 2 * (static_cast<float>(event->pos().x()) / width()) - 1 );
-    normalizedPos.setY(1 - 2 * (static_cast<float>(event->pos().y()) / height()) );
-
-    if (_flyThrough) {
-        _cameraControl.setRotationalVelocity(normalizedPos * 2);
-    }
-
-    emit mouseMoved(normalizedPos);
-}
-
