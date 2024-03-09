@@ -47,6 +47,7 @@ namespace Sahara {
       const AnimationDict& animations() const;
       const AnimationClipDict& animationClips() const;
       const Armature& armature() const;
+      bool hasArmature() const;
 
       static Model* fromCollada(Renderer* renderer, const QString& path);
 

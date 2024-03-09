@@ -43,10 +43,10 @@ void Sahara::CameraDisplay::initBuffers()
     }
 
     VertexBuffer* positionBuffer = new VertexBuffer(_vulkanWindow);
-    positionBuffer->write(positionData, numFloats);
+    positionBuffer->write(positionData, numFloats, 3);
 
     VertexBuffer* normalBuffer = new VertexBuffer(_vulkanWindow);
-    normalBuffer->write(normalData, numFloats);
+    normalBuffer->write(normalData, numFloats, 3);
 
     delete [] positionData;
     delete [] normalData;

@@ -140,8 +140,28 @@ void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semanti
         }
     }
 
+    int stride;
+    switch (input) {
+    case Input::POSITION:
+    case Input::NORMAL:
+    case Input::COLOR:
+        stride = 3;
+        break;
+    case Input::TEXCOORD:
+        stride = 2;
+        break;
+    case Input::JOINTS:
+    case Input::WEIGHTS:
+        stride = 4;
+        break;
+    default:
+    case Input::UNDEFINED:
+        stride = 1;
+        break;
+    }
+
     VertexBuffer* vertexBuffer = new VertexBuffer(_vulkanWindow);
-    vertexBuffer->write(data, dataSize * sizeof(float));
+    vertexBuffer->write(data, dataSize * sizeof(float), stride);
 
     delete [] data;
 

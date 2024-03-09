@@ -18,7 +18,7 @@ uint32_t GridPipeline::binding(const QString &vertexAttribute) const
     return attributes.indexOf(vertexAttribute);
 }
 
-QList<VkVertexInputBindingDescription> GridPipeline::getVertexInputBindingDescriptions()
+QList<VkVertexInputBindingDescription> GridPipeline::getVertexInputBindingDescriptions() const
 {
     VkVertexInputBindingDescription positionDesc{
         .binding = 0,
@@ -35,7 +35,7 @@ QList<VkVertexInputBindingDescription> GridPipeline::getVertexInputBindingDescri
     return QList<VkVertexInputBindingDescription>{ positionDesc, colorDesc };
 }
 
-QList<QList<VkDescriptorSetLayoutBinding> > GridPipeline::getDescriptorSetLayoutBindings()
+QList<QList<VkDescriptorSetLayoutBinding> > GridPipeline::getDescriptorSetLayoutBindings() const
 {
     VkDescriptorSetLayoutBinding vertexRenderLayoutBinding{
         .binding = 0,
@@ -48,7 +48,7 @@ QList<QList<VkDescriptorSetLayoutBinding> > GridPipeline::getDescriptorSetLayout
     return { QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding } };
 }
 
-QList<VkVertexInputAttributeDescription> GridPipeline::getVertexInputAttributeDescriptions()
+QList<VkVertexInputAttributeDescription> GridPipeline::getVertexInputAttributeDescriptions() const
 {
     QList<VkVertexInputAttributeDescription> attributeDescriptions(2);
 

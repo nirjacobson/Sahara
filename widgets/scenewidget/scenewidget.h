@@ -75,10 +75,6 @@ namespace Sahara {
         void updateCameraControl();
 
     signals:
-
-        // QWidget interface
-    protected:
-        // void paintEvent(QPaintEvent *event) override;
     };
 }
 

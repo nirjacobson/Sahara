@@ -31,7 +31,7 @@ QList<VkDescriptorSet> ScenePipeline::createImageDescriptorSets(VkImageView imag
     return Pipeline::createImageDescriptorSets(3, 0, _sampler, imageView);
 }
 
-QList<VkVertexInputBindingDescription> ScenePipeline::getVertexInputBindingDescriptions()
+QList<VkVertexInputBindingDescription> ScenePipeline::getVertexInputBindingDescriptions() const
 {
     VkVertexInputBindingDescription positionDesc{
         .binding = 0,
@@ -54,7 +54,7 @@ QList<VkVertexInputBindingDescription> ScenePipeline::getVertexInputBindingDescr
     return QList<VkVertexInputBindingDescription>{ positionDesc, normalDesc, texcoordDesc };
 }
 
-QList<QList<VkDescriptorSetLayoutBinding>> ScenePipeline::getDescriptorSetLayoutBindings()
+QList<QList<VkDescriptorSetLayoutBinding>> ScenePipeline::getDescriptorSetLayoutBindings() const
 {
     VkDescriptorSetLayoutBinding renderLayoutBinding{
         .binding = 0,
@@ -94,7 +94,7 @@ QList<QList<VkDescriptorSetLayoutBinding>> ScenePipeline::getDescriptorSetLayout
                                                        QList<VkDescriptorSetLayoutBinding>{ samplerLayoutBinding } };
 }
 
-QList<VkVertexInputAttributeDescription> ScenePipeline::getVertexInputAttributeDescriptions()
+QList<VkVertexInputAttributeDescription> ScenePipeline::getVertexInputAttributeDescriptions() const
 {
     QList<VkVertexInputAttributeDescription> attributeDescriptions(3);
 

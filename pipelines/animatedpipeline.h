@@ -12,7 +12,7 @@ public:
     struct PushConstants {
         alignas(16) float modelView[16];
         alignas(16) int articulated;
-        alignas(16) float cameraPosition[3];
+        alignas(16) float cameraPosition[4];
         alignas(16) int focus;
     };
 
@@ -22,12 +22,12 @@ public:
     };
 
     struct Joint {
-        float rotation[4];
-        float translation[3];
+        alignas(16) float rotation[4];
+        alignas(16) float translation[3];
     };
 
     struct Armature {
-        alignas(16) Joint joints[110];
+        Joint joints[110];
     };
 
     struct AmbientLight {
@@ -36,17 +36,15 @@ public:
     };
 
     struct PointLight {
-        float position[3];
-        float color[3];
-        float constantAttenuation;
-        float linearAttenuation;
-        float quadraticAttenuation;
+        alignas(16) float position[3];
+        alignas(16) float color[3];
+        alignas(16) float attenuation[3];
     };
 
     struct Lighting {
         alignas(16) AmbientLight ambientLight;
         alignas(16) int pointLightCount;
-        alignas(16) PointLight pointLights[6];
+        PointLight pointLights[6];
     };
 
     struct Material {
@@ -79,9 +77,9 @@ private:
 
     VkSampler _sampler;
 
-    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions();
-    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings();
-    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions();
+    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() const;
+    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() const;
+    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() const;
 };
 
 #endif // ANIMATEDPIPELINE_H

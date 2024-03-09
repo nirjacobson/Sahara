@@ -18,7 +18,7 @@ uint32_t DisplayPipeline::binding(const QString &vertexAttribute) const
     return attributes.indexOf(vertexAttribute);
 }
 
-QList<VkVertexInputBindingDescription> DisplayPipeline::getVertexInputBindingDescriptions()
+QList<VkVertexInputBindingDescription> DisplayPipeline::getVertexInputBindingDescriptions() const
 {
     VkVertexInputBindingDescription positionDesc{
         .binding = 0,
@@ -35,7 +35,7 @@ QList<VkVertexInputBindingDescription> DisplayPipeline::getVertexInputBindingDes
     return QList<VkVertexInputBindingDescription>{ positionDesc, normalDesc };
 }
 
-QList<QList<VkDescriptorSetLayoutBinding> > DisplayPipeline::getDescriptorSetLayoutBindings()
+QList<QList<VkDescriptorSetLayoutBinding> > DisplayPipeline::getDescriptorSetLayoutBindings() const
 {
     VkDescriptorSetLayoutBinding vertexRenderLayoutBinding{
         .binding = 0,
@@ -48,7 +48,7 @@ QList<QList<VkDescriptorSetLayoutBinding> > DisplayPipeline::getDescriptorSetLay
     return { QList<VkDescriptorSetLayoutBinding>{ vertexRenderLayoutBinding } };
 }
 
-QList<VkVertexInputAttributeDescription> DisplayPipeline::getVertexInputAttributeDescriptions()
+QList<VkVertexInputAttributeDescription> DisplayPipeline::getVertexInputAttributeDescriptions() const
 {
     QList<VkVertexInputAttributeDescription> attributeDescriptions(2);
 

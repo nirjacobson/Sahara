@@ -64,26 +64,6 @@ void Sahara::SceneWidget::updateCameraControl()
     }
 }
 
-// void Sahara::SceneWidget::paintEvent(QPaintEvent *event)
-// {
-//     static float fps = _fps;
-//     static int i = 0;
-//     i = (i + 1) % 15;
-
-//     if (_renderer) {
-//         _fps = _renderer->fps();
-
-//         if (i == 0) {
-//             fps = _fps;
-//         }
-
-//         if (_showFPS) {
-//             QPainter painter(this);
-//             painter.drawText(16, height() - 16, QString::number(fps, 'f', 0)+" FPS");
-//         }
-//     }
-// }
-
 void Sahara::SceneWidget::setScene(Sahara::Scene* scene)
 {
     Scene* s = _scene;

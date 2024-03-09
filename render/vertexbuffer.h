@@ -19,7 +19,9 @@ namespace Sahara
 
             VkBuffer buffer() const;
 
-            void write(const float * const data, const uint32_t size);
+            void write(const float * const data, const uint32_t size, int stride);
+
+            uint32_t count() const;
 
         private:
             QVulkanWindow* _window;
@@ -27,6 +29,8 @@ namespace Sahara
             VkBuffer _buffer;
             VkDeviceMemory _memory;
 
+            uint32_t _size;
+            int _stride;
             bool _haveBuffer;
     };
 

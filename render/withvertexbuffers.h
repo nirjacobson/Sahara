@@ -14,7 +14,7 @@ namespace Sahara {
             const VertexBufferDict& vertexBuffers() const;
             VertexBufferDict& vertexBuffers();
 
-            QList<VkBuffer> buffersByBinding(const Pipeline& pipeline);
+            virtual QList<VkBuffer> buffersByBinding(const Pipeline& pipeline);
 
             virtual int count() const = 0;
 

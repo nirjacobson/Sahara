@@ -71,6 +71,8 @@ namespace Sahara {
             QVulkanWindow* _vulkanWindow;
             QVulkanDeviceFunctions* _deviceFunctions;
 
+            AnimatedPipeline* _animatedPipeline;
+            AnimatedPipeline* _animatedPipelineWire;
             ScenePipeline* _scenePipeline;
             ScenePipeline* _scenePipelineWire;
             GridPipeline* _gridPipeline;
@@ -78,9 +80,13 @@ namespace Sahara {
             DisplayPipeline* _displayPipeline;
 
             Image* _emptyImage;
+            VkBuffer _emptyBuffer;
+            VkDeviceMemory _emptyBufferMemory;
 
             QElapsedTimer _frameTime;
             float _fps;
+
+            QElapsedTimer _time;
 
             Scene* _scene;
 
@@ -111,13 +117,14 @@ namespace Sahara {
             VulkanUtil::UniformBuffers _renderUniformBuffersGrid;
             VulkanUtil::UniformBuffers _renderUniformBuffersDisplay;
             VulkanUtil::UniformBuffers _renderUniformBuffersScene;
+            VulkanUtil::UniformBuffers _renderUniformBuffersAnimated;
 
             void recordGrid(Scene& scene);
             void recordDisplay(Scene& scene, Display& display, const QMatrix4x4& modelView, const bool focus);
             void recordPointLight(Scene& scene, const QMatrix4x4 &modelView, const bool focus);
             void recordCamera(Scene& scene, const QMatrix4x4 &modelView, const bool focus);
             void recordScene(Scene& scene, const float time);
-            void recordSurface(Sahara::Surface& surface, Instance& instance, const bool focus);
+            void recordSurface(Pipeline *pipeline, Sahara::Surface& surface, Instance& instance, const bool focus);
             void recordModel(Sahara::Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
 
             void record(const float time);

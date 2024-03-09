@@ -22,8 +22,11 @@ VkBuffer Sahara::VertexBuffer::buffer() const
     return _buffer;
 }
 
-void Sahara::VertexBuffer::write(const float* const data, const uint32_t size)
+void Sahara::VertexBuffer::write(const float* const data, const uint32_t size, int stride)
 {
+    _size = size;
+    _stride = stride;
+
     VkBuffer oldBuffer = _buffer;
     VkDeviceMemory oldMemory = _memory;
 
@@ -49,5 +52,10 @@ void Sahara::VertexBuffer::write(const float* const data, const uint32_t size)
     }
 
     _haveBuffer = true;
+}
+
+uint32_t Sahara::VertexBuffer::count() const
+{
+    return _size / _stride;
 }
 

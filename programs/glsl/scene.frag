@@ -24,8 +24,8 @@ struct PointLight {
 
 layout(set = 1, binding = 0) uniform Lighting {
     layout(offset = 0) AmbientLight ambientLight;
-    layout(offset = 16) int pointLightCount;
-    layout(offset = 32) PointLight pointLights[6];
+    layout(offset = 16) PointLight pointLights[6];
+    layout(offset = 304) int pointLightCount;
 } uLighting;
 
 layout(set = 2, binding = 0) uniform Material {

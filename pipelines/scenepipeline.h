@@ -26,15 +26,15 @@ public:
     };
 
     struct PointLight {
-        float position[3];
-        float color[3];
-        float attenuation[3];
+        alignas(16) float position[3];
+        alignas(16) float color[3];
+        alignas(16) float attenuation[3];
     };
 
     struct Lighting {
         alignas(16) AmbientLight ambientLight;
-        alignas(16) int pointLightCount;
         alignas(16) PointLight pointLights[6];
+        alignas(16) int pointLightCount;
     };
 
     struct Material {
@@ -65,9 +65,9 @@ private:
 
     VkSampler _sampler;
 
-    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions();
-    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings();
-    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions();
+    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() const;
+    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() const;
+    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() const;
 };
 
 #endif // SCENEPIPELINE_H

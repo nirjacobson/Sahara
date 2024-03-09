@@ -24,6 +24,7 @@ public:
     VkPipeline pipeline() const;
     VkPipelineLayout pipelineLayout() const;
 
+
 private:
     const static QList<VkDynamicState> dynamicStates;
 
@@ -37,10 +38,9 @@ private:
     VkPolygonMode _polygonMode;
     VkPipelineLayout _pipelineLayout;
     VkPipeline _pipeline;
-
-    virtual QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() = 0;
-    virtual QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() = 0;
-    virtual QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() = 0;
+    virtual QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() const = 0;
+    virtual QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() const  = 0;
+    virtual QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() const  = 0;
 
     VkShaderModule createShaderModule(const QString& name);
 

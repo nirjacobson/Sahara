@@ -17,6 +17,7 @@ namespace Sahara {
 
     signals:
         void rendererCreated(QVulkanWindowRenderer* renderer);
+
     };
 }
 

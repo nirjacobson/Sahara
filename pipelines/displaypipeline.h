@@ -29,9 +29,9 @@ private:
         float normal[3];
     };
 
-    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions();
-     QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings();
-    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions();
+    QList<VkVertexInputBindingDescription> getVertexInputBindingDescriptions() const;
+    QList<QList<VkDescriptorSetLayoutBinding>> getDescriptorSetLayoutBindings() const;
+    QList<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions() const;
 };
 
 #endif // DISPLAYPIPELINE_H

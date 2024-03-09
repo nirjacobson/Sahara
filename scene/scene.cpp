@@ -155,9 +155,9 @@ void Sahara::Scene::updateUniform(const uint32_t currentFrame) const
                     pointLight->color().blueF()
                 },
                 .attenuation = {
-                    pointLight->quadraticAttenuation(),
+                    pointLight->constantAttenuation(),
                     pointLight->linearAttenuation(),
-                    pointLight->constantAttenuation()
+                    pointLight->quadraticAttenuation(),
                 }
             };
         }

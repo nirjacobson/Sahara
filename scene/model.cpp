@@ -79,6 +79,11 @@ const Sahara::Armature& Sahara::Model::armature() const
   return *_armature;
 }
 
+bool Sahara::Model::hasArmature() const
+{
+    return _armature;
+}
+
 Sahara::Model* Sahara::Model::fromCollada(Renderer* renderer, const QString& path)
 {
   return parseColladaModel(renderer, path);
