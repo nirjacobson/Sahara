@@ -122,6 +122,13 @@ add_library(Sahara SHARED
   widgets/scenewidget/scenewidget.h widgets/scenewidget/scenewidget.cpp
   pipelines/animatedpipeline.h
   pipelines/animatedpipeline.cpp
+  programs/glsl/panel.vert
+  programs/glsl/panel.frag
+  programs/spir-v/panel.frag.spv programs/spir-v/panel.vert.spv
+  pipelines/panelpipeline.h pipelines/panelpipeline.cpp
+  panel/panel.h
+  panel/panel.cpp
+  panel/fpspanel.h panel/fpspanel.cpp
 
 )
 

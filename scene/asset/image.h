@@ -23,7 +23,7 @@ namespace Sahara
 
             const QString& uri() const;
 
-            void updateUniform(const uint32_t currentFrame) const { }
+            void updateUniform(const uint32_t currentFrame) { }
 
         private:
             Renderer* _renderer;

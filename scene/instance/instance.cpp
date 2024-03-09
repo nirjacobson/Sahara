@@ -22,6 +22,11 @@ const Sahara::Material& Sahara::Instance::getMaterial(const QString& name) const
     return *_materials[name];
 }
 
+Sahara::Material &Sahara::Instance::getMaterial(const QString &name)
+{
+    return *_materials[name];
+}
+
 const QMatrix4x4& Sahara::Instance::transform() const
 {
     return _transform;

@@ -14,5 +14,9 @@
         <file>programs/spir-v/scene.vert.spv</file>
         <file>programs/glsl/animated.vert</file>
         <file>programs/spir-v/animated.vert.spv</file>
+        <file>programs/glsl/panel.frag</file>
+        <file>programs/glsl/panel.vert</file>
+        <file>programs/spir-v/panel.frag.spv</file>
+        <file>programs/spir-v/panel.vert.spv</file>
     </qresource>
 </RCC>

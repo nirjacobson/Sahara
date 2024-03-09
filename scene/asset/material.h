@@ -37,7 +37,7 @@ namespace Sahara
 
             const QList<VkDescriptorSet>& descriptorSets() const;
 
-            void updateUniform(const uint32_t currentFrame) const;
+            void updateUniform(const uint32_t currentFrame);
 
         private:
             Renderer* _renderer;

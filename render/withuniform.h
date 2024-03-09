@@ -10,7 +10,7 @@ namespace Sahara {
     public:
         virtual const QList<VkDescriptorSet>& descriptorSets() const = 0;
 
-        virtual void updateUniform(const uint32_t currentFrame) const = 0;
+        virtual void updateUniform(const uint32_t currentFrame) = 0;
     private:
 
     };

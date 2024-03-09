@@ -8,6 +8,7 @@ Sahara::Renderer::Renderer(QVulkanWindow *vulkanWindow)
     , _showAxes(true)
     , _showLights(true)
     , _showCameras(true)
+    , _showFPS(false)
 {
 
 }
@@ -57,6 +58,16 @@ void Sahara::Renderer::showCameras(const bool visible)
     _showCameras = visible;
 }
 
+bool Sahara::Renderer::showFPS() const
+{
+    return _showFPS;
+}
+
+void Sahara::Renderer::showFPS(const bool visible)
+{
+    _showFPS = visible;
+}
+
 void Sahara::Renderer::pause()
 {
     _paused = true;
@@ -97,6 +108,12 @@ void Sahara::Renderer::freeImageDescriptorSets(const QList<VkDescriptorSet> &des
 {
     _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
     _scenePipeline->freeDescriptorSets(descriptorSets);
+}
+
+void Sahara::Renderer::freePanelImageDescriptorSets(const QList<VkDescriptorSet> &descriptorSets)
+{
+    _deviceFunctions->vkQueueWaitIdle(_vulkanWindow->graphicsQueue());
+    _panelPipeline->freeDescriptorSets(descriptorSets);
 }
 
 void Sahara::Renderer::destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView)
@@ -321,7 +338,7 @@ void Sahara::Renderer::recordScene(Scene &scene, const float time)
 
 void Sahara::Renderer::recordSurface(Pipeline* pipeline, Surface &surface, Instance &instance, const bool focus)
 {
-    const Material& material = instance.getMaterial(surface.material());
+    Material& material = instance.getMaterial(surface.material());
 
     material.updateUniform(_vulkanWindow->currentFrame());
 
@@ -426,6 +443,23 @@ void Sahara::Renderer::recordModel(Model &model, QStack<QMatrix4x4> &transformSt
     }
 }
 
+void Sahara::Renderer::recordPanel(Panel &panel)
+{
+    _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _panelPipeline->pipeline());
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _panelPipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersPanel.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+    _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _panelPipeline->pipelineLayout(), 1, 1, &panel.descriptorSets()[_vulkanWindow->currentFrame()], 0, nullptr);
+
+    float location[2] = { (float)panel.position().x(), (float)panel.position().y() };
+    _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), _panelPipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(PanelPipeline::PushConstants, location), sizeof(location), location);
+
+    panel.updateUniform(_vulkanWindow->currentFrame());
+
+    QList<VkBuffer> vertexBuffers = panel.buffersByBinding(*_panelPipeline);
+    QList<VkDeviceSize> offsets(vertexBuffers.size(), 0);
+    _deviceFunctions->vkCmdBindVertexBuffers(_vulkanWindow->currentCommandBuffer(), 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data());
+    _deviceFunctions->vkCmdDraw(_vulkanWindow->currentCommandBuffer(), panel.vertexBuffers().first()->count(), 1, 0, 0);
+}
+
 void Sahara::Renderer::record(const float time)
 {
     // Update Render uniform used in all pipelines
@@ -438,6 +472,10 @@ void Sahara::Renderer::record(const float time)
     memcpy(_renderUniformBuffersAnimated.buffersMapped[_vulkanWindow->currentFrame()], &render, sizeof(AnimatedPipeline::Render));
 
     recordScene(*_scene, time);
+
+    if (_showFPS) {
+        recordPanel(*_fpsPanel);
+    }
 }
 
 void Sahara::Renderer::startNextFrame()
@@ -512,11 +550,21 @@ void Sahara::Renderer::initSwapChainResources()
     _scene->cameraNode().globalTransform().inverted().transposed().copyDataTo(render.inverseCamera);
     (_vulkanWindow->clipCorrectionMatrix() * _scene->camera().projection()).transposed().copyDataTo(render.projection);
 
+    // Panel
+    _fpsPanel->setPosition(16, _vulkanWindow->height() - _fpsPanel->size().height() - 16);
+
+    QMatrix4x4 proj(_vulkanWindow->clipCorrectionMatrix());
+    proj.ortho(QRect(QPoint(), QSize(_vulkanWindow->width(), _vulkanWindow->height())));
+
+    float projf[16];
+    proj.transposed().copyDataTo(projf);
+
     for (int i = 0; i < _renderUniformBuffersGrid.buffers.size(); i++) {
         memcpy(_renderUniformBuffersGrid.buffersMapped[i], &render, sizeof(GridPipeline::Render));
         memcpy(_renderUniformBuffersDisplay.buffersMapped[i], &render, sizeof(GridPipeline::Render));
         memcpy(_renderUniformBuffersScene.buffersMapped[i], &render, sizeof(ScenePipeline::Render));
         memcpy(_renderUniformBuffersAnimated.buffersMapped[i], &render, sizeof(AnimatedPipeline::Render));
+        memcpy(_renderUniformBuffersPanel.buffersMapped[i], projf, sizeof(projf));
     }
 }
 
@@ -531,6 +579,7 @@ void Sahara::Renderer::initResources()
     _gridPipeline = new GridPipeline(_vulkanWindow, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
     _gridPipelineWire = new GridPipeline(_vulkanWindow, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP);
     _displayPipeline = new DisplayPipeline(_vulkanWindow);
+    _panelPipeline = new PanelPipeline(_vulkanWindow);
 
     _animatedPipeline->create();
     _animatedPipelineWire->create();
@@ -539,6 +588,7 @@ void Sahara::Renderer::initResources()
     _gridPipeline->create();
     _gridPipelineWire->create();
     _displayPipeline->create();
+    _panelPipeline->create();
 
     _pointLightDisplay = new PointLightDisplay(_vulkanWindow);
     _cameraDisplay = new CameraDisplay(_vulkanWindow);
@@ -548,6 +598,9 @@ void Sahara::Renderer::initResources()
     _renderUniformBuffersDisplay = getUniformBuffers<DisplayPipeline::Render>(*_displayPipeline, 0, 0);
     _renderUniformBuffersScene = getUniformBuffers<ScenePipeline::Render>(*_scenePipeline, 0, 0);
     _renderUniformBuffersAnimated = getUniformBuffers<AnimatedPipeline::Render>(*_animatedPipeline, 0, 0);
+    _renderUniformBuffersPanel = getUniformBuffers<PanelPipeline::Render>(*_panelPipeline, 0, 0);
+
+    _fpsPanel = new FPSPanel(this);
 
     _emptyImage = new Image(this, "empty", "");
     VulkanUtil::createBuffer(_vulkanWindow, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _vulkanWindow->deviceLocalMemoryIndex(), _emptyBuffer, _emptyBufferMemory);
@@ -563,7 +616,9 @@ void Sahara::Renderer::releaseResources()
     _deviceFunctions->vkFreeMemory(_vulkanWindow->device(), _emptyBufferMemory, nullptr);
 
     delete _emptyImage;
+    delete _fpsPanel;
 
+    releaseUniformBuffers(*_panelPipeline, _renderUniformBuffersPanel);
     releaseUniformBuffers(*_animatedPipeline, _renderUniformBuffersAnimated);
     releaseUniformBuffers(*_scenePipeline, _renderUniformBuffersScene);
     releaseUniformBuffers(*_displayPipeline, _renderUniformBuffersDisplay);
@@ -573,6 +628,7 @@ void Sahara::Renderer::releaseResources()
     delete _grid;
     delete _cameraDisplay;
     delete _pointLightDisplay;
+    delete _panelPipeline;
     delete _displayPipeline;
     delete _gridPipelineWire;
     delete _gridPipeline;

@@ -168,12 +168,12 @@ void Sahara::SceneWidget::showAxes(const bool visible)
 
 bool Sahara::SceneWidget::showFPS() const
 {
-    return _showFPS;
+    return _renderer->showFPS();
 }
 
 void Sahara::SceneWidget::showFPS(const bool visible)
 {
-    _showFPS = visible;
+    _renderer->showFPS(visible);
 }
 
 bool Sahara::SceneWidget::showLights() const

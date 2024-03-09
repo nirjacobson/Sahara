@@ -54,11 +54,7 @@ namespace Sahara {
         SceneWindow _window;
         Renderer* _renderer;
 
-        bool _showFPS;
-
         CameraControl _cameraControl;
-
-        double _fps;
 
         QTimer _timer;
 

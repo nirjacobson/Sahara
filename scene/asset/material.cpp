@@ -95,7 +95,7 @@ const QList<VkDescriptorSet>& Sahara::Material::descriptorSets() const
     return _uniformBuffers.bufferDescriptorSets;
 }
 
-void Sahara::Material::updateUniform(const uint32_t currentFrame) const
+void Sahara::Material::updateUniform(const uint32_t currentFrame)
 {
     ScenePipeline::Material material{
         .emission = {

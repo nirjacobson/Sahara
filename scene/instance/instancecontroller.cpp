@@ -35,7 +35,7 @@ const QList<VkDescriptorSet> &Sahara::InstanceController::descriptorSets() const
     return _uniformBuffers.bufferDescriptorSets;
 }
 
-void Sahara::InstanceController::updateUniform(const uint32_t currentFrame) const
+void Sahara::InstanceController::updateUniform(const uint32_t currentFrame)
 {
     QList<Transform> jointTransforms;
     for (int i = 0; i < _controller->joints().size(); i++) {

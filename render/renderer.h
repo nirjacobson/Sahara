@@ -11,6 +11,7 @@
 #include "../pipelines/scenepipeline.h"
 #include "../pipelines/gridpipeline.h"
 #include "../pipelines/displaypipeline.h"
+#include "../pipelines/panelpipeline.h"
 #include "../scene/scene.h"
 #include "../scene/model.h"
 #include "../scene/asset/mesh/surface.h"
@@ -21,6 +22,7 @@
 #include "scene/instance/instancecontroller.h"
 #include "scene/asset/light/pointlight.h"
 #include "vulkanutil.h"
+#include "panel/fpspanel.h"
 
 namespace Sahara {
 
@@ -41,6 +43,8 @@ namespace Sahara {
             void showLights(const bool visible);
             bool showCameras() const;
             void showCameras(const bool visible);
+            bool showFPS() const;
+            void showFPS(const bool visible);
 
             void pause();
             void resume();
@@ -53,6 +57,7 @@ namespace Sahara {
             VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
             QList<VkDescriptorSet> createImageDescriptorSets(VkImageView imageView);
             void freeImageDescriptorSets(const QList<VkDescriptorSet>& descriptorSets);
+            void freePanelImageDescriptorSets(const QList<VkDescriptorSet>& descriptorSets);
 
             void destroyImage(VkImage image, VkDeviceMemory memory, VkImageView imageView);
 
@@ -79,6 +84,7 @@ namespace Sahara {
             GridPipeline* _gridPipeline;
             GridPipeline* _gridPipelineWire;
             DisplayPipeline* _displayPipeline;
+            PanelPipeline* _panelPipeline;
 
             Image* _emptyImage;
             VkBuffer _emptyBuffer;
@@ -98,6 +104,9 @@ namespace Sahara {
             bool _showAxes;
             bool _showLights;
             bool _showCameras;
+            bool _showFPS;
+
+            FPSPanel* _fpsPanel;
 
             PointLightDisplay* _pointLightDisplay;
             CameraDisplay* _cameraDisplay;
@@ -110,6 +119,7 @@ namespace Sahara {
             VulkanUtil::UniformBuffers _renderUniformBuffersDisplay;
             VulkanUtil::UniformBuffers _renderUniformBuffersScene;
             VulkanUtil::UniformBuffers _renderUniformBuffersAnimated;
+            VulkanUtil::UniformBuffers _renderUniformBuffersPanel;
 
             void recordGrid(Scene& scene);
             void recordDisplay(Scene& scene, Display& display, const QMatrix4x4& modelView, const bool focus);
@@ -118,6 +128,7 @@ namespace Sahara {
             void recordScene(Scene& scene, const float time);
             void recordSurface(Pipeline *pipeline, Sahara::Surface& surface, Instance& instance, const bool focus);
             void recordModel(Sahara::Model& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
+            void recordPanel(Panel& panel);
 
             void record(const float time);
 
