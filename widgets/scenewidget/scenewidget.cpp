@@ -200,3 +200,8 @@ Sahara::Renderer *Sahara::SceneWidget::renderer()
 {
     return _renderer;
 }
+
+Sahara::CameraControl& Sahara::SceneWidget::cameraControl()
+{
+    return _cameraControl;
+}

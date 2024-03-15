@@ -38,6 +38,7 @@ namespace Sahara {
         void showCameras(const bool visible);
 
         Renderer* renderer();
+        CameraControl& cameraControl();
 
     signals:
         void initialized() const;

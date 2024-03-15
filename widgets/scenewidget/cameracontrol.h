@@ -31,7 +31,7 @@ class CameraControl
             void accelerateRight(const bool on);
             void reset();
 
-            void update(Node& cameraNode);
+            QMatrix4x4 update(Node& cameraNode);
 
         private:
             QVector2D _rotationalVelocity;

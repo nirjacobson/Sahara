@@ -42,7 +42,7 @@ void Sahara::CameraControl::reset()
     _acceleration = { false, false, false, false, };
 }
 
-void Sahara::CameraControl::update(Sahara::Node& cameraNode)
+QMatrix4x4 Sahara::CameraControl::update(Sahara::Node& cameraNode)
 {
     QVector3D right = { 1, 0, 0 };
     QVector3D up = { 0, 1, 0 };
@@ -62,7 +62,7 @@ void Sahara::CameraControl::update(Sahara::Node& cameraNode)
     QMatrix4x4 translation;
     translation.translate(_velocity);
 
-    cameraNode.setTransform(translation * nodeTranslation * rotation * QMatrix4x4(nodeRotation));
+    QMatrix4x4 result = translation * nodeTranslation * rotation * QMatrix4x4(nodeRotation);
 
     QVector3D acceleration;
     if (_acceleration.forward)
@@ -81,4 +81,6 @@ void Sahara::CameraControl::update(Sahara::Node& cameraNode)
     }
 
     _velocity = _velocity + acceleration;
+
+    return result;
 }
