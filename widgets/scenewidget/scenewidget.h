@@ -46,6 +46,8 @@ namespace Sahara {
 
             Renderer* renderer();
 
+            CameraControl& cameraControl();
+
         signals:
             void initialized() const;
             void sizeChanged(QSize size);

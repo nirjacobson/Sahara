@@ -111,6 +111,11 @@ Sahara::Renderer *Sahara::SceneWidget::renderer()
     return _renderer;
 }
 
+Sahara::CameraControl& Sahara::SceneWidget::cameraControl()
+{
+    return _cameraControl;
+}
+
 void Sahara::SceneWidget::initializeGL()
 {
     initializeOpenGLFunctions();
@@ -226,7 +231,6 @@ void Sahara::SceneWidget::mouseMoveEvent(QMouseEvent* event)
 void Sahara::SceneWidget::frame()
 {
     if (_flyThrough) {
-        _cameraControl.update(_scene->cameraNode());
         emit cameraMotion();
     }
     update();

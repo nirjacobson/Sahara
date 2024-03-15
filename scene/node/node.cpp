@@ -7,6 +7,7 @@ Sahara::Node::Node(const QString& name, NodeItem* const nodeItem, const QMatrix4
     , _item(nodeItem)
     , _transform(transform)
     , _hasFocus(false)
+    , _scale({1, 1, 1})
 {
 
 }
@@ -122,6 +123,47 @@ QVector3D Sahara::Node::globalPosition() const
 void Sahara::Node::setTransform(const QMatrix4x4& transform)
 {
     _transform = transform;
+
+    float m20 = _transform.row(2)[0];
+    float m10 = _transform.row(1)[0];
+    float m00 = _transform.row(0)[0];
+    float m21 = _transform.row(2)[1];
+    float m22 = _transform.row(2)[2];
+    float m12 = _transform.row(1)[2];
+    float m11 = _transform.row(1)[1];
+
+    float lx = globalPosition().x();
+    float ly = globalPosition().y();
+    float lz = globalPosition().z();
+
+    float rx, ry, rz;
+    if (m20 < 1) {
+        if (m20 > -1) {
+            rx = qAtan2(m21, m22);
+            ry = qAsin(-m20);
+            rz = qAtan2(m10, m00);
+        } else {
+            rx = 0;
+            ry = M_PI / 2;
+            rz = -qAtan2(-m12, m11);
+        }
+    } else {
+        rx = 0;
+        ry = -M_PI / 2;
+        rz = qAtan2(-m12, m11);
+    }
+
+    rx = qRadiansToDegrees(rx);
+    ry = qRadiansToDegrees(ry);
+    rz = qRadiansToDegrees(rz);
+
+    float sx = _transform.column(0).length();
+    float sy = _transform.column(1).length();
+    float sz = _transform.column(2).length();
+
+    _location = { lx, ly, lz };
+    _rotation = { rx, ry, rz };
+    _scale = { sx, sy, sz };
 }
 
 bool Sahara::Node::hasFocus() const
@@ -262,6 +304,39 @@ bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitorConst& visitorBefor
     return false;
 }
 
+const QVector3D Sahara::Node::location() const
+{
+    return _location;
+}
+
+const QVector3D Sahara::Node::rotation() const
+{
+    return _rotation;
+}
+
+const QVector3D Sahara::Node::scale() const
+{
+    return _scale;
+}
+
+void Sahara::Node::setLocation(const QVector3D& vec)
+{
+    _location = vec;
+    recomputeTransform();
+}
+
+void Sahara::Node::setRotation(const QVector3D& vec)
+{
+    _rotation = vec;
+    recomputeTransform();
+}
+
+void Sahara::Node::setScale(const QVector3D& vec)
+{
+    _scale = vec;
+    recomputeTransform();
+}
+
 void Sahara::Node::trySetName(Sahara::Node* root, const QString name, const int suffix)
 {
     QString newName = name+"."+QString("%1").arg(suffix, 3, 10, QChar('0'));
@@ -279,4 +354,30 @@ void Sahara::Node::trySetName(Sahara::Node* root, const QString name, const int 
     if (!found) {
         _name = newName;
     }
+}
+
+void Sahara::Node::recomputeTransform()
+{
+    QMatrix4x4 transform;
+    transform.rotate(_rotation.z(), {0, 0, 1});
+    transform.rotate(_rotation.y(), {0, 1, 0});
+    transform.rotate(_rotation.x(), {1, 0, 0});
+
+    if (!isRoot()) {
+        QVector3D localPosition = parent().globalTransform().inverted().map(_location);
+        transform.setColumn(3, {localPosition, 1});
+    } else {
+        transform.setColumn(3, {_location, 1});
+    }
+
+    float sx = _scale.x();
+    float sy = _scale.y();
+    float sz = _scale.z();
+
+    QMatrix4x4 scale;
+    scale.setRow(0, {sx, 0, 0, 0});
+    scale.setRow(1, {0, sy, 0, 0});
+    scale.setRow(2, {0, 0, sz, 0});
+
+    _transform = transform * scale;
 }

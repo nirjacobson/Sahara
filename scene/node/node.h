@@ -55,6 +55,14 @@ namespace Sahara
             bool depthFirst(const NodeVisitor& visitorBefore, const NodeVisitor& visitorAfter);
             bool depthFirst(const NodeVisitorConst& visitorBefore, const NodeVisitorConst& visitorAfter) const;
 
+            const QVector3D location() const;
+            const QVector3D rotation() const;
+            const QVector3D scale() const;
+
+            void setLocation(const QVector3D& vec);
+            void setRotation(const QVector3D& vec);
+            void setScale(const QVector3D& vec);
+
         private:
             Node* _parent;
             int _index;
@@ -64,7 +72,12 @@ namespace Sahara
             QMatrix4x4 _transform;
             bool _hasFocus;
 
+            QVector3D _location;
+            QVector3D _rotation;
+            QVector3D _scale;
+
             void trySetName(Node* root, const QString name, const int suffix);
+            void recomputeTransform();
     };
 
 }
