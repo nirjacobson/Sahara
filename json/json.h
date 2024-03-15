@@ -66,7 +66,7 @@ namespace Sahara {
             static Controller* toController(const QJsonObject& object, const Model& model);
 
             static QJsonObject fromImage(const Image* image);
-            static Image* toImage(const QJsonObject& object);
+            static Image* toImage(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromMaterial(const Material* material);
             static Material* toMaterial(const QJsonObject& object, const Model& model);
@@ -96,7 +96,7 @@ namespace Sahara {
             static Volume toVolume(const QJsonObject& object);
 
             static QJsonObject fromModel(const Model* model);
-            static Model* toModel(const QJsonObject& object);
+            static Model* toModel(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromNode(const Node* node);
             static Node* toNode(const QJsonObject& object, const QMap<QString, NodeItem*>& items);

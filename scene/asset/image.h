@@ -9,12 +9,14 @@
 namespace Sahara
 {
 
+    class Renderer;
+
     class Image : public Asset
     {
         friend class JSON;
 
         public:
-            Image(const QString& id, const QString& uri);
+            Image(Renderer*, const QString& id, const QString& uri);
             ~Image();
 
             void bind();

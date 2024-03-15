@@ -74,7 +74,7 @@ namespace Sahara {
       AnimationClip* _animationClip;
 
       static Model* parseColladaModel(Renderer* renderer, const QString& path);
-      static ImageDict parseColladaModelImages(const QCollada::Collada& collada, const QString& path);
+      static ImageDict parseColladaModelImages(Renderer* renderer, const QCollada::Collada& collada, const QString& path);
       static MaterialDict parseColladaModelMaterials(const QCollada::Collada& collada, const ImageDict& images);
       static MeshDict parseColladaModelGeometries(const QCollada::Collada& collada, Volume& volume);
       static ControllerDict parseColladaModelControllers(const QCollada::Collada& collada, MeshDict& meshes);

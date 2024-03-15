@@ -1,6 +1,6 @@
 #include "image.h"
 #include <QUrl>
-Sahara::Image::Image(const QString& id, const QString& uri)
+Sahara::Image::Image(Renderer*, const QString& id, const QString& uri)
     : Asset(id)
     , _uri(uri)
     , _texture(QOpenGLTexture(QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored()))

@@ -129,7 +129,7 @@ Sahara::Model* Sahara::Model::parseColladaModel(Renderer* renderer, const QStrin
   QCollada::Collada collada = QCollada::Collada::parse(path);
   Sahara::Model* model = new Model();
 
-  ImageDict images = parseColladaModelImages(collada, QFileInfo(path).dir().path());
+  ImageDict images = parseColladaModelImages(renderer, collada, QFileInfo(path).dir().path());
   MaterialDict materials = parseColladaModelMaterials(collada, images);
   MeshDict meshes = parseColladaModelGeometries(collada, model->_volume);
   ControllerDict controllers = parseColladaModelControllers(collada, meshes);
@@ -151,14 +151,14 @@ Sahara::Model* Sahara::Model::parseColladaModel(Renderer* renderer, const QStrin
   return model;
 }
 
-Sahara::ImageDict Sahara::Model::parseColladaModelImages(const QCollada::Collada& collada, const QString& path)
+Sahara::ImageDict Sahara::Model::parseColladaModelImages(Renderer* renderer, const QCollada::Collada& collada, const QString& path)
 {
   Sahara::ImageDict images;
 
   for (auto it = collada.images().begin(); it != collada.images().end(); it++) {
     QString id = it.key();
     QCollada::Image* image = it.value();
-    Sahara::Image* modelImage = new Sahara::Image(id, QDir::cleanPath(path + QDir::separator() + image->initFrom()));
+    Sahara::Image* modelImage = new Sahara::Image(renderer, id, QDir::cleanPath(path + QDir::separator() + image->initFrom()));
 
     images.insert(id, modelImage);
   }

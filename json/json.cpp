@@ -434,14 +434,14 @@ QJsonObject Sahara::JSON::fromImage(const Sahara::Image* image)
     return object;
 }
 
-Sahara::Image*Sahara::JSON::toImage(const QJsonObject& object)
+Sahara::Image*Sahara::JSON::toImage(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Image");
     QString id = object["id"].toString();
 
     QString uri = object["uri"].toString();
 
-    return new Image(id, uri);
+    return new Image(renderer, id, uri);
 }
 
 QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
@@ -847,7 +847,7 @@ QJsonObject Sahara::JSON::fromModel(const Sahara::Model* model)
     return object;
 }
 
-Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
+Sahara::Model*Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Model");
 
@@ -859,7 +859,7 @@ Sahara::Model*Sahara::JSON::toModel(const QJsonObject& object)
     QJsonObject imagesObject = object["images"].toObject();
     ImageDict images;
     for (QJsonObject::iterator i = imagesObject.begin(); i != imagesObject.end(); i++) {
-        images[i.key()] = toImage(i.value().toObject());
+        images[i.key()] = toImage(renderer, i.value().toObject());
     }
     model->_images = images;
 
@@ -1028,7 +1028,7 @@ Sahara::Scene* Sahara::JSON::toScene(Renderer* renderer, const QJsonObject& obje
         } else if (itemObject["_type"] == "Camera") {
             items.insert(id, toCamera(itemObject));
         } else if (itemObject["_type"] == "Model") {
-            items.insert(id, toModel(itemObject));
+            items.insert(id, toModel(renderer, itemObject));
         }
     }
 
