@@ -450,6 +450,7 @@ QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
 
     object["_type"] = "Material";
     object["id"] = material->id();
+    object["name"] = material->name();
 
     QJsonArray emissionArray = fromColor(material->_emission);
     QJsonArray ambientArray = fromColor(material->_ambient);
@@ -473,6 +474,7 @@ Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahar
 {
     assert(object["_type"] == "Material");
     QString id = object["id"].toString();
+    QString name = object["name"].toString();
 
     QColor emission = toColor(object["emission"].toArray());
     QColor ambient = toColor(object["ambient"].toArray());
@@ -483,9 +485,9 @@ Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahar
     if (object.contains("image")) {
         Image* image = model.images()[object["image"].toString()];
 
-        return new Material(id, emission, ambient, image, specular, shininess);
+        return new Material(id, name, emission, ambient, image, specular, shininess);
     } else {
-        return new Material(id, emission, ambient, diffuse, specular, shininess);
+        return new Material(id, name, emission, ambient, diffuse, specular, shininess);
     }
 }
 

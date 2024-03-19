@@ -48,7 +48,7 @@
   </effect>
  </library_effects>
  <library_materials>
-  <material id="_7_-_Default-material" name="_7_-_Default">
+  <material id="_7_-_Default-material" name="Skin">
    <instance_effect url="#_7_-_Default-effect"/>
   </material>
  </library_materials>

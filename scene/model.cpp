@@ -182,6 +182,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
         Sahara::Image* image = images[imageId];
         modelMaterial = new Sahara::Material(
           id,
+          material->name(),
           effect->phong().emission(),
           effect->phong().ambient(),
           image,
@@ -190,6 +191,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(const QCollada::C
       } else {
         modelMaterial = new Sahara::Material(
           id,
+          material->name(),
           effect->phong().emission(),
           effect->phong().ambient(),
           effect->phong().diffuse(),
