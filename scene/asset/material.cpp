@@ -1,9 +1,10 @@
 #include "material.h"
 #include "render/renderer.h"
 
-Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
+Sahara::Material::Material(Renderer* renderer, const QString& id, const QString& name,  const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
     : Asset(id)
     , _renderer(renderer)
+    , _name(name)
     , _emission(emission)
     , _ambient(ambient)
     , _diffuse(diffuse)
@@ -13,9 +14,10 @@ Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& 
     _uniformBuffers = renderer->createMaterialUniformBuffers();
 }
 
-Sahara::Material::Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
+Sahara::Material::Material(Renderer* renderer, const QString& id, const QString& name,  const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
     : Asset(id)
     , _renderer(renderer)
+    , _name(name)
     , _emission(emission)
     , _ambient(ambient)
     , _image(image)
@@ -78,6 +80,11 @@ float Sahara::Material::shininess() const
 void Sahara::Material::setShininess(const float shininess)
 {
     _shininess = shininess;
+}
+
+const QString& Sahara::Material::name() const
+{
+    return _name;
 }
 
 const std::optional<Sahara::Image*>& Sahara::Material::image() const

@@ -124,16 +124,16 @@
   </effect>
  </library_effects>
  <library_materials>
-  <material id="_blinn1-material" name="_blinn1">
+  <material id="_blinn1-material" name="Shoes">
    <instance_effect url="#_blinn1-effect"/>
   </material>
-  <material id="_lambert2-material" name="_lambert2">
+  <material id="_lambert2-material" name="Hair">
    <instance_effect url="#_lambert2-effect"/>
   </material>
-  <material id="_lambert5-material" name="_lambert5">
+  <material id="_lambert5-material" name="Suit">
    <instance_effect url="#_lambert5-effect"/>
   </material>
-  <material id="_lambert4-material" name="_lambert4">
+  <material id="_lambert4-material" name="Skin">
    <instance_effect url="#_lambert4-effect"/>
   </material>
  </library_materials>

@@ -88,7 +88,7 @@
 	<material id="id-material-5" name="Bark">
 		<instance_effect url="#id-fx-4"/>
 	</material>
-	<material id="id-material-7" name="Tree">
+        <material id="id-material-7" name="Leaves">
 		<instance_effect url="#id-fx-6"/>
 	</material>
 </library_materials>

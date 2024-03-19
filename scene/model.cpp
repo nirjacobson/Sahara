@@ -190,6 +190,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(Renderer* rendere
         modelMaterial = new Sahara::Material(
           renderer,
           id,
+          material->name(),
           effect->phong().emission(),
           effect->phong().ambient(),
           image,
@@ -199,6 +200,7 @@ Sahara::MaterialDict Sahara::Model::parseColladaModelMaterials(Renderer* rendere
         modelMaterial = new Sahara::Material(
           renderer,
           id,
+          material->name(),
           effect->phong().emission(),
           effect->phong().ambient(),
           effect->phong().diffuse(),

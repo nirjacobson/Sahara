@@ -17,8 +17,8 @@ namespace Sahara
         friend class JSON;
 
         public:
-            Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess);
-            Material(Renderer* renderer, const QString& id, const QColor& emission, const QColor& ambient, Image* const image, const QColor& specular, const float shininess);
+            Material(Renderer* renderer, const QString& id, const QString& name, const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess);
+            Material(Renderer* renderer, const QString& id, const QString& name, const QColor& emission, const QColor& ambient, Image* const image, const QColor& specular, const float shininess);
             ~Material();
 
             const QColor& emission() const;
@@ -32,6 +32,8 @@ namespace Sahara
             float shininess() const;
             void setShininess(const float shininess);
 
+            const QString& name() const;
+
             const std::optional<Image*>& image() const;
             std::optional<Image*>& image();
 
@@ -41,6 +43,7 @@ namespace Sahara
 
         private:
             Renderer* _renderer;
+            QString _name;
             QColor _emission;
             QColor _ambient;
             QColor _diffuse;
