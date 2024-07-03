@@ -1,19 +1,19 @@
-#version 300 es
+#version 100
 #undef lowp
 #undef mediump
 #undef highp
 
 precision highp float;
 
-in vec3 position;
-in vec3 normal;
-in vec2 texcoord;
-in vec4 joints;
-in vec4 weights;
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec2 texcoord;
+attribute vec4 joints;
+attribute vec4 weights;
 
-out vec3 vertPosition;
-out vec3 vertNormal;
-out vec2 vertTexcoord;
+varying vec3 vertPosition;
+varying vec3 vertNormal;
+varying vec2 vertTexcoord;
 
 struct Render {
     mat4 modelView;

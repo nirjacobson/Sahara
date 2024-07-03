@@ -1,15 +1,13 @@
-#version 300 es
+#version 100
 #undef lowp
 #undef mediump
 #undef highp
 
 precision highp float;
 
-in vec3 vertPosition;
-in vec3 vertNormal;
-in vec2 vertTexcoord;
-
-out vec4 Color;
+varying vec3 vertPosition;
+varying vec3 vertNormal;
+varying vec2 vertTexcoord;
 
 uniform vec3 uCameraPosition;
 uniform int uFocus;
@@ -86,8 +84,8 @@ void main() {
 
         vec3 gamma = vec3(1.0/2.2);
 
-        Color = vec4(pow(outputColor, gamma), d.a);
+        gl_FragColor = vec4(pow(outputColor, gamma), d.a);
     } else {
-        Color = vec4(1, 0.5765, 0, 0.5);
+        gl_FragColor = vec4(1, 0.5765, 0, 0.5);
     }
 }

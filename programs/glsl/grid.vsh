@@ -1,14 +1,14 @@
-#version 300 es
+#version 100
 #undef lowp
 #undef mediump
 #undef highp
 
 precision highp float;
 
-in vec3 position;
-in vec3 color;
+attribute vec3 position;
+attribute vec3 color;
 
-out vec3 Color;
+varying vec3 Color;
 
 struct Render {
     mat4 inverseCamera;

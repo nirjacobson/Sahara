@@ -1,14 +1,12 @@
-#version 300 es
+#version 100
 #undef lowp
 #undef mediump
 #undef highp
 
 precision highp float;
 
-in vec3 Color;
-
-out vec4 color;
+varying vec3 Color;
 
 void main() {
-    color = vec4(Color, 1);
+    gl_FragColor = vec4(Color, 1);
 }
