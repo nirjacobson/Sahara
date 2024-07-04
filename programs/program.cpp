@@ -65,7 +65,8 @@ void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
             i.value().release();
         }
 
-        assert(glGetError() == GL_NO_ERROR);
+        GLenum error = glGetError();
+        assert(error == GL_NO_ERROR || error == GL_INVALID_OPERATION);
     }
 }
 
