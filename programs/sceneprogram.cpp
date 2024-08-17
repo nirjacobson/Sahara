@@ -46,7 +46,7 @@ Sahara::SceneProgram::SceneProgram()
 
     _sampler = program().uniformLocation("uSampler");
 
-    glActiveTexture(GL_TEXTURE0);
+    QOpenGLFunctions(QOpenGLContext::currentContext()).glActiveTexture(GL_TEXTURE0);
     program().bind();
     program().setUniformValue(_sampler, static_cast<GLint>(0));
     program().setUniformValue(_lighting.pointLightCount, static_cast<GLint>(0));
