@@ -5,7 +5,7 @@ project(Sahara LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
@@ -40,7 +40,6 @@ add_library(Sahara SHARED
   programs/sceneprogram.h
   render/display/openglcameradisplay.cpp
   render/display/openglcameradisplay.h
-
   render/display/opengldisplay.h
   render/display/openglpointlightdisplay.cpp
   render/display/openglpointlightdisplay.h
@@ -147,6 +146,11 @@ add_library(Sahara SHARED
   programs/spir-v/animated.vert.spv programs/spir-v/display.frag.spv programs/spir-v/display.vert.spv programs/spir-v/grid.frag.spv programs/spir-v/grid.vert.spv programs/spir-v/panel.frag.spv programs/spir-v/panel.vert.spv programs/spir-v/scene.frag.spv programs/spir-v/scene.vert.spv
 )
 
-target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets)
+if (LINUX)
+    target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets)
+elseif (WIN32)
+    target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+        "../QCollada/build/Desktop-Release/QCollada.lib")
+endif()
 
 target_compile_definitions(Sahara PRIVATE SAHARA_LIBRARY)

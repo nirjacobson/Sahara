@@ -6,14 +6,13 @@
 
 #include "node/nodeitem.h"
 
-#include "asset/controller.h"
-#include "asset/armature.h"
-#include "asset/animation.h"
-#include "asset/animationclip.h"
-#include "instance/instance.h"
-#include "node/nodeitem.h"
-#include "asset/openglimage.h"
-#include "collada/collada.h"
+#include "scene/asset/controller.h"
+#include "scene/asset/armature.h"
+#include "scene/asset/animation.h"
+#include "scene/asset/animationclip.h"
+#include "scene/instance/instance.h"
+#include "scene/node/nodeitem.h"
+#include "scene/asset/image.h"
 #include "common/volume.h"
 
 namespace Sahara {

@@ -57,35 +57,35 @@ void Sahara::SceneProgram::setModelView(const QMatrix4x4& modelView)
 {
     program().setUniformValue(_render.modelView, modelView);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setInverseCamera(const QMatrix4x4& inverseCamera)
 {
     program().setUniformValue(_render.inverseCamera, inverseCamera);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setProjection(const QMatrix4x4& projection)
 {
     program().setUniformValue(_render.projection, projection);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setArticulated(const bool articulated)
 {
     program().setUniformValue(_armature.present, static_cast<GLint>(articulated));
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setFocus(const bool focus)
 {
     program().setUniformValue(_focus, static_cast<GLint>(focus));
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setJointTransforms(const QList<Sahara::Transform>& transforms)
@@ -95,7 +95,7 @@ void Sahara::SceneProgram::setJointTransforms(const QList<Sahara::Transform>& tr
         program().setUniformValue(_armature.joints[i].translation, transforms[i].translation());
     }
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setAmbientLight(const AmbientLight& ambientLight)
@@ -105,7 +105,7 @@ void Sahara::SceneProgram::setAmbientLight(const AmbientLight& ambientLight)
     program().setUniformValue(_lighting.ambientLight.color, color);
     program().setUniformValue(_lighting.ambientLight.strength, ambientLight.strength());
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::addPointLight(const Sahara::PointLight& pointLight, const QVector3D& position)
@@ -121,7 +121,7 @@ void Sahara::SceneProgram::addPointLight(const Sahara::PointLight& pointLight, c
     program().setUniformValue(_lighting.pointLights[_pointLights].quadraticAttenuation, pointLight.quadraticAttenuation());
     program().setUniformValue(_lighting.pointLightCount, ++_pointLights);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 
 }
 
@@ -140,14 +140,14 @@ void Sahara::SceneProgram::setMaterial(const Sahara::OpenGLMaterial& material)
     program().setUniformValue(_material.shininess, material.shininess());
     program().setUniformValue(_material.textured, static_cast<GLint>(material.image().has_value()));
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::SceneProgram::setCameraPosition(const QVector3D& position)
 {
     program().setUniformValue(_cameraPosition, position);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(QOpenGLFunctions(QOpenGLContext::currentContext()).glGetError() == GL_NO_ERROR);
 }
 
 Sahara::SceneProgram::~SceneProgram()

@@ -3,15 +3,15 @@
 Sahara::OpenGLRenderer::OpenGLRenderer()
     : _grid(32)
 {
-    glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
     QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+    glFuncs.glClearColor(0.5f, 0.75f, 0.86f, 1.0f);
     glFuncs.glClearDepthf(1.0f);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glFuncs.glEnable(GL_CULL_FACE);
+    glFuncs.glEnable(GL_DEPTH_TEST);
+    glFuncs.glEnable(GL_BLEND);
+    glFuncs.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    assert(glGetError() == GL_NO_ERROR);
+    assert(glFuncs.glGetError() == GL_NO_ERROR);
 }
 
 Sahara::OpenGLRenderer::~OpenGLRenderer()
@@ -21,7 +21,7 @@ Sahara::OpenGLRenderer::~OpenGLRenderer()
 
 void Sahara::OpenGLRenderer::render(Sahara::OpenGLScene& scene, const float time)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    QOpenGLFunctions(QOpenGLContext::currentContext()).glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderScene(scene, time);
 }
 
@@ -81,6 +81,8 @@ void Sahara::OpenGLRenderer::renderScene(OpenGLScene& scene, const float time)
 
 void Sahara::OpenGLRenderer::renderGrid(OpenGLScene& scene)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+
     _gridProgram.bind();
 
     _gridProgram.setInverseCamera(scene.cameraNode().globalTransform().inverted());
@@ -88,26 +90,26 @@ void Sahara::OpenGLRenderer::renderGrid(OpenGLScene& scene)
 
     _gridProgram.setGrid(_grid);
     for (int i = 0; i < 2 * _grid.length(); i++) {
-        glDrawArrays(GL_LINE_LOOP, i * 4, 4);
+        glFuncs.glDrawArrays(GL_LINE_LOOP, i * 4, 4);
     }
     _gridProgram.clearGrid(_grid);
 
     if (showAxes()) {
         _gridProgram.setAxis(_grid.xAxis());
         for (int i = 0; i < 6; i++) {
-            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+            glFuncs.glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
         }
         _gridProgram.clearAxis(_grid.xAxis());
 
         _gridProgram.setAxis(_grid.yAxis());
         for (int i = 0; i < 6; i++) {
-            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+            glFuncs.glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
         }
         _gridProgram.clearAxis(_grid.yAxis());
 
         _gridProgram.setAxis(_grid.zAxis());
         for (int i = 0; i < 6; i++) {
-            glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
+            glFuncs.glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
         }
         _gridProgram.clearAxis(_grid.zAxis());
     }
@@ -117,6 +119,8 @@ void Sahara::OpenGLRenderer::renderGrid(OpenGLScene& scene)
 
 void Sahara::OpenGLRenderer::renderPointLight(OpenGLScene& scene, const QMatrix4x4& modelView, const bool focus)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+
     _displayProgram.bind();
 
     _displayProgram.setModelView(modelView);
@@ -131,7 +135,7 @@ void Sahara::OpenGLRenderer::renderPointLight(OpenGLScene& scene, const QMatrix4
     int vertices = buffer.count();
 
     for (int i = 0; i < vertices / 3; i++) {
-        glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+        glFuncs.glDrawArrays(GL_LINE_LOOP, i * 3, 3);
     }
 
     _displayProgram.clearDisplay(_pointLightDisplay);
@@ -141,6 +145,8 @@ void Sahara::OpenGLRenderer::renderPointLight(OpenGLScene& scene, const QMatrix4
 
 void Sahara::OpenGLRenderer::renderCamera(Sahara::OpenGLScene& scene, const QMatrix4x4& modelView, const bool focus)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+
     _displayProgram.bind();
 
     _displayProgram.setModelView(modelView);
@@ -155,7 +161,7 @@ void Sahara::OpenGLRenderer::renderCamera(Sahara::OpenGLScene& scene, const QMat
     int vertices = buffer.count();
 
     for (int i = 0; i < vertices / 3; i++) {
-        glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+        glFuncs.glDrawArrays(GL_LINE_LOOP, i * 3, 3);
     }
 
     _displayProgram.clearDisplay(_cameraDisplay);
@@ -195,6 +201,8 @@ void Sahara::OpenGLRenderer::renderModel(Sahara::OpenGLModel& model, QStack<QMat
 
 void Sahara::OpenGLRenderer::renderSurface(Sahara::OpenGLSurface& surface, Instance& instance, const bool focus)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
+
     const OpenGLMaterial& material = dynamic_cast<const OpenGLMaterial&>(instance.getMaterial(surface.material()));
     _sceneProgram.setMaterial(material);
     if (material.image().has_value()) {
@@ -207,14 +215,14 @@ void Sahara::OpenGLRenderer::renderSurface(Sahara::OpenGLSurface& surface, Insta
         int vertices = buffer.count();
 
         for (int i = 0; i < vertices / 3; i++) {
-            glDrawArrays(GL_LINE_LOOP, i * 3, 3);
+            glFuncs.glDrawArrays(GL_LINE_LOOP, i * 3, 3);
         }
     } else {
-        glDrawArrays(GL_TRIANGLES, 0, surface.vertexBuffers().first().count());
+        glFuncs.glDrawArrays(GL_TRIANGLES, 0, surface.vertexBuffers().first().count());
     }
    _sceneProgram.clearSurface(surface);
 
-   assert(glGetError() == GL_NO_ERROR);
+   assert(glFuncs.glGetError() == GL_NO_ERROR);
 }
 
 void Sahara::OpenGLRenderer::processSceneLighting(Sahara::OpenGLScene& scene)

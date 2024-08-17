@@ -6,7 +6,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Xml Widgets OpenGL OpenGLWidgets)
@@ -48,12 +48,21 @@ else()
     endif()
 endif()
 
-target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
-                                                 Qt${QT_VERSION_MAJOR}::Widgets
-                                                 Qt${QT_VERSION_MAJOR}::OpenGL
-                                                 Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Debug/libQCollada.so
-                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Debug/libSahara.so )
+if (LINUX)
+    target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
+                                                     Qt${QT_VERSION_MAJOR}::Widgets
+                                                     Qt${QT_VERSION_MAJOR}::OpenGL
+                                                     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/libQCollada.so
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/libSahara.so )
+elseif (WIN32)
+    target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
+                                                     Qt${QT_VERSION_MAJOR}::Widgets
+                                                     Qt${QT_VERSION_MAJOR}::OpenGL
+                                                     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/libQCollada.lib
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/libSahara.lib )
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

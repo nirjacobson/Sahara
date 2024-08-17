@@ -999,7 +999,7 @@ QJsonObject Sahara::JSON::fromNode(const Sahara::Node* node)
 
     object["index"] = node->_index;
     object["name"] = node->_name;
-    object["item"] = QString::number(reinterpret_cast<long>(&node->item()));
+    object["item"] = QString::number(reinterpret_cast<long long>(&node->item()));
     object["transform"] = fromMatrix4x4(node->_transform);
     object["hasFocus"] = node->_hasFocus;
 
@@ -1049,7 +1049,7 @@ QJsonObject Sahara::JSON::fromScene(const Sahara::Scene* scene)
         if (&node == scene->_root)
             return false;
 
-        QString id = QString::number(reinterpret_cast<long>(&node.item()));
+        QString id = QString::number(reinterpret_cast<long long>(&node.item()));
         if (itemsObject.contains(id))
             return false;
 

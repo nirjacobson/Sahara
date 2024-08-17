@@ -1,6 +1,8 @@
 #ifndef SAHARA_MODELWIDGET_H
 #define SAHARA_MODELWIDGET_H
 
+#include "Sahara_global.h"
+
 #include <QWidget>
 #include <QFileDialog>
 
@@ -16,7 +18,7 @@ namespace Ui {
 
 namespace Sahara {
 
-    class ModelWidget : public QWidget
+    class SAHARA_EXPORT ModelWidget : public QWidget
     {
             Q_OBJECT
 

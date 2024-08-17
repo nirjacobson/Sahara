@@ -8,6 +8,10 @@
 #include "../QCollada/asset/common/floatsource.h"
 #include "../QCollada/asset/common/namesource.h"
 
+#include "../QCollada/asset/image.h"
+#include "../QCollada/asset/material.h"
+#include "../QCollada/asset/animationclip.h"
+
 Sahara::OpenGLModel::OpenGLModel()
 {
 

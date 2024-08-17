@@ -5,7 +5,8 @@
 #include <QMatrix4x4>
 
 #include "model.h"
-#include "asset/openglmaterial.h"
+#include "scene/asset/openglmaterial.h"
+#include "collada/collada.h"
 
 namespace Sahara {
   class OpenGLRenderer;

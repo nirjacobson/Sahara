@@ -4,7 +4,6 @@
 #include <QImage>
 
 #include "image.h"
-#include "vulkanutil.h"
 #include "../../render/withuniform.h"
 
 namespace Sahara

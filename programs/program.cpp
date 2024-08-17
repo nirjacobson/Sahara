@@ -65,18 +65,19 @@ void Sahara::Program::layout(Sahara::OpenGLWithVertexBuffers &wvb)
             i.value().release();
         }
 
-        assert(glGetError() == GL_NO_ERROR);
+        assert(glFuncs.glGetError() == GL_NO_ERROR);
     }
 }
 
 void Sahara::Program::unlayout(Sahara::OpenGLWithVertexBuffers& wvb)
 {
+    QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
     for (OpenGLVertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
         GLint location = _program.attributeLocation(i.key());
         if (location >= 0) {
             _program.disableAttributeArray(location);
         }
 
-        assert(glGetError() == GL_NO_ERROR);
+        assert(glFuncs.glGetError() == GL_NO_ERROR);
     }
 }

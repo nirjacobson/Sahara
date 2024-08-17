@@ -1,6 +1,8 @@
 #ifndef SAHARA_SCENEWIDGET_H
 #define SAHARA_SCENEWIDGET_H
 
+#include "Sahara_global.h"
+
 #include <QKeyEvent>
 
 #include "scene/scene.h"
@@ -8,7 +10,7 @@
 #include "render/renderer.h"
 
 namespace Sahara {
-    class SceneWidget
+    class SAHARA_EXPORT SceneWidget
     {
 
     public:

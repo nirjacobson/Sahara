@@ -1,5 +1,5 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SAHARA_SCENE_H
+#define SAHARA_SCENE_H
 
 #include "asset/camera.h"
 #include "asset/light/light.h"
@@ -50,4 +50,4 @@ namespace Sahara {
     };
 }
 
-#endif // SCENE_H
+#endif // SAHARA_SCENE_H

@@ -5,12 +5,12 @@
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 
-#include "../programs/sceneprogram.h"
-#include "../programs/gridprogram.h"
-#include "../programs/displayprogram.h"
-#include "../scene/openglscene.h"
-#include "../scene/openglmodel.h"
-#include "../scene/asset/mesh/openglsurface.h"
+#include "programs/sceneprogram.h"
+#include "programs/gridprogram.h"
+#include "programs/displayprogram.h"
+#include "scene/openglscene.h"
+#include "scene/openglmodel.h"
+#include "scene/asset/mesh/openglsurface.h"
 #include "grid/openglgrid.h"
 #include "display/openglpointlightdisplay.h"
 #include "display/openglcameradisplay.h"
