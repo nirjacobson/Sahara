@@ -1,5 +1,5 @@
-#ifndef SCENEWIDGET_H
-#define SCENEWIDGET_H
+#ifndef SAHARA_SCENEWIDGET_H
+#define SAHARA_SCENEWIDGET_H
 
 #include <QKeyEvent>
 
@@ -43,4 +43,4 @@ namespace Sahara {
     };
 }
 
-#endif // SCENEWIDGET_H
+#endif // SAHARA_SCENEWIDGET_H
