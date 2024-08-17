@@ -3,12 +3,15 @@
 
 Sahara::VulkanMaterial::VulkanMaterial(VulkanRenderer* renderer, const QString& id, const QString& name,  const QColor& emission, const QColor& ambient, const QColor& diffuse, const QColor& specular, const float shininess)
     : Material(id, name, emission, ambient, diffuse, specular, shininess)
+    , _renderer(renderer)
 {
     _uniformBuffers = renderer->createMaterialUniformBuffers();
 }
 
 Sahara::VulkanMaterial::VulkanMaterial(VulkanRenderer* renderer, const QString& id, const QString& name,  const QColor& emission, const QColor& ambient, Sahara::VulkanImage* const image, const QColor& specular, const float shininess)
     : Material(id, name, emission, ambient, QColor(), specular, shininess)
+    , _renderer(renderer)
+    , _image(image)
 {
     _uniformBuffers = renderer->createMaterialUniformBuffers();
 }

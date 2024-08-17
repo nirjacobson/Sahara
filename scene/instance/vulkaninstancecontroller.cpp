@@ -3,6 +3,7 @@
 
 Sahara::VulkanInstanceController::VulkanInstanceController(VulkanRenderer* renderer, const Armature* armature, const Sahara::MaterialDict& materials, const QMatrix4x4& transform, Sahara::Controller* controller)
     : InstanceController(armature, materials, transform, controller)
+    , _renderer(renderer)
 {
     _uniformBuffers = renderer->createArmatureUniformBuffers();
 }
