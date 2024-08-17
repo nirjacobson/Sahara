@@ -43,15 +43,16 @@
     <addaction name="actionScorpion"/>
     <addaction name="actionTree"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuAPI">
     <property name="title">
-     <string>&amp;Edit</string>
+     <string>&amp;API</string>
     </property>
-    <addaction name="actionSettings"/>
+    <addaction name="actionOpenGL"/>
+    <addaction name="actionVulkan"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuAPI"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
@@ -89,9 +90,20 @@
     <string>&amp;Chibi</string>
    </property>
   </action>
-  <action name="actionSettings">
+  <action name="actionOpenGL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>&amp;Settings</string>
+    <string>&amp;OpenGL</string>
+   </property>
+  </action>
+  <action name="actionVulkan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Vulkan</string>
    </property>
   </action>
  </widget>

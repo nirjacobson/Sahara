@@ -2,6 +2,8 @@
 #define SAHARA_MODELWIDGETEXAMPLE_MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
+#include <QMessageBox>
 
 #include "widgets/modelwidget.h"
 
@@ -23,6 +25,7 @@ namespace Sahara {
 
             private:
                 Ui::MainWindow *ui;
+                bool _vulkan;
                 Sahara::ModelWidget* _modelWidget;
 
             private slots:
@@ -30,6 +33,8 @@ namespace Sahara {
                 void actionChibiTriggered();
                 void actionScorpionTriggered();
                 void actionTreeTriggered();
+                void actionOpenGLTriggered();
+                void actionVulkanTriggered();
         };
 
     }

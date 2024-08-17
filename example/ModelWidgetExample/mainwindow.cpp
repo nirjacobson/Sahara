@@ -7,7 +7,12 @@ Sahara::ModelWidgetExample::MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    _modelWidget = new Sahara::ModelWidget(this, true);
+    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+    _vulkan = settings.value("API").toString() == "Vulkan" && QVulkanInstance().create();
+    ui->actionOpenGL->setChecked(!_vulkan);
+    ui->actionVulkan->setChecked(_vulkan);
+
+    _modelWidget = new Sahara::ModelWidget(this, _vulkan);
 
     ui->centralwidget->layout()->replaceWidget(ui->modelWidget, _modelWidget);
 
@@ -16,6 +21,8 @@ Sahara::ModelWidgetExample::MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionChibi, &QAction::triggered, this, &MainWindow::actionChibiTriggered);
     connect(ui->actionScorpion, &QAction::triggered, this, &MainWindow::actionScorpionTriggered);
     connect(ui->actionTree, &QAction::triggered, this, &MainWindow::actionTreeTriggered);
+    connect(ui->actionOpenGL, &QAction::triggered, this, &MainWindow::actionOpenGLTriggered);
+    connect(ui->actionVulkan, &QAction::triggered, this, &MainWindow::actionVulkanTriggered);
 }
 
 Sahara::ModelWidgetExample::MainWindow::~MainWindow()
@@ -79,4 +86,26 @@ void Sahara::ModelWidgetExample::MainWindow::actionTreeTriggered()
     ui->actionScorpion->blockSignals(true);
     ui->actionTree->setChecked(true);
     ui->actionScorpion->blockSignals(false);
+}
+
+void Sahara::ModelWidgetExample::MainWindow::actionOpenGLTriggered()
+{
+    ui->actionOpenGL->setChecked(!_vulkan);
+    ui->actionVulkan->setChecked(_vulkan);
+
+    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+    settings.setValue("API", "OpenGL");
+
+    QMessageBox::information(this, "Please restart the program", "Please restart the program for the changes to take effect.");
+}
+
+void Sahara::ModelWidgetExample::MainWindow::actionVulkanTriggered()
+{
+    ui->actionOpenGL->setChecked(!_vulkan);
+    ui->actionVulkan->setChecked(_vulkan);
+
+    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+    settings.setValue("API", "Vulkan");
+
+    QMessageBox::information(this, "Please restart the program", "Please restart the program for the changes to take effect.");
 }
