@@ -5,7 +5,7 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
-#include "../render/grid/grid.h"
+#include "../render/grid/openglgrid.h"
 
 namespace Sahara
 {
@@ -24,10 +24,10 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setGrid(Grid& grid);
-            void clearGrid(Grid& grid);
-            void setAxis(Axis& axis);
-            void clearAxis(Axis& axis);
+            void setGrid(OpenGLGrid& grid);
+            void clearGrid(OpenGLGrid& grid);
+            void setAxis(OpenGLAxis& axis);
+            void clearAxis(OpenGLAxis& axis);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
             void setProjection(const QMatrix4x4& projection);
 

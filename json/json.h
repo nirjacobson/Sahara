@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMatrix4x4>
+#include <QVulkanWindow>
 
 #include "common/transform.h"
 #include "common/volume.h"
@@ -13,16 +14,17 @@
 #include "scene/asset/armature.h"
 #include "scene/asset/camera.h"
 #include "scene/asset/controller.h"
-#include "scene/model.h"
-#include "scene/asset/image.h"
 #include "scene/asset/light/pointlight.h"
 #include "scene/asset/mesh/source.h"
-#include "scene/asset/mesh/surface.h"
-#include "scene/asset/mesh/mesh.h"
 #include "scene/instance/instancemesh.h"
-#include "scene/instance/instancecontroller.h"
 #include "scene/node/node.h"
+#include "scene/asset/image.h"
+#include "render/renderer.h"
+#include "scene/model.h"
+#include "scene/instance/instancecontroller.h"
 #include "scene/scene.h"
+#include "render/openglrenderer.h"
+#include "render/vulkanrenderer.h"
 
 namespace Sahara {
 
@@ -69,7 +71,7 @@ namespace Sahara {
             static Image* toImage(Renderer* renderer, const QJsonObject& object);
 
             static QJsonObject fromMaterial(const Material* material);
-            static Material* toMaterial(const QJsonObject& object, const Model& model);
+            static Material* toMaterial(Renderer* renderer, const QJsonObject& object, const Model& model);
 
             static QJsonObject fromPointLight(const PointLight* pointLight);
             static PointLight* toPointLight(const QJsonObject& object);
@@ -81,16 +83,16 @@ namespace Sahara {
             static Surface::Input toSurfaceInput(const QJsonObject& object);
 
             static QJsonObject fromSurface(const Surface* surface);
-            static Surface* toSurface(const QJsonObject& object, const Mesh& mesh);
+            static Surface* toSurface(QVulkanWindow* window, const QJsonObject& object, const Mesh& mesh);
 
             static QJsonObject fromMesh(const Mesh* mesh);
-            static Mesh* toMesh(const QJsonObject& object);
+            static Mesh* toMesh(QVulkanWindow* window, const QJsonObject& object);
 
             static QJsonObject fromInstanceMesh(const InstanceMesh* instanceMesh);
             static InstanceMesh* toInstanceMesh(const QJsonObject& object, const Model& model);
 
             static QJsonObject fromInstanceController(const InstanceController* instanceController);
-            static InstanceController* toInstanceController(const QJsonObject& object, const Model& model);
+            static InstanceController* toInstanceController(Renderer* renderer, const QJsonObject& object, const Model& model);
 
             static QJsonObject fromVolume(const Volume& volume);
             static Volume toVolume(const QJsonObject& object);

@@ -25,21 +25,21 @@ int Sahara::Surface::Input::offset() const
 QString Sahara::Surface::Input::semanticToString(const Sahara::Surface::Input::Semantic semantic)
 {
     switch (semantic) {
-        case Sahara::Surface::Input::POSITION:
-            return "POSITION";
-        case Sahara::Surface::Input::NORMAL:
-            return "NORMAL";
-        case Sahara::Surface::Input::TEXCOORD:
-            return "TEXCOORD";
-        case Sahara::Surface::Input::COLOR:
-            return "COLOR";
-        case Sahara::Surface::Input::JOINTS:
-            return "JOINTS";
-        case Sahara::Surface::Input::WEIGHTS:
-            return "WEIGHTS";
-        case Sahara::Surface::Input::UNDEFINED:
-            return "UNDEFINED";
-            break;
+    case Sahara::Surface::Input::POSITION:
+        return "POSITION";
+    case Sahara::Surface::Input::NORMAL:
+        return "NORMAL";
+    case Sahara::Surface::Input::TEXCOORD:
+        return "TEXCOORD";
+    case Sahara::Surface::Input::COLOR:
+        return "COLOR";
+    case Sahara::Surface::Input::JOINTS:
+        return "JOINTS";
+    case Sahara::Surface::Input::WEIGHTS:
+        return "WEIGHTS";
+    case Sahara::Surface::Input::UNDEFINED:
+        return "UNDEFINED";
+        break;
     }
 
     return "";
@@ -70,7 +70,12 @@ Sahara::Surface::Surface(const SourceDict& sourceDict, const QString& material)
 
 }
 
-const QString&Sahara::Surface::material() const
+int Sahara::Surface::count() const
+{
+    return _sources.first()->count();
+}
+
+const QString& Sahara::Surface::material() const
 {
     return _material;
 }
@@ -109,36 +114,4 @@ int Sahara::Surface::triangles() const
         }
     }
     return _elements.size() / (maxOffset + 1) / 3;
-}
-
-void Sahara::Surface::generateVertexBuffer(const Sahara::Surface::Input::Semantic input)
-{
-    const Source* source = _sources[_inputs[input].source()];
-
-    int maxOffset = 0;
-    for (Input i : _inputs) {
-        if (i.offset() > maxOffset) {
-            maxOffset = i.offset();
-        }
-    }
-
-    unsigned long dataSize = _elements.size() / (maxOffset + 1) * source->stride();
-    GLfloat* data = new GLfloat[dataSize];
-    int dataIndex = 0;
-
-    for (int i = _inputs[input].offset(); i < _elements.size(); i += maxOffset + 1) {
-        int index = _elements.at(i);
-        QList<float> element = source->at(index);
-        for (int j = 0; j < element.size(); j++) {
-            data[dataIndex++] = element.at(j);
-        }
-    }
-
-    VertexBuffer vertexBuffer;
-    vertexBuffer.write(data, dataSize);
-    vertexBuffer.setStride(source->stride());
-
-    delete [] data;
-
-    WithVertexBuffers::addVertexBuffer(Input::semanticToString(input).toLower(), vertexBuffer);
 }

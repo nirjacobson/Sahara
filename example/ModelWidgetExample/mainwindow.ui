@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="Sahara::ModelWidget" name="modelWidget" native="true"/>
+     <widget class="QWidget" name="modelWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -31,25 +31,32 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="actionChibi"/>
     <addaction name="actionScorpion"/>
     <addaction name="actionTree"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
   </action>
   <action name="actionScorpion">
@@ -60,7 +67,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Scorpion</string>
+    <string>&amp;Scorpion</string>
    </property>
   </action>
   <action name="actionTree">
@@ -68,7 +75,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Tree</string>
+    <string>&amp;Tree</string>
    </property>
   </action>
   <action name="actionChibi">
@@ -79,18 +86,15 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Chibi</string>
+    <string>&amp;Chibi</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>Sahara::ModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/modelwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

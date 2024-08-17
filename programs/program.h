@@ -5,7 +5,7 @@
 #include <QOpenGLFunctions>
 
 
-#include "../render/withvertexbuffers.h"
+#include "../render/openglwithvertexbuffers.h"
 
 namespace Sahara
 {
@@ -26,8 +26,8 @@ namespace Sahara
 
             QOpenGLShaderProgram& program();
 
-            void layout(WithVertexBuffers& wvb);
-            void unlayout(WithVertexBuffers& wvb);
+            void layout(OpenGLWithVertexBuffers& wvb);
+            void unlayout(OpenGLWithVertexBuffers& wvb);
 
         private:
             QOpenGLShaderProgram _program;

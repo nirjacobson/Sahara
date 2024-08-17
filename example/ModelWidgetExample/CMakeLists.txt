@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Xml Widgets OpenGL)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Xml Widgets OpenGL)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Xml Widgets OpenGL OpenGLWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Xml Widgets OpenGL OpenGLWidgets)
 
 
 include_directories("../../../QCollada")
@@ -51,8 +51,9 @@ endif()
 target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
                                                  Qt${QT_VERSION_MAJOR}::Widgets
                                                  Qt${QT_VERSION_MAJOR}::OpenGL
-                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../build-QCollada-Desktop-Debug/libQCollada.so
-                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../build-Sahara-Desktop-Debug/libSahara.so )
+                                                 Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Debug/libQCollada.so
+                                                 ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Debug/libSahara.so )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

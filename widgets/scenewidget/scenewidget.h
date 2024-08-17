@@ -1,89 +1,46 @@
-#ifndef SAHARA_SCENEWIDGET_H
-#define SAHARA_SCENEWIDGET_H
+#ifndef SCENEWIDGET_H
+#define SCENEWIDGET_H
 
-#include <QObject>
-#include <QOpenGLWidget>
-#include <QOpenGLFunctions>
 #include <QKeyEvent>
-#include <QMouseEvent>
-#include <QElapsedTimer>
-#include <QTime>
-#include <QTimer>
-#include <QPainter>
 
 #include "scene/scene.h"
-#include "render/renderer.h"
 #include "cameracontrol.h"
+#include "render/renderer.h"
 
 namespace Sahara {
-
-    class SceneWidget : public QOpenGLWidget, protected QOpenGLFunctions
+    class SceneWidget
     {
-        Q_OBJECT
 
-        public:
-            SceneWidget(QWidget* parent);
-            ~SceneWidget() override;
+    public:
+        virtual Scene& scene() = 0;
+        virtual void newScene() = 0;
+        virtual void setScene(Scene* scene) = 0;
+        virtual void flyThrough(const bool on) = 0;
 
-            Scene& scene();
-            void newScene();
-            void setScene(Scene* scene);
-            void flyThrough(const bool on);
+        virtual void pause() = 0;
+        virtual void resume() = 0;
 
-            void pause();
-            void resume();
 
-            bool showGrid() const;
-            void showGrid(const bool visible);
-            bool showAxes() const;
-            void showAxes(const bool visible);
-            bool showFPS() const;
-            void showFPS(const bool visible);
-            bool showLights() const;
-            void showLights(const bool visible);
-            bool showCameras() const;
-            void showCameras(const bool visible);
+        virtual bool showGrid() const = 0;
+        virtual void showGrid(const bool visible) = 0;
+        virtual bool showAxes() const = 0;
+        virtual void showAxes(const bool visible) = 0;
+        virtual bool showFPS() const = 0;
+        virtual void showFPS(const bool visible) = 0;
+        virtual bool showLights() const = 0;
+        virtual void showLights(const bool visible) = 0;
+        virtual bool showCameras() const = 0;
+        virtual void showCameras(const bool visible) = 0;
 
-            Renderer* renderer();
+        virtual Renderer* renderer() = 0;
 
-            CameraControl& cameraControl();
+        CameraControl& cameraControl();
 
-        signals:
-            void initialized() const;
-            void sizeChanged(QSize size);
-            void cameraMotion() const;
-            void keyPressed(QKeyEvent* event);
-            void mouseMoved(QVector2D ndc);
-            void mousePressed(QVector2D ndc);
-            void sceneLoaded();
+    private:
+        Scene* _scene;
 
-        protected:
-            void initializeGL() override;
-            void paintGL() override;
-            void resizeGL(int w, int h) override;
-            void keyPressEvent(QKeyEvent* event) override;
-            void keyReleaseEvent(QKeyEvent* event) override;
-            void mousePressEvent(QMouseEvent* event) override;
-            void mouseMoveEvent(QMouseEvent* event) override;
-
-        private:
-            Sahara::Scene* _scene;
-            Sahara::Renderer* _renderer;
-
-            bool _showFPS;
-
-            bool _flyThrough;
-            CameraControl _cameraControl;
-
-            QElapsedTimer _time;
-            QElapsedTimer _frameTime;
-            QTimer _timer;
-
-            double _fps;
-
-        private slots:
-            void frame();
+        CameraControl _cameraControl;
     };
 }
 
-#endif // SAHARA_SCENEWIDGET_H
+#endif // SCENEWIDGET_H

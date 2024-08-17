@@ -1,16 +1,29 @@
 #include "modelwidget.h"
 #include "ui_modelwidget.h"
 
-Sahara::ModelWidget::ModelWidget(QWidget *parent) :
+Sahara::ModelWidget::ModelWidget(QWidget *parent, bool vulkan) :
     QWidget(parent),
     ui(new Ui::ModelWidget),
     _model(nullptr),
-    _modelNode(nullptr)
+    _modelNode(nullptr),
+    _vulkan(vulkan)
 {
     ui->setupUi(this);
 
-    connect(ui->sceneWidget, &SceneWidget::initialized, this, &ModelWidget::sceneWidgetInitialized);
-    connect(ui->sceneWidget, &SceneWidget::initialized, this, &ModelWidget::initialized);
+    if (vulkan) {
+        VulkanSceneWidget* widget = new VulkanSceneWidget(this);
+        _sceneWidget = widget;
+        layout()->replaceWidget(ui->sceneWidget, widget);
+        connect(widget, SIGNAL(initialized(void)), this, SLOT(sceneWidgetInitialized(void)));
+        connect(widget, SIGNAL(initialized(void)), this, SIGNAL(initialized(void)));
+    } else {
+        OpenGLSceneWidget* widget = new OpenGLSceneWidget(this);
+        _sceneWidget = widget;
+        layout()->replaceWidget(ui->sceneWidget, widget);
+        connect(widget, &OpenGLSceneWidget::initialized, this, &ModelWidget::sceneWidgetInitialized);
+        connect(widget, &OpenGLSceneWidget::initialized, this, &ModelWidget::initialized);
+    }
+
     connect(ui->animationComboBox, &QComboBox::currentTextChanged, this, &ModelWidget::animationComboBoxCurrentTextChanged);
     connect(ui->scaleDial, &QDial::valueChanged, this, &ModelWidget::dialValueChanged);
     connect(ui->xDial, &QDial::valueChanged, this, &ModelWidget::dialValueChanged);
@@ -31,11 +44,16 @@ void Sahara::ModelWidget::setModel(const QString& path)
         delete _modelNode;
     }
 
-    _model = Model::fromCollada(ui->sceneWidget->renderer(), path);
+    if (_vulkan) {
+        _model = VulkanModel::fromCollada(dynamic_cast<VulkanRenderer*>(_sceneWidget->renderer()), path);
+    } else {
+        _model = OpenGLModel::fromCollada(path);
+    }
+
     float scale = static_cast<float>(ui->scaleDial->value()) / ui->scaleDial->maximum();
     _modelNode = new Node(QFileInfo(path).baseName(), _model, QMatrix4x4(QMatrix3x3() * scale));
 
-    ui->sceneWidget->scene().root().addChild(_modelNode);
+    _sceneWidget->scene().root().addChild(_modelNode);
     dialValueChanged();
 
     if (_model->animationClipNames().size() > 1) {
@@ -75,12 +93,12 @@ void Sahara::ModelWidget::sceneWidgetInitialized()
 {
     QMatrix4x4 cameraTransform;
     cameraTransform.translate({0, 0, 16});
-    ui->sceneWidget->scene().cameraNode().setTransform(cameraTransform);
+    _sceneWidget->scene().cameraNode().setTransform(cameraTransform);
 
     PointLight* pointLight = new PointLight("Point Light", QColor(255, 255, 255), 1, 0, 0);
     Node* pointLightNode = new Node("Point Light", pointLight, QMatrix4x4());
 
-    ui->sceneWidget->scene().cameraNode().addChild(pointLightNode);
+    _sceneWidget->scene().cameraNode().addChild(pointLightNode);
 }
 
 void Sahara::ModelWidget::dialValueChanged()

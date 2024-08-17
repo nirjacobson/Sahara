@@ -6,6 +6,9 @@
 
 #include "scene/model.h"
 #include "scene/node/node.h"
+#include "widgets/scenewidget/scenewidget.h"
+#include "widgets/scenewidget/openglscenewidget.h"
+#include "widgets/scenewidget/vulkanscenewidget.h"
 
 namespace Ui {
     class ModelWidget;
@@ -18,7 +21,7 @@ namespace Sahara {
             Q_OBJECT
 
         public:
-            explicit ModelWidget(QWidget *parent = nullptr);
+            explicit ModelWidget(QWidget *parent = nullptr, bool vulkan = false);
             ~ModelWidget();
 
             void setModel(const QString& path);
@@ -30,8 +33,10 @@ namespace Sahara {
 
         private:
             Ui::ModelWidget *ui;
+            bool _vulkan;
             Model* _model;
             Node* _modelNode;
+            SceneWidget* _sceneWidget;
 
             void showAnimationsUI(const bool visible);
 

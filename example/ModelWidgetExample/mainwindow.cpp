@@ -6,8 +6,13 @@ Sahara::ModelWidgetExample::MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    _modelWidget = new Sahara::ModelWidget(this, true);
+
+    ui->centralwidget->layout()->replaceWidget(ui->modelWidget, _modelWidget);
+
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
-    connect(ui->modelWidget, &Sahara::ModelWidget::initialized, this, &MainWindow::modelWidgetInitialized);
+    connect(_modelWidget, &Sahara::ModelWidget::initialized, this, &MainWindow::modelWidgetInitialized);
     connect(ui->actionChibi, &QAction::triggered, this, &MainWindow::actionChibiTriggered);
     connect(ui->actionScorpion, &QAction::triggered, this, &MainWindow::actionScorpionTriggered);
     connect(ui->actionTree, &QAction::triggered, this, &MainWindow::actionTreeTriggered);
@@ -25,8 +30,8 @@ void Sahara::ModelWidgetExample::MainWindow::modelWidgetInitialized()
 
 void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()
 {
-    ui->modelWidget->setModel(":/models/chibi.dae");
-    ui->modelWidget->setAnimationClip("Idle");
+    _modelWidget->setModel(":/models/chibi.dae");
+    _modelWidget->setAnimationClip("Idle");
 
     ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(true);
@@ -43,8 +48,8 @@ void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()
 
 void Sahara::ModelWidgetExample::MainWindow::actionScorpionTriggered()
 {
-    ui->modelWidget->setModel(":/models/scorpion.dae");
-    ui->modelWidget->setAnimationClip("Idle");
+    _modelWidget->setModel(":/models/scorpion.dae");
+    _modelWidget->setAnimationClip("Idle");
 
     ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(false);
@@ -61,7 +66,7 @@ void Sahara::ModelWidgetExample::MainWindow::actionScorpionTriggered()
 
 void Sahara::ModelWidgetExample::MainWindow::actionTreeTriggered()
 {
-    ui->modelWidget->setModel(":/models/tree.dae");
+    _modelWidget->setModel(":/models/tree.dae");
 
     ui->actionChibi->blockSignals(true);
     ui->actionChibi->setChecked(false);

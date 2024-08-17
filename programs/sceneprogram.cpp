@@ -131,7 +131,7 @@ void Sahara::SceneProgram::clearPointLights()
     program().setUniformValue(_lighting.pointLightCount, _pointLights);
 }
 
-void Sahara::SceneProgram::setMaterial(const Sahara::Material& material)
+void Sahara::SceneProgram::setMaterial(const Sahara::OpenGLMaterial& material)
 {
     program().setUniformValue(_material.emission, material.emission());
     program().setUniformValue(_material.ambient, material.ambient());
@@ -166,12 +166,12 @@ void Sahara::SceneProgram::release()
     program().release();
 }
 
-void Sahara::SceneProgram::setSurface(Sahara::Surface& surface)
+void Sahara::SceneProgram::setSurface(Sahara::OpenGLSurface& surface)
 {
     layout(surface);
 }
 
-void Sahara::SceneProgram::clearSurface(Sahara::Surface& surface)
+void Sahara::SceneProgram::clearSurface(Sahara::OpenGLSurface& surface)
 {
     unlayout(surface);
 }

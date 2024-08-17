@@ -17,7 +17,7 @@ QStringList Sahara::Instance::materials() const
     return _materials.keys();
 }
 
-const Sahara::Material& Sahara::Instance::getMaterial(const QString& name) const
+Sahara::Material& Sahara::Instance::getMaterial(const QString& name)
 {
     return *_materials[name];
 }

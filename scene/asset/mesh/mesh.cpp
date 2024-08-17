@@ -6,22 +6,12 @@ Sahara::Mesh::Mesh(const QString& id)
 
 }
 
-Sahara::Mesh::~Mesh()
-{
-    for (const Source* source : _sources.values()) {
-        delete source;
-    }
-    for (const Surface* surface : _surfaces) {
-        delete surface;
-    }
-}
-
 QStringList Sahara::Mesh::sources() const
 {
     return _sources.keys();
 }
 
-void Sahara::Mesh::add(const QString& name, Sahara::Source* source)
+void Sahara::Mesh::add(const QString& name, Source* source)
 {
     _sources[name] = source;
 }
@@ -29,19 +19,6 @@ void Sahara::Mesh::add(const QString& name, Sahara::Source* source)
 int Sahara::Mesh::count() const
 {
     return _surfaces.size();
-}
-
-Sahara::Surface&Sahara::Mesh::surface(const int i)
-{
-    return *_surfaces.at(i);
-}
-
-Sahara::Surface& Sahara::Mesh::add(const QString& material)
-{
-    Surface* surface = new Surface(_sources, material);
-    _surfaces.append(surface);
-
-    return *surface;
 }
 
 int Sahara::Mesh::triangles() const
@@ -53,4 +30,3 @@ int Sahara::Mesh::triangles() const
 
     return triangles;
 }
-

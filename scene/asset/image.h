@@ -1,34 +1,22 @@
-#ifndef SAHARA_IMAGE_H
-#define SAHARA_IMAGE_H
-
-#include <QImage>
-#include <QOpenGLTexture>
+#ifndef IMAGE_H
+#define IMAGE_H
 
 #include "asset.h"
 
-namespace Sahara
-{
-
-    class Renderer;
-
+namespace Sahara {
     class Image : public Asset
     {
         friend class JSON;
 
-        public:
-            Image(Renderer*, const QString& id, const QString& uri);
-            ~Image();
+    public:
+        Image(const QString& id, const QString& uri);
+        virtual ~Image() { }
 
-            void bind();
-            void release();
+        const QString& uri() const;
 
-            const QString& uri() const;
-
-        private:
-            QString _uri;
-            QOpenGLTexture _texture;
+    protected:
+        QString _uri;
     };
-
 }
 
-#endif // SAHARA_IMAGE_H
+#endif // IMAGE_H

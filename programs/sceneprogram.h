@@ -7,8 +7,8 @@
 #include "program.h"
 #include "scene/asset/light/ambientlight.h"
 #include "scene/asset/light/pointlight.h"
-#include "scene/asset/material.h"
-#include "scene/asset/mesh/surface.h"
+#include "scene/asset/openglmaterial.h"
+#include "scene/asset/mesh/openglsurface.h"
 #include "common/transform.h"
 
 namespace Sahara
@@ -71,8 +71,8 @@ namespace Sahara
             void bind() override;
             void release() override;
 
-            void setSurface(Surface& surface);
-            void clearSurface(Surface& surface);
+            void setSurface(OpenGLSurface& surface);
+            void clearSurface(OpenGLSurface& surface);
 
             void setModelView(const QMatrix4x4& modelView);
             void setInverseCamera(const QMatrix4x4& inverseCamera);
@@ -84,7 +84,7 @@ namespace Sahara
             void setAmbientLight(const AmbientLight& ambientLight);
             void addPointLight(const PointLight& pointLight, const QVector3D& position);
             void clearPointLights();
-            void setMaterial(const Material& material);
+            void setMaterial(const OpenGLMaterial& material);
             void setCameraPosition(const QVector3D& position);
 
         private:

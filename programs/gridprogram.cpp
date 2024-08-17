@@ -33,22 +33,22 @@ void Sahara::GridProgram::release()
     program().release();
 }
 
-void Sahara::GridProgram::setGrid(Sahara::Grid &grid)
+void Sahara::GridProgram::setGrid(Sahara::OpenGLGrid &grid)
 {
     layout(grid);
 }
 
-void Sahara::GridProgram::setAxis(Sahara::Axis& axis)
+void Sahara::GridProgram::setAxis(Sahara::OpenGLAxis& axis)
 {
     layout(axis);
 }
 
-void Sahara::GridProgram::clearAxis(Sahara::Axis& axis)
+void Sahara::GridProgram::clearAxis(Sahara::OpenGLAxis& axis)
 {
     unlayout(axis);
 }
 
-void Sahara::GridProgram::clearGrid(Sahara::Grid& grid)
+void Sahara::GridProgram::clearGrid(Sahara::OpenGLGrid& grid)
 {
     unlayout(grid);
 }

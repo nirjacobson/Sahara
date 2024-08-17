@@ -53,10 +53,10 @@ QOpenGLShaderProgram& Sahara::Program::program()
     return _program;
 }
 
-void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
+void Sahara::Program::layout(Sahara::OpenGLWithVertexBuffers &wvb)
 {
     QOpenGLFunctions glFuncs(QOpenGLContext::currentContext());
-    for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
+    for (OpenGLVertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
         GLint location = _program.attributeLocation(i.key());
         if (location >= 0) {
             i.value().bind();
@@ -69,9 +69,9 @@ void Sahara::Program::layout(Sahara::WithVertexBuffers &wvb)
     }
 }
 
-void Sahara::Program::unlayout(Sahara::WithVertexBuffers& wvb)
+void Sahara::Program::unlayout(Sahara::OpenGLWithVertexBuffers& wvb)
 {
-    for (VertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
+    for (OpenGLVertexBufferDict::iterator i = wvb.vertexBuffers().begin(); i != wvb.vertexBuffers().end(); i++) {
         GLint location = _program.attributeLocation(i.key());
         if (location >= 0) {
             _program.disableAttributeArray(location);

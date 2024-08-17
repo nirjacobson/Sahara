@@ -11,19 +11,6 @@ Sahara::Material::Material(const QString& id, const QString& name, const QColor&
 {
 
 }
-
-Sahara::Material::Material(const QString& id, const QString& name, const QColor& emission, const QColor& ambient, Sahara::Image* const image, const QColor& specular, const float shininess)
-    : Asset(id)
-    , _name(name)
-    , _emission(emission)
-    , _ambient(ambient)
-    , _image(image)
-    , _specular(specular)
-    , _shininess(shininess)
-{
-
-}
-
 const QColor& Sahara::Material::emission() const
 {
     return _emission;
@@ -77,14 +64,4 @@ void Sahara::Material::setShininess(const float shininess)
 const QString& Sahara::Material::name() const
 {
     return _name;
-}
-
-const std::optional<Sahara::Image*>& Sahara::Material::image() const
-{
-    return _image;
-}
-
-std::optional<Sahara::Image*>& Sahara::Material::image()
-{
-    return _image;
 }

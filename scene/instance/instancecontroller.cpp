@@ -1,6 +1,7 @@
 #include "instancecontroller.h"
 
-Sahara::InstanceController::InstanceController(const Armature* armature, const Sahara::MaterialDict& materials, const QMatrix4x4& transform, Sahara::Controller* controller)
+
+Sahara::InstanceController::InstanceController(const Armature* armature, const MaterialDict& materials, const QMatrix4x4& transform, Controller* controller)
     : Instance(materials, transform)
     , _armature(armature)
     , _controller(controller)

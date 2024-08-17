@@ -37,12 +37,12 @@ void Sahara::DisplayProgram::release()
     program().release();
 }
 
-void Sahara::DisplayProgram::setDisplay(Sahara::Display& display)
+void Sahara::DisplayProgram::setDisplay(Sahara::OpenGLDisplay& display)
 {
     layout(display);
 }
 
-void Sahara::DisplayProgram::clearDisplay(Sahara::Display& display)
+void Sahara::DisplayProgram::clearDisplay(Sahara::OpenGLDisplay& display)
 {
     unlayout(display);
 }

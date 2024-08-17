@@ -21,7 +21,7 @@ namespace Sahara
             virtual ~Instance();
 
             QStringList materials() const;
-            const Material& getMaterial(const QString& name) const;
+            Material& getMaterial(const QString& name);
 
             const QMatrix4x4& transform() const;
 

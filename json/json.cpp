@@ -1,4 +1,5 @@
 #include "json.h"
+#include "render/renderer.h"
 
 Sahara::JSON::JSON()
 {
@@ -434,14 +435,21 @@ QJsonObject Sahara::JSON::fromImage(const Sahara::Image* image)
     return object;
 }
 
-Sahara::Image*Sahara::JSON::toImage(Renderer* renderer, const QJsonObject& object)
+Sahara::Image* Sahara::JSON::toImage(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Image");
     QString id = object["id"].toString();
 
     QString uri = object["uri"].toString();
 
-    return new Image(renderer, id, uri);
+    OpenGLRenderer* oglRenderer;
+    VulkanRenderer* vlkRenderer;
+    if ((oglRenderer = dynamic_cast<OpenGLRenderer*>(renderer))) {
+        return new OpenGLImage(id, uri);
+    }
+
+    vlkRenderer = dynamic_cast<VulkanRenderer*>(renderer);
+    return new VulkanImage(vlkRenderer, id, uri);
 }
 
 QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
@@ -463,14 +471,23 @@ QJsonObject Sahara::JSON::fromMaterial(const Sahara::Material* material)
     object["specular"] = specularArray;
     object["shininess"] = static_cast<double>(material->_shininess);
 
-    if (material->image().has_value()) {
-        object["image"] = (*material->image())->id();
+    const Sahara::OpenGLMaterial* oglMaterial;
+    const Sahara::VulkanMaterial* vlkMaterial;
+    if ((oglMaterial = dynamic_cast<const Sahara::OpenGLMaterial*>(material))) {
+        if (oglMaterial->image().has_value()) {
+            object["image"] = (*oglMaterial->image())->id();
+        }
+    } else {
+        vlkMaterial = dynamic_cast<const Sahara::VulkanMaterial*>(material);
+        if (vlkMaterial->image().has_value()) {
+            object["image"] = (*vlkMaterial->image())->id();
+        }
     }
 
     return object;
 }
 
-Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahara::Model& model)
+Sahara::Material* Sahara::JSON::toMaterial(Renderer* renderer, const QJsonObject& object, const Sahara::Model& model)
 {
     assert(object["_type"] == "Material");
     QString id = object["id"].toString();
@@ -482,13 +499,27 @@ Sahara::Material*Sahara::JSON::toMaterial(const QJsonObject& object, const Sahar
     QColor specular = toColor(object["specular"].toArray());
     float shininess = static_cast<float>(object["shininess"].toDouble());
 
-    if (object.contains("image")) {
-        Image* image = model.images()[object["image"].toString()];
+    OpenGLRenderer* oglRenderer;
+    VulkanRenderer* vlkRenderer;
+    if ((oglRenderer = dynamic_cast<OpenGLRenderer*>(renderer))) {
+        if (object.contains("image")) {
+            OpenGLImage* image = dynamic_cast<OpenGLImage*>(model.images()[object["image"].toString()]);
 
-        return new Material(id, name, emission, ambient, image, specular, shininess);
-    } else {
-        return new Material(id, name, emission, ambient, diffuse, specular, shininess);
+            return new OpenGLMaterial(id, name, emission, ambient, image, specular, shininess);
+        } else {
+            return new OpenGLMaterial(id, name, emission, ambient, diffuse, specular, shininess);
+        }
     }
+
+    vlkRenderer = dynamic_cast<VulkanRenderer*>(renderer);
+    if (object.contains("image")) {
+        VulkanImage* image = dynamic_cast<VulkanImage*>(model.images()[object["image"].toString()]);
+
+        return new VulkanMaterial(vlkRenderer, id, name, emission, ambient, image, specular, shininess);
+    } else {
+        return new VulkanMaterial(vlkRenderer, id, name, emission, ambient, diffuse, specular, shininess);
+    }
+
 }
 
 QJsonObject Sahara::JSON::fromPointLight(const Sahara::PointLight* pointLight)
@@ -599,7 +630,7 @@ QJsonObject Sahara::JSON::fromSurface(const Sahara::Surface* surface)
     return object;
 }
 
-Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara::Mesh& mesh)
+Sahara::Surface*Sahara::JSON::toSurface(QVulkanWindow* window, const QJsonObject& object, const Sahara::Mesh& mesh)
 {
     assert(object["_type"] == "Surface");
 
@@ -620,7 +651,14 @@ Sahara::Surface*Sahara::JSON::toSurface(const QJsonObject& object, const Sahara:
         elements.append(elementsArray.at(i).toInt());
     }
 
-    Surface* surface = new Surface(mesh._sources, material);
+    Surface* surface;
+
+    if (window) {
+        surface = new VulkanSurface(window, mesh._sources, material);
+    } else {
+        surface = new OpenGLSurface(mesh._sources, material);
+    }
+
     surface->_inputs = inputs;
     surface->_elements = elements;
 
@@ -654,12 +692,18 @@ QJsonObject Sahara::JSON::fromMesh(const Sahara::Mesh* mesh)
     return object;
 }
 
-Sahara::Mesh*Sahara::JSON::toMesh(const QJsonObject& object)
+Sahara::Mesh*Sahara::JSON::toMesh(QVulkanWindow* window, const QJsonObject& object)
 {
     assert(object["_type"] == "Mesh");
     QString id = object["id"].toString();
 
-    Mesh* mesh = new Mesh(id);
+    Mesh* mesh;
+
+    if (window) {
+        mesh = new VulkanMesh(window, id);
+    } else {
+        mesh = new OpenGLMesh(id);
+    }
 
     QJsonObject sourcesObject = object["sources"].toObject();
     SourceDict sources;
@@ -671,7 +715,7 @@ Sahara::Mesh*Sahara::JSON::toMesh(const QJsonObject& object)
     QJsonArray surfacesArray = object["surfaces"].toArray();
     QList<Surface*> surfaces;
     for (int i = 0; i < surfacesArray.size(); i++) {
-        surfaces.append(toSurface(surfacesArray.at(i).toObject(), *mesh));
+        surfaces.append(toSurface(window, surfacesArray.at(i).toObject(), *mesh));
     }
     mesh->_surfaces = surfaces;
 
@@ -733,7 +777,7 @@ Sahara::InstanceMesh* Sahara::JSON::toInstanceMesh(const QJsonObject& object, co
     return instanceMesh;
 }
 
-QJsonObject Sahara::JSON::fromInstanceController(const Sahara::InstanceController* instanceController)
+QJsonObject Sahara::JSON::fromInstanceController(const InstanceController* instanceController)
 {
     QJsonObject object = fromInstance(instanceController);
 
@@ -744,13 +788,23 @@ QJsonObject Sahara::JSON::fromInstanceController(const Sahara::InstanceControlle
     return object;
 }
 
-Sahara::InstanceController*Sahara::JSON::toInstanceController(const QJsonObject& object, const Sahara::Model& model)
+Sahara::InstanceController* Sahara::JSON::toInstanceController(Renderer* renderer, const QJsonObject& object, const Sahara::Model& model)
 {
     assert(object["_type"] == "InstanceController");
 
     Controller* controller = model.controllers()[object["controller"].toString()];
 
-    InstanceController* instanceController = new InstanceController(&model.armature(), {}, {}, controller);
+    InstanceController* instanceController;
+
+    OpenGLRenderer* oglRenderer;
+    VulkanRenderer* vlkRenderer;
+    if ((oglRenderer = dynamic_cast<OpenGLRenderer*>(renderer))) {
+        instanceController = new OpenGLInstanceController(&model.armature(), {}, {}, controller);
+    } else {
+        vlkRenderer = dynamic_cast<VulkanRenderer*>(renderer);
+        instanceController = new VulkanInstanceController(vlkRenderer, &model.armature(), {}, {}, controller);
+    }
+
     instanceController->_armature = model._armature;
 
     toInstance(object, instanceController, model);
@@ -849,11 +903,19 @@ QJsonObject Sahara::JSON::fromModel(const Sahara::Model* model)
     return object;
 }
 
-Sahara::Model*Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& object)
+Sahara::Model* Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& object)
 {
     assert(object["_type"] == "Model");
 
-    Model* model = new Model;
+    Model* model;
+
+    OpenGLRenderer* oglRenderer = nullptr;
+    VulkanRenderer* vlkRenderer = nullptr;
+    if ((oglRenderer = dynamic_cast<OpenGLRenderer*>(renderer))) {
+        model = new OpenGLModel;
+    } else {
+        model = new VulkanModel;
+    }
 
     Volume volume = toVolume(object["volume"].toObject());
     model->_volume = volume;
@@ -868,14 +930,15 @@ Sahara::Model*Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& objec
     QJsonObject materialsObject = object["materials"].toObject();
     MaterialDict materials;
     for (QJsonObject::iterator i = materialsObject.begin(); i != materialsObject.end(); i++) {
-        materials[i.key()] = toMaterial(i.value().toObject(), *model);
+        materials[i.key()] = toMaterial(renderer, i.value().toObject(), *model);
     }
     model->_materials = materials;
 
     QJsonObject meshesObject = object["meshes"].toObject();
     MeshDict meshes;
     for (QJsonObject::iterator i = meshesObject.begin(); i != meshesObject.end(); i++) {
-        meshes[i.key()] = toMesh(i.value().toObject());
+        QVulkanWindow* window = vlkRenderer ? vlkRenderer->window() : nullptr;
+        meshes[i.key()] = toMesh(window, i.value().toObject());
     }
     model->_meshes = meshes;
 
@@ -920,7 +983,7 @@ Sahara::Model*Sahara::JSON::toModel(Renderer* renderer, const QJsonObject& objec
         if (instanceObject["_type"] == "InstanceMesh") {
             instances.append( toInstanceMesh(instanceObject, *model) );
         } else if (instanceObject["_type"] == "InstanceController") {
-            instances.append( toInstanceController(instanceObject, *model) );
+            instances.append( toInstanceController(renderer, instanceObject, *model) );
         }
     }
     model->_instances = instances;
@@ -1034,7 +1097,18 @@ Sahara::Scene* Sahara::JSON::toScene(Renderer* renderer, const QJsonObject& obje
         }
     }
 
-    Scene* scene = new Scene;
+    Scene* scene;
+
+    OpenGLRenderer* oglRenderer;
+    VulkanRenderer* vlkRenderer;
+
+    if ((oglRenderer = dynamic_cast<OpenGLRenderer*>(renderer))) {
+        scene = new OpenGLScene;
+    } else {
+        vlkRenderer = dynamic_cast<VulkanRenderer*>(renderer);
+        scene = new VulkanScene(vlkRenderer);
+    }
+
     scene->_root = toNode(object["root"].toObject(), items);
 
     scene->_root->depthFirst([&](Node& node) {

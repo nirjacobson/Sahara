@@ -13,6 +13,8 @@ Sahara::Armature::~Armature()
     delete _root;
 }
 
+
+
 const Sahara::Joint& Sahara::Armature::root() const
 {
     return *_root;

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "widgets/modelwidget.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -21,6 +23,7 @@ namespace Sahara {
 
             private:
                 Ui::MainWindow *ui;
+                Sahara::ModelWidget* _modelWidget;
 
             private slots:
                 void modelWidgetInitialized();

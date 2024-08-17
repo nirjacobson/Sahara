@@ -1,6 +1,6 @@
 #include "instancemesh.h"
 
-Sahara::InstanceMesh::InstanceMesh(const Sahara::MaterialDict& materials, const QMatrix4x4& transform, Sahara::Mesh* mesh)
+Sahara::InstanceMesh::InstanceMesh(const MaterialDict& materials, const QMatrix4x4& transform, Mesh* mesh)
     : Instance(materials, transform)
     , _mesh(mesh)
 {

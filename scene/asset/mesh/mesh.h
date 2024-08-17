@@ -1,35 +1,31 @@
-#ifndef SAHARA_MESH_H
-#define SAHARA_MESH_H
-
-#include <QList>
+#ifndef MESH_H
+#define MESH_H
 
 #include "../asset.h"
-#include "source.h"
 #include "surface.h"
 
-namespace Sahara
-{
+namespace Sahara {
     class Mesh : public Asset
     {
         friend class JSON;
 
-        public:
-            Mesh(const QString& id);
-            ~Mesh();
+    public:
+        Mesh(const QString& id);
+        virtual ~Mesh() { }
 
-            QStringList sources() const;
-            void add(const QString& name, Source* source);
+        QStringList sources() const;
+        void add(const QString& name, Source* source);
 
-            int count() const;
-            Surface& surface(const int i);
-            Surface& add(const QString& material);
+        int count() const;
+        virtual Surface& surface(const int i) = 0;
+        virtual Surface& add(const QString& material) = 0;
 
-            int triangles() const;
+        int triangles() const;
 
-        private:
-            SourceDict _sources;
-            QList<Surface*> _surfaces;
+    protected:
+        SourceDict _sources;
+        QList<Surface*> _surfaces;
     };
 }
 
-#endif // SAHARA_MESH_H
+#endif // MESH_H
