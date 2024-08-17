@@ -60,8 +60,8 @@ elseif (WIN32)
                                                      Qt${QT_VERSION_MAJOR}::Widgets
                                                      Qt${QT_VERSION_MAJOR}::OpenGL
                                                      Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/libQCollada.lib
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/libSahara.lib )
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/QCollada.lib
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/Sahara.lib )
 endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
