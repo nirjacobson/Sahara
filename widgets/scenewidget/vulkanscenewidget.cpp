@@ -4,7 +4,7 @@ Sahara::VulkanSceneWidget::VulkanSceneWidget(QWidget *parent)
     : QWidget{parent}
     , _scene(nullptr)
     , _renderer(nullptr)
-    , _window(_cameraControl)
+    , _window(cameraControl())
 {
     _instance.setLayers({ "VK_LAYER_KHRONOS_validation" });
     if (!_instance.create())
@@ -56,7 +56,7 @@ void Sahara::VulkanSceneWidget::rendererReady()
 void Sahara::VulkanSceneWidget::updateCameraControl()
 {
     if (_window.flyThrough()) {
-        _cameraControl.update(_scene->cameraNode());
+        cameraControl().update(_scene->cameraNode());
         emit cameraMotion();
     }
 }
@@ -69,16 +69,16 @@ void Sahara::VulkanSceneWidget::keyPressEvent(QKeyEvent *event)
     if (_window.flyThrough()) {
         switch (event->key()) {
         case Qt::Key_W:
-            _cameraControl.accelerateForward(true);
+            cameraControl().accelerateForward(true);
             break;
         case Qt::Key_A:
-            _cameraControl.accelerateLeft(true);
+            cameraControl().accelerateLeft(true);
             break;
         case Qt::Key_S:
-            _cameraControl.accelerateBackward(true);
+            cameraControl().accelerateBackward(true);
             break;
         case Qt::Key_D:
-            _cameraControl.accelerateRight(true);
+            cameraControl().accelerateRight(true);
             break;
         }
     }
@@ -98,16 +98,16 @@ void Sahara::VulkanSceneWidget::keyReleaseEvent(QKeyEvent *event)
 
     switch (event->key()) {
     case Qt::Key_W:
-        _cameraControl.accelerateForward(false);
+        cameraControl().accelerateForward(false);
         break;
     case Qt::Key_A:
-        _cameraControl.accelerateLeft(false);
+        cameraControl().accelerateLeft(false);
         break;
     case Qt::Key_S:
-        _cameraControl.accelerateBackward(false);
+        cameraControl().accelerateBackward(false);
         break;
     case Qt::Key_D:
-        _cameraControl.accelerateRight(false);
+        cameraControl().accelerateRight(false);
         break;
     }
 }

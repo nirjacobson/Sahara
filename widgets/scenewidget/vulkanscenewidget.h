@@ -56,8 +56,6 @@ namespace Sahara {
         VulkanSceneWindow _window;
         VulkanRenderer* _renderer;
 
-        CameraControl _cameraControl;
-
         QTimer _timer;
 
     private slots:
