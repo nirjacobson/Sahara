@@ -150,7 +150,7 @@ if (LINUX)
     target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets)
 elseif (WIN32)
     target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-        "../QCollada/build/Desktop-Release/QCollada.lib")
+        "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop-Release/QCollada.lib")
 endif()
 
 target_compile_definitions(Sahara PRIVATE SAHARA_LIBRARY)
