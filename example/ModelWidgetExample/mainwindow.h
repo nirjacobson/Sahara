@@ -24,6 +24,10 @@ namespace Sahara {
                 ~MainWindow();
 
             private:
+                static const QString Organization;
+                static const QString Application;
+                static const QString SettingsFile;
+
                 Ui::MainWindow *ui;
                 bool _vulkan;
                 Sahara::ModelWidget* _modelWidget;

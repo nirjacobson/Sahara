@@ -1,13 +1,21 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+const QString Sahara::ModelWidgetExample::MainWindow::Organization = "Nir Jacobson";
+const QString Sahara::ModelWidgetExample::MainWindow::Application = "ModelWidgetExample";
+const QString Sahara::ModelWidgetExample::MainWindow::SettingsFile = "settings.ini";
+
 Sahara::ModelWidgetExample::MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+#ifdef Q_OS_WIN
+    QSettings settings(SettingsFile, QSettings::IniFormat);
+#else
+    QSettings settings(Organization, Application);
+#endif
     _vulkan = settings.value("API").toString() == "Vulkan" && QVulkanInstance().create();
     ui->actionOpenGL->setChecked(!_vulkan);
     ui->actionVulkan->setChecked(_vulkan);
@@ -93,7 +101,12 @@ void Sahara::ModelWidgetExample::MainWindow::actionOpenGLTriggered()
     ui->actionOpenGL->setChecked(!_vulkan);
     ui->actionVulkan->setChecked(_vulkan);
 
-    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+#ifdef Q_OS_WIN
+    QSettings settings(SettingsFile, QSettings::IniFormat);
+#else
+    QSettings settings(Organization, Application);
+#endif
+
     settings.setValue("API", "OpenGL");
 
     QMessageBox::information(this, "Please restart the program", "Please restart the program for the changes to take effect.");
@@ -104,7 +117,12 @@ void Sahara::ModelWidgetExample::MainWindow::actionVulkanTriggered()
     ui->actionOpenGL->setChecked(!_vulkan);
     ui->actionVulkan->setChecked(_vulkan);
 
-    QSettings settings("Nir Jacobson", "ModelWidgetExample");
+#ifdef Q_OS_WIN
+    QSettings settings(SettingsFile, QSettings::IniFormat);
+#else
+    QSettings settings(Organization, Application);
+#endif
+
     settings.setValue("API", "Vulkan");
 
     QMessageBox::information(this, "Please restart the program", "Please restart the program for the changes to take effect.");
