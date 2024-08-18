@@ -1,6 +1,8 @@
 #ifndef SAHARA_MATERIAL_H
 #define SAHARA_MATERIAL_H
 
+#include "Sahara_global.h"
+
 #include <QColor>
 #include <optional>
 
@@ -12,7 +14,7 @@
 namespace Sahara
 {
 
-    class VulkanMaterial : public Material, public VulkanWithUniform
+    class SAHARA_EXPORT VulkanMaterial : public Material, public VulkanWithUniform
     {
         friend class JSON;
 

@@ -1,12 +1,14 @@
 #ifndef SAHARA_ASSET_H
 #define SAHARA_ASSET_H
 
+#include "Sahara_global.h"
+
 #include <QString>
 
 namespace Sahara
 {
 
-    class Asset
+    class SAHARA_EXPORT Asset
     {
         public:
             Asset(const QString& id);

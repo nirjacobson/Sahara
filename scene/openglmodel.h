@@ -1,6 +1,8 @@
 #ifndef SAHARA_OPENGL_MODEL_H
 #define SAHARA_OPENGL_MODEL_H
 
+#include "Sahara_global.h"
+
 #include <QStack>
 #include <QMatrix4x4>
 
@@ -11,7 +13,7 @@
 namespace Sahara {
   class OpenGLRenderer;
 
-  class OpenGLModel : public Model
+  class SAHARA_EXPORT OpenGLModel : public Model
   {
     friend class JSON;
 

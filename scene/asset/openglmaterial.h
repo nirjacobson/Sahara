@@ -1,6 +1,8 @@
 #ifndef SAHARA_OPENGL_MATERIAL_H
 #define SAHARA_OPENGL_MATERIAL_H
 
+#include "Sahara_global.h"
+
 #include <QColor>
 #include <optional>
 
@@ -10,7 +12,7 @@
 namespace Sahara
 {
 
-    class OpenGLMaterial : public Material
+    class SAHARA_EXPORT OpenGLMaterial : public Material
     {
         friend class JSON;
 

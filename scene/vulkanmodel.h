@@ -1,6 +1,8 @@
 #ifndef SAHARA_VULKAN_MODEL_H
 #define SAHARA_VULKAN_MODEL_H
 
+#include "Sahara_global.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QStack>
@@ -21,7 +23,7 @@
 
 namespace Sahara {
 
-  class VulkanModel : public Model
+  class SAHARA_EXPORT VulkanModel : public Model
   {
     friend class JSON;
 
