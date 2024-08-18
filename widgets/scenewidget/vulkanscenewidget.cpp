@@ -46,11 +46,15 @@ void Sahara::VulkanSceneWidget::rendererCreated(QVulkanWindowRenderer* renderer)
 
 void Sahara::VulkanSceneWidget::rendererReady()
 {
-    newScene();
+    if (!_scene) {
+        newScene();
 
-    _timer.start();
+        _timer.start();
 
-    emit initialized();
+        emit initialized();
+    } else {
+        _scene->recreateUniforms();
+    }
 }
 
 void Sahara::VulkanSceneWidget::updateCameraControl()

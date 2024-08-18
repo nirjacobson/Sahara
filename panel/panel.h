@@ -4,13 +4,13 @@
 #include <QPainter>
 
 #include "render/vulkanwithvertexbuffers.h"
-#include "render/withuniform.h"
+#include "render/vulkanwithuniform.h"
 
 namespace Sahara {
 
     class VulkanRenderer;
 
-    class Panel : public VulkanWithVertexBuffers, public WithUniform
+    class Panel : public VulkanWithVertexBuffers, public VulkanWithUniform
     {
         public:
             Panel(VulkanRenderer* renderer, int width, int height);
@@ -40,6 +40,7 @@ namespace Sahara {
         public:
             const QList<VkDescriptorSet> &descriptorSets() const;
             void updateUniform(const uint32_t currentFrame);
+            void recreateUniform();
     };
 
 }

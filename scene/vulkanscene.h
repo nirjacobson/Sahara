@@ -8,14 +8,14 @@
 #include "asset/light/ambientlight.h"
 #include "node/node.h"
 #include "vulkanutil.h"
-#include "../render/withuniform.h"
+#include "../render/vulkanwithuniform.h"
 #include "scene/vulkanmodel.h"
 #include "scene.h"
 
 namespace Sahara {
   class VulkanRenderer;
 
-  class VulkanScene : public Scene, public WithUniform
+  class VulkanScene : public Scene, public VulkanWithUniform
   {
     friend class JSON;
 
@@ -26,6 +26,8 @@ namespace Sahara {
       const QList<VkDescriptorSet>& descriptorSets() const;
 
       void updateUniform(const uint32_t currentFrame);
+      void recreateUniform();
+      void recreateUniforms();
 
     private:
       VulkanRenderer* _renderer;

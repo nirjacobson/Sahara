@@ -4,13 +4,13 @@
 #include <QImage>
 
 #include "image.h"
-#include "../../render/withuniform.h"
+#include "../../render/vulkanwithuniform.h"
 
 namespace Sahara
 {
     class VulkanRenderer;
 
-    class VulkanImage : public Image, public WithUniform
+    class VulkanImage : public Image, public VulkanWithUniform
     {
         friend class JSON;
 
@@ -21,6 +21,7 @@ namespace Sahara
             const QList<VkDescriptorSet>& descriptorSets() const;
 
             void updateUniform(const uint32_t currentFrame) { }
+            void recreateUniform();
 
         private:
             VulkanRenderer* _renderer;

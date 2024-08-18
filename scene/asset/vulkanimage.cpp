@@ -29,3 +29,8 @@ const QList<VkDescriptorSet>& Sahara::VulkanImage::descriptorSets() const
 {
     return _descriptorSets;
 }
+
+void Sahara::VulkanImage::recreateUniform()
+{
+    _descriptorSets = _renderer->createImageDescriptorSets(_imageView);
+}

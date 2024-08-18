@@ -40,15 +40,7 @@ Sahara::ModelWidgetExample::MainWindow::~MainWindow()
 
 void Sahara::ModelWidgetExample::MainWindow::modelWidgetInitialized()
 {
-    if (ui->actionChibi->isChecked()) {
-        ui->actionChibi->trigger();
-    } else if (ui->actionScorpion->isChecked()) {
-        ui->actionScorpion->trigger();
-    } else if (ui->actionTree->isChecked()) {
-        ui->actionTree->trigger();
-    } else {
-        ui->actionChibi->trigger();
-    }
+    ui->actionChibi->trigger();
 }
 
 void Sahara::ModelWidgetExample::MainWindow::actionChibiTriggered()

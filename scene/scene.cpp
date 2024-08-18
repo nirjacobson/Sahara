@@ -115,3 +115,4 @@ Sahara::AmbientLight& Sahara::Scene::ambientLight()
 {
     return _ambientLight;
 }
+

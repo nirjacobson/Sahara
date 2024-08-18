@@ -69,3 +69,8 @@ void Sahara::VulkanMaterial::updateUniform(const uint32_t currentFrame)
 
     memcpy(_uniformBuffers.buffersMapped[currentFrame], &material, sizeof(ScenePipeline::Material));
 }
+
+void Sahara::VulkanMaterial::recreateUniform()
+{
+    _uniformBuffers = _renderer->createMaterialUniformBuffers();
+}

@@ -41,6 +41,28 @@ Sahara::VulkanModel* Sahara::VulkanModel::fromCollada(VulkanRenderer* renderer, 
   return model;
 }
 
+void Sahara::VulkanModel::recreateUniforms()
+{
+    VulkanInstanceController* vic;
+    VulkanMaterial* mat;
+    VulkanImage* img;
+    for (Instance* inst : _instances) {
+        if ((vic = dynamic_cast<VulkanInstanceController*>(inst))) {
+            vic->recreateUniform();
+        }
+    }
+    for (Material* matt : _materials) {
+        if ((mat = dynamic_cast<VulkanMaterial*>(matt))) {
+            mat->recreateUniform();
+        }
+    }
+    for (Image* imgg : _images) {
+        if ((img = dynamic_cast<VulkanImage*>(imgg))) {
+            img->recreateUniform();
+        }
+    }
+}
+
 Sahara::VulkanModel::VulkanModel()
 {
 

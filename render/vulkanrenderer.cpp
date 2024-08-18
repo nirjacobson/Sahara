@@ -580,7 +580,6 @@ void Sahara::VulkanRenderer::releaseResources()
     releaseUniformBuffers(*_displayPipeline, _renderUniformBuffersDisplay);
     releaseUniformBuffers(*_gridPipeline, _renderUniformBuffersGrid);
 
-    delete _scene;
     delete _grid;
     delete _cameraDisplay;
     delete _pointLightDisplay;

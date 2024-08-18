@@ -58,3 +58,8 @@ void Sahara::VulkanInstanceController::updateUniform(const uint32_t currentFrame
 
     memcpy(_uniformBuffers.buffersMapped[currentFrame], &armature, sizeof(AnimatedPipeline::Armature));
 }
+
+void Sahara::VulkanInstanceController::recreateUniform()
+{
+    _uniformBuffers = _renderer->createArmatureUniformBuffers();
+}

@@ -7,12 +7,12 @@
 #include "material.h"
 #include "vulkanimage.h"
 #include "vulkanutil.h"
-#include "../../render/withuniform.h"
+#include "../../render/vulkanwithuniform.h"
 
 namespace Sahara
 {
 
-    class VulkanMaterial : public Material, public WithUniform
+    class VulkanMaterial : public Material, public VulkanWithUniform
     {
         friend class JSON;
 
@@ -40,6 +40,7 @@ namespace Sahara
             const QList<VkDescriptorSet>& descriptorSets() const;
 
             void updateUniform(const uint32_t currentFrame);
+            void recreateUniform();
 
         private:
             VulkanRenderer* _renderer;

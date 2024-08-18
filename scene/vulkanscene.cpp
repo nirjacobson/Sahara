@@ -61,6 +61,22 @@ void Sahara::VulkanScene::updateUniform(const uint32_t currentFrame)
 
 }
 
+void Sahara::VulkanScene::recreateUniform()
+{
+    _lightingUniformBuffers = _renderer->createLightingUniformBuffers();
+}
 
+void Sahara::VulkanScene::recreateUniforms()
+{
+    recreateUniform();
 
-
+    _root->depthFirst([&](Sahara::Node& node) {
+        if (!node.isRoot()) {
+            VulkanModel* model;
+            if ((model = dynamic_cast<VulkanModel*>(&node.item()))) {
+                model->recreateUniforms();
+            }
+        }
+        return false;
+    });
+}

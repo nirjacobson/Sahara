@@ -28,6 +28,7 @@ namespace Sahara {
     public:
       static VulkanModel* fromCollada(VulkanRenderer* renderer, const QString& path);
 
+      void recreateUniforms();
     private:
       VulkanModel();
 

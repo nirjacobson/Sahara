@@ -134,8 +134,8 @@ add_library(Sahara SHARED
   panel/panel.h
   scene/asset/vulkanimage.cpp
   scene/asset/vulkanimage.h
-  render/withuniform.cpp
-  render/withuniform.h
+  render/vulkanwithuniform.cpp
+  render/vulkanwithuniform.h
   scene/asset/vulkanmaterial.cpp
   scene/asset/vulkanmaterial.h
   scene/instance/vulkaninstancecontroller.cpp

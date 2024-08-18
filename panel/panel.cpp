@@ -76,3 +76,8 @@ void Sahara::Panel::updateUniform(const uint32_t currentFrame)
         _renderer->copyImage(_image, _vkImage);
     }
 }
+
+void Sahara::Panel::recreateUniform()
+{
+    _descriptorSets = _renderer->createImageDescriptorSets(_vkImageView);
+}

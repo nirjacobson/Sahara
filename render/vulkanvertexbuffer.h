@@ -25,7 +25,6 @@ namespace Sahara
 
         private:
             QVulkanWindow* _window;
-            QVulkanDeviceFunctions* _deviceFunctions;
             VkBuffer _buffer;
             VkDeviceMemory _memory;
 
