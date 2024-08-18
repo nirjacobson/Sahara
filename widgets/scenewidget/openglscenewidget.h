@@ -1,6 +1,8 @@
 #ifndef SAHARA_OPENGL_SCENEWIDGET_H
 #define SAHARA_OPENGL_SCENEWIDGET_H
 
+#include "Sahara_global.h"
+
 #include <QObject>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -18,7 +20,7 @@
 
 namespace Sahara {
 
-    class OpenGLSceneWidget :  public QOpenGLWidget, protected QOpenGLFunctions, public SceneWidget
+    class SAHARA_EXPORT OpenGLSceneWidget :  public QOpenGLWidget, protected QOpenGLFunctions, public SceneWidget
     {
         Q_OBJECT
 

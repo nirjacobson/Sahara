@@ -1,6 +1,8 @@
 #ifndef SAHARA_VULKAN_SCENEWIDGET_H
 #define SAHARA_VULKAN_SCENEWIDGET_H
 
+#include "Sahara_global.h"
+
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QKeyEvent>
@@ -14,7 +16,7 @@
 #include "scenewidget.h"
 
 namespace Sahara {
-    class VulkanSceneWidget : public QWidget, public SceneWidget
+    class SAHARA_EXPORT VulkanSceneWidget : public QWidget, public SceneWidget
     {
         Q_OBJECT
     public:

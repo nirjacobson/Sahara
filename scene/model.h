@@ -1,6 +1,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "Sahara_global.h"
+
 #include <QFileInfo>
 #include <QDir>
 
@@ -24,7 +26,7 @@ namespace Sahara {
     typedef QMap<QString, Animation*> AnimationDict;
     typedef QMap<QString, AnimationClip*> AnimationClipDict;
 
-    class Model : public NodeItem
+    class SAHARA_EXPORT Model : public NodeItem
     {    friend class JSON;
 
     protected:

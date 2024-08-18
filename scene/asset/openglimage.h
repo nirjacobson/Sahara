@@ -1,6 +1,8 @@
 #ifndef SAHARA_OPENGL_IMAGE_H
 #define SAHARA_OPENGL_IMAGE_H
 
+#include "Sahara_global.h"
+
 #include <QImage>
 #include <QOpenGLTexture>
 
@@ -11,7 +13,7 @@ namespace Sahara
 
     class OpenGLRenderer;
 
-    class OpenGLImage : public Image
+    class SAHARA_EXPORT OpenGLImage : public Image
     {
         friend class JSON;
 

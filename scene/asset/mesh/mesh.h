@@ -1,11 +1,13 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "Sahara_global.h"
+
 #include "../asset.h"
 #include "surface.h"
 
 namespace Sahara {
-    class Mesh : public Asset
+    class SAHARA_EXPORT Mesh : public Asset
     {
         friend class JSON;
 

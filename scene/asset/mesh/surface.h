@@ -1,10 +1,12 @@
 #ifndef SURFACE_H
 #define SURFACE_H
 
+#include "Sahara_global.h"
+
 #include "source.h"
 
 namespace Sahara {
-    class Surface
+    class SAHARA_EXPORT Surface
     {
         friend class JSON;
 

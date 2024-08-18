@@ -1,6 +1,8 @@
 #ifndef SAHARA_VULKAN_IMAGE_H
 #define SAHARA_VULKAN_IMAGE_H
 
+#include "Sahara_global.h"
+
 #include <QImage>
 
 #include "image.h"
@@ -10,7 +12,7 @@ namespace Sahara
 {
     class VulkanRenderer;
 
-    class VulkanImage : public Image, public VulkanWithUniform
+    class SAHARA_EXPORT VulkanImage : public Image, public VulkanWithUniform
     {
         friend class JSON;
 
