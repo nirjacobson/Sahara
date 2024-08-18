@@ -15,7 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Xml Widgets OpenGL OpenGL
 
 include_directories("../../../QCollada")
 include_directories("../../../Sahara")
-include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
+include_directories("/Users/nir/MoltenVK/Package/${CMAKE_BUILD_TYPE}/MoltenVK/include")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(PROJECT_SOURCES
@@ -54,23 +54,23 @@ if (LINUX)
                                                      Qt${QT_VERSION_MAJOR}::Widgets
                                                      Qt${QT_VERSION_MAJOR}::OpenGL
                                                      Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/libQCollada.so
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/libSahara.so )
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/libQCollada.so
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-${CMAKE_BUILD_TYPE}/libSahara.so )
 elseif (WIN32)
     target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
                                                      Qt${QT_VERSION_MAJOR}::Widgets
                                                      Qt${QT_VERSION_MAJOR}::OpenGL
                                                      Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/QCollada.lib
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/Sahara.lib )
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/QCollada.lib
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-${CMAKE_BUILD_TYPE}/Sahara.lib )
 
 elseif (APPLE)
     target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
                                                      Qt${QT_VERSION_MAJOR}::Widgets
                                                      Qt${QT_VERSION_MAJOR}::OpenGL
                                                      Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-Release/libQCollada.dylib
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-Release/libSahara.dylib )
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/libQCollada.dylib
+                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-${CMAKE_BUILD_TYPE}/libSahara.dylib )
 endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
