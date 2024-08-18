@@ -44,30 +44,33 @@ void Sahara::OpenGLRenderer::renderScene(OpenGLScene& scene, const float time)
     transforms.push(QMatrix4x4());
     scene.root().depthFirst([&](Node& node) {
        transforms.push(transforms.top() * node.transform());
-       OpenGLModel* model;
-       PointLight* pointLight;
-       Camera* camera;
-       if ((model = dynamic_cast<OpenGLModel*>(&node.item()))) {
-           _sceneProgram.setFocus(false);
-           renderModel(*model, transforms, false, time);
-           if (node.hasFocus()) {
-               _sceneProgram.setFocus(true);
-               renderModel(*model, transforms, true, time);
-           }
-       } else {
-           _sceneProgram.release();
 
-           if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-               if (showLights()) {
-                   renderPointLight(scene, transforms.top(), node.hasFocus());
+       if (!node.isRoot()) {
+           OpenGLModel* model;
+           PointLight* pointLight;
+           Camera* camera;
+           if ((model = dynamic_cast<OpenGLModel*>(&node.item()))) {
+               _sceneProgram.setFocus(false);
+               renderModel(*model, transforms, false, time);
+               if (node.hasFocus()) {
+                   _sceneProgram.setFocus(true);
+                   renderModel(*model, transforms, true, time);
                }
-           } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-               if (showCameras() && &node != &scene.cameraNode()) {
-                   renderCamera(scene, transforms.top(), node.hasFocus());
-               }
-           }
+           } else {
+               _sceneProgram.release();
 
-           _sceneProgram.bind();
+               if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+                   if (showLights()) {
+                       renderPointLight(scene, transforms.top(), node.hasFocus());
+                   }
+               } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+                   if (showCameras() && &node != &scene.cameraNode()) {
+                       renderCamera(scene, transforms.top(), node.hasFocus());
+                   }
+               }
+
+               _sceneProgram.bind();
+           }
        }
 
        return false;
@@ -230,9 +233,11 @@ void Sahara::OpenGLRenderer::processSceneLighting(Sahara::OpenGLScene& scene)
     _sceneProgram.setAmbientLight(scene.ambientLight());
     _sceneProgram.clearPointLights();
     scene.root().depthFirst([&](const Node& node) {
-        const PointLight* pointLight;
-        if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
-            _sceneProgram.addPointLight(*pointLight, node.globalPosition());
+        if (!node.isRoot()) {
+            const PointLight* pointLight;
+            if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
+                _sceneProgram.addPointLight(*pointLight, node.globalPosition());
+            }
         }
         return false;
     });

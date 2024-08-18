@@ -3,10 +3,14 @@
 Sahara::GridProgram::GridProgram()
 {
     _vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-    _vertexShader->compileSourceFile(":/programs/glsl/grid.vsh");
+    if (!_vertexShader->compileSourceFile(":/programs/glsl/300/grid.vsh")) {
+        _vertexShader->compileSourceFile(":/programs/glsl/120/grid.vsh");
+    }
 
     _fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
-    _fragmentShader->compileSourceFile(":/programs/glsl/grid.fsh");
+    if (!_fragmentShader->compileSourceFile(":/programs/glsl/300/grid.fsh")) {
+        _fragmentShader->compileSourceFile(":/programs/glsl/120/grid.fsh");
+    }
 
     program().addShader(_vertexShader);
     program().addShader(_fragmentShader);

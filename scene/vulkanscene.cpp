@@ -32,25 +32,27 @@ void Sahara::VulkanScene::updateUniform(const uint32_t currentFrame)
     };
 
     _root->depthFirst([&](const Node& node) {
-        const PointLight* pointLight;
-        if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
-            lighting.pointLights[lighting.pointLightCount++] = {
-                .position = {
-                    node.globalPosition().x(),
-                    node.globalPosition().y(),
-                    node.globalPosition().z()
-                },
-                .color = {
-                    pointLight->color().redF(),
-                    pointLight->color().greenF(),
-                    pointLight->color().blueF()
-                },
-                .attenuation = {
-                    pointLight->constantAttenuation(),
-                    pointLight->linearAttenuation(),
-                    pointLight->quadraticAttenuation(),
-                }
-            };
+        if (!node.isRoot()) {
+            const PointLight* pointLight;
+            if ((pointLight = dynamic_cast<const PointLight*>(&node.item()))) {
+                lighting.pointLights[lighting.pointLightCount++] = {
+                    .position = {
+                        node.globalPosition().x(),
+                        node.globalPosition().y(),
+                        node.globalPosition().z()
+                    },
+                    .color = {
+                        pointLight->color().redF(),
+                        pointLight->color().greenF(),
+                        pointLight->color().blueF()
+                    },
+                    .attenuation = {
+                        pointLight->constantAttenuation(),
+                        pointLight->linearAttenuation(),
+                        pointLight->quadraticAttenuation(),
+                    }
+                };
+            }
         }
         return false;
     });

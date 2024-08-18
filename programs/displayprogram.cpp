@@ -3,10 +3,14 @@
 Sahara::DisplayProgram::DisplayProgram()
 {
     _vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-    _vertexShader->compileSourceFile(":/programs/glsl/display.vsh");
+    if (!_vertexShader->compileSourceFile(":/programs/glsl/300/display.vsh")) {
+        _vertexShader->compileSourceFile(":/programs/glsl/120/display.vsh");
+    }
 
     _fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
-    _fragmentShader->compileSourceFile(":/programs/glsl/display.fsh");
+    if (!_fragmentShader->compileSourceFile(":/programs/glsl/300/display.fsh")) {
+        _fragmentShader->compileSourceFile(":/programs/glsl/120/display.fsh");
+    }
 
     program().addShader(_vertexShader);
     program().addShader(_fragmentShader);

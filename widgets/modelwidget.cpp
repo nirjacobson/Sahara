@@ -91,6 +91,8 @@ void Sahara::ModelWidget::showAnimationsUI(const bool visible)
 
 void Sahara::ModelWidget::sceneWidgetInitialized()
 {
+    _modelNode = nullptr;
+
     QMatrix4x4 cameraTransform;
     cameraTransform.translate({0, 0, 16});
     _sceneWidget->scene().cameraNode().setTransform(cameraTransform);

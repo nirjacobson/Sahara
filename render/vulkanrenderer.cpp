@@ -265,22 +265,24 @@ void Sahara::VulkanRenderer::recordScene(VulkanScene &scene, const float time)
     transforms.push(QMatrix4x4());
     scene.root().depthFirst([&](Node& node) {
        transforms.push(transforms.top() * node.transform());
-       VulkanModel* model;
-       PointLight* pointLight;
-       Camera* camera;
-       if ((model = dynamic_cast<VulkanModel*>(&node.item()))) {
-           recordModel(*model, transforms, false, time);
-           if (node.hasFocus()) {
-               recordModel(*model, transforms, true, time);
-           }
-       } else {
-           if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
-               if (showLights()) {
-                   recordPointLight(scene, transforms.top(), node.hasFocus());
+       if (!node.isRoot()) {
+           VulkanModel* model;
+           PointLight* pointLight;
+           Camera* camera;
+           if ((model = dynamic_cast<VulkanModel*>(&node.item()))) {
+               recordModel(*model, transforms, false, time);
+               if (node.hasFocus()) {
+                   recordModel(*model, transforms, true, time);
                }
-           } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
-               if (showCameras() && &node != &scene.cameraNode()) {
-                   recordCamera(scene, transforms.top(), node.hasFocus());
+           } else {
+               if ((pointLight = dynamic_cast<PointLight*>(&node.item()))) {
+                   if (showLights()) {
+                       recordPointLight(scene, transforms.top(), node.hasFocus());
+                   }
+               } else if ((camera = dynamic_cast<Camera*>(&node.item()))) {
+                   if (showCameras() && &node != &scene.cameraNode()) {
+                       recordCamera(scene, transforms.top(), node.hasFocus());
+                   }
                }
            }
        }
@@ -437,8 +439,6 @@ void Sahara::VulkanRenderer::record(const float time)
 void Sahara::VulkanRenderer::startNextFrame()
 {
     if (_scene) {
-        VkDevice dev = _vulkanWindow->device();
-        VkCommandBuffer cb = _vulkanWindow->currentCommandBuffer();
         const QSize sz = _vulkanWindow->swapChainImageSize();
 
         VkClearColorValue clearColor = {{ 0.5f, 0.75f, 0.86f, 1.0f }};

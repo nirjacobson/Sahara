@@ -13,6 +13,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Gui Widgets Open
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories("../QCollada")
+include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
 
 add_library(Sahara SHARED
   Sahara_global.h
@@ -24,13 +25,6 @@ add_library(Sahara SHARED
   common/volume.h
   json/json.cpp
   json/json.h
-  programs/glsl/display.fsh
-  programs/glsl/display.vsh
-  programs/glsl/grid.fsh
-  programs/glsl/grid.vsh
-  programs/glsl/scene.fsh
-  programs/glsl/scene.vsh
-  programs/displayprogram.cpp
   programs/displayprogram.h
   programs/gridprogram.cpp
   programs/gridprogram.h
@@ -115,35 +109,98 @@ add_library(Sahara SHARED
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
-  pipelines/animatedpipeline.cpp pipelines/animatedpipeline.h pipelines/displaypipeline.cpp pipelines/displaypipeline.h pipelines/gridpipeline.cpp pipelines/gridpipeline.h pipelines/panelpipeline.cpp pipelines/panelpipeline.h pipelines/pipeline.cpp pipelines/pipeline.h pipelines/scenepipeline.cpp pipelines/scenepipeline.h
+  pipelines/animatedpipeline.cpp
+  pipelines/animatedpipeline.h
+  pipelines/displaypipeline.cpp
+  pipelines/displaypipeline.h
+  pipelines/gridpipeline.cpp
+  pipelines/gridpipeline.h
+  pipelines/panelpipeline.cpp
+  pipelines/panelpipeline.h
+  pipelines/pipeline.cpp
+  pipelines/pipeline.h
+  pipelines/scenepipeline.cpp
+  pipelines/scenepipeline.h
   vulkanutil.cpp vulkanutil.h
-  render/vulkanvertexbuffer.cpp render/vulkanvertexbuffer.h
-  render/vulkanwithvertexbuffers.cpp render/vulkanwithvertexbuffers.h
-  render/vulkanrenderer.cpp render/vulkanrenderer.h
-  panel/fpspanel.cpp panel/fpspanel.h panel/panel.cpp panel/panel.h
-  scene/asset/vulkanimage.cpp scene/asset/vulkanimage.h
-  render/withuniform.cpp render/withuniform.h
-  scene/asset/vulkanmaterial.cpp scene/asset/vulkanmaterial.h
-  scene/instance/vulkaninstancecontroller.cpp scene/instance/vulkaninstancecontroller.h
-  scene/vulkanscene.cpp scene/vulkanscene.h
-  widgets/scenewidget/vulkanscenewidget.cpp widgets/scenewidget/vulkanscenewidget.h
-  widgets/scenewidget/vulkanscenewindow.cpp widgets/scenewidget/vulkanscenewindow.h
-  scene/vulkanmodel.cpp scene/vulkanmodel.h
-  scene/asset/mesh/vulkanmesh.cpp scene/asset/mesh/vulkanmesh.h
-  scene/asset/mesh/vulkansurface.cpp scene/asset/mesh/vulkansurface.h
-  scene/asset/mesh/mesh.h scene/asset/mesh/mesh.cpp
-  scene/asset/mesh/surface.h scene/asset/mesh/surface.cpp
-  scene/asset/material.h scene/asset/material.cpp
-  scene/instance/instancecontroller.h scene/instance/instancecontroller.cpp
-  scene/model.h scene/model.cpp
-  scene/asset/image.h scene/asset/image.cpp
-  scene/scene.h scene/scene.cpp
-  widgets/scenewidget/scenewidget.h widgets/scenewidget/scenewidget.cpp
-  render/renderer.h render/renderer.cpp
-  render/grid/vulkanaxis.cpp render/grid/vulkanaxis.h
-  render/grid/vulkangrid.cpp render/grid/vulkangrid.h
-  render/display/vulkancameradisplay.cpp render/display/vulkancameradisplay.h render/display/vulkandisplay.h render/display/vulkanpointlightdisplay.cpp render/display/vulkanpointlightdisplay.h
-  programs/spir-v/animated.vert.spv programs/spir-v/display.frag.spv programs/spir-v/display.vert.spv programs/spir-v/grid.frag.spv programs/spir-v/grid.vert.spv programs/spir-v/panel.frag.spv programs/spir-v/panel.vert.spv programs/spir-v/scene.frag.spv programs/spir-v/scene.vert.spv
+  render/vulkanvertexbuffer.cpp
+  render/vulkanvertexbuffer.h
+  render/vulkanwithvertexbuffers.cpp
+  render/vulkanwithvertexbuffers.h
+  render/vulkanrenderer.cpp
+  render/vulkanrenderer.h
+  panel/fpspanel.cpp
+  panel/fpspanel.h
+  panel/panel.cpp
+  panel/panel.h
+  scene/asset/vulkanimage.cpp
+  scene/asset/vulkanimage.h
+  render/withuniform.cpp
+  render/withuniform.h
+  scene/asset/vulkanmaterial.cpp
+  scene/asset/vulkanmaterial.h
+  scene/instance/vulkaninstancecontroller.cpp
+  scene/instance/vulkaninstancecontroller.h
+  scene/vulkanscene.cpp
+  scene/vulkanscene.h
+  widgets/scenewidget/vulkanscenewidget.cpp
+  widgets/scenewidget/vulkanscenewidget.h
+  widgets/scenewidget/vulkanscenewindow.cpp
+  widgets/scenewidget/vulkanscenewindow.h
+  scene/vulkanmodel.cpp
+  scene/vulkanmodel.h
+  scene/asset/mesh/vulkanmesh.cpp
+  scene/asset/mesh/vulkanmesh.h
+  scene/asset/mesh/vulkansurface.cpp
+  scene/asset/mesh/vulkansurface.h
+  scene/asset/mesh/mesh.h
+  scene/asset/mesh/mesh.cpp
+  scene/asset/mesh/surface.h
+  scene/asset/mesh/surface.cpp
+  scene/asset/material.h
+  scene/asset/material.cpp
+  scene/instance/instancecontroller.h
+  scene/instance/instancecontroller.cpp
+  scene/model.h
+  scene/model.cpp
+  scene/asset/image.h
+  scene/asset/image.cpp
+  scene/scene.h
+  scene/scene.cpp
+  widgets/scenewidget/scenewidget.h
+  widgets/scenewidget/scenewidget.cpp
+  render/renderer.h
+  render/renderer.cpp
+  render/grid/vulkanaxis.cpp
+  render/grid/vulkanaxis.h
+  render/grid/vulkangrid.cpp
+  render/grid/vulkangrid.h
+  render/display/vulkancameradisplay.cpp
+  render/display/vulkancameradisplay.h
+  render/display/vulkandisplay.h
+  render/display/vulkanpointlightdisplay.cpp
+  render/display/vulkanpointlightdisplay.h
+  programs/spir-v/animated.vert.spv
+  programs/spir-v/display.frag.spv
+  programs/spir-v/display.vert.spv
+  programs/spir-v/grid.frag.spv
+  programs/spir-v/grid.vert.spv
+  programs/spir-v/panel.frag.spv
+  programs/spir-v/panel.vert.spv
+  programs/spir-v/scene.frag.spv
+  programs/spir-v/scene.vert.spv
+  programs/glsl/120/display.fsh
+  programs/glsl/120/display.vsh
+  programs/glsl/120/grid.fsh
+  programs/glsl/120/grid.vsh
+  programs/glsl/120/scene.fsh
+  programs/glsl/120/scene.vsh
+  programs/glsl/300/display.fsh
+  programs/glsl/300/display.vsh
+  programs/glsl/300/grid.fsh
+  programs/glsl/300/grid.vsh
+  programs/glsl/300/scene.fsh
+  programs/glsl/300/scene.vsh
+  programs/displayprogram.cpp
 )
 
 if (LINUX)
@@ -151,6 +208,10 @@ if (LINUX)
 elseif (WIN32)
     target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
         "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop-Release/QCollada.lib")
+elseif (APPLE)
+    target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+        "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop-Debug/libQCollada.dylib")
+
 endif()
 
 target_compile_definitions(Sahara PRIVATE SAHARA_LIBRARY)
