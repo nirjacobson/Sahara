@@ -1,11 +1,13 @@
 #ifndef SAHARA_AMBIENTLIGHT_H
 #define SAHARA_AMBIENTLIGHT_H
 
+#include "Sahara_global.h"
+
 #include "light.h"
 
 namespace Sahara
 {
-    class AmbientLight : public Light
+    class SAHARA_EXPORT AmbientLight : public Light
     {
         public:
             AmbientLight();

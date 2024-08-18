@@ -1,10 +1,12 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+#include "Sahara_global.h"
+
 #include "asset.h"
 
 namespace Sahara {
-    class Image : public Asset
+    class SAHARA_EXPORT Image : public Asset
     {
         friend class JSON;
 

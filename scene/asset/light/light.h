@@ -1,12 +1,14 @@
 #ifndef SAHARALIGHT_H
 #define SAHARALIGHT_H
 
+#include "Sahara_global.h"
+
 #include <QColor>
 
 namespace Sahara
 {
 
-    class Light
+    class SAHARA_EXPORT Light
     {
         public:
             Light(const QColor& color);

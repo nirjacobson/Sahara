@@ -1,6 +1,8 @@
 #ifndef SAHARA_JSON_H
 #define SAHARA_JSON_H
 
+#include "Sahara_global.h"
+
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMatrix4x4>
@@ -28,7 +30,7 @@
 
 namespace Sahara {
 
-    class JSON
+    class SAHARA_EXPORT JSON
     {
         public:
             JSON();

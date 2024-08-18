@@ -1,6 +1,8 @@
 #ifndef SAHARA_POINTLIGHT_H
 #define SAHARA_POINTLIGHT_H
 
+#include "Sahara_global.h"
+
 #include <QColor>
 
 #include "../asset.h"
@@ -10,7 +12,7 @@
 namespace Sahara
 {
 
-    class PointLight : public Asset, public NodeItem,  public Light
+    class SAHARA_EXPORT PointLight : public Asset, public NodeItem,  public Light
     {
         friend class JSON;
 

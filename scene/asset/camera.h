@@ -1,6 +1,8 @@
 #ifndef SAHARA_CAMERA_H
 #define SAHARA_CAMERA_H
 
+#include "Sahara_global.h"
+
 #include <QMatrix4x4>
 #include <QtMath>
 
@@ -10,7 +12,7 @@
 namespace Sahara
 {
 
-    class Camera : public Asset, public NodeItem
+    class SAHARA_EXPORT Camera : public Asset, public NodeItem
     {
         friend class JSON;
 

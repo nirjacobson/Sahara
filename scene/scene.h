@@ -1,6 +1,8 @@
 #ifndef SAHARA_SCENE_H
 #define SAHARA_SCENE_H
 
+#include "Sahara_global.h"
+
 #include "asset/camera.h"
 #include "asset/light/light.h"
 #include "asset/light/ambientlight.h"
@@ -8,7 +10,7 @@
 #include "node/node.h"
 
 namespace Sahara {
-    class Scene
+    class SAHARA_EXPORT Scene
     {
         friend class JSON;
 

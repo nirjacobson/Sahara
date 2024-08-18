@@ -1,12 +1,14 @@
 #ifndef SAHARA_NODEITEM_H
 #define SAHARA_NODEITEM_H
 
+#include "Sahara_global.h"
+
 #include "common/volume.h"
 
 namespace Sahara
 {
 
-    class NodeItem
+    class SAHARA_EXPORT NodeItem
     {
         public:
             NodeItem();

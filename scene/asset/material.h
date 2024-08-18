@@ -1,12 +1,14 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "Sahara_global.h"
+
 #include <QColor>
 
 #include "asset.h"
 
 namespace Sahara {
-    class Material : public Asset
+    class SAHARA_EXPORT Material : public Asset
     {
         friend class JSON;
 
