@@ -64,6 +64,11 @@ namespace Sahara {
         void rendererCreated(QVulkanWindowRenderer* renderer);
         void rendererReady();
         void updateCameraControl();
+
+        // QWidget interface
+    protected:
+        void keyPressEvent(QKeyEvent* event) override;
+        void keyReleaseEvent(QKeyEvent* event) override;
     };
 }
 

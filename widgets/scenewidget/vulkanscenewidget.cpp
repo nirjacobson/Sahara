@@ -65,6 +65,63 @@ void Sahara::VulkanSceneWidget::updateCameraControl()
     }
 }
 
+void Sahara::VulkanSceneWidget::keyPressEvent(QKeyEvent *event)
+{
+#ifdef Q_OS_LINUX
+    if (event->isAutoRepeat())
+        return;
+
+    if (_window.flyThrough()) {
+        switch (event->key()) {
+        case Qt::Key_W:
+            cameraControl().accelerateForward(true);
+            break;
+        case Qt::Key_A:
+            cameraControl().accelerateLeft(true);
+            break;
+        case Qt::Key_S:
+            cameraControl().accelerateBackward(true);
+            break;
+        case Qt::Key_D:
+            cameraControl().accelerateRight(true);
+            break;
+        }
+    }
+
+    emit keyPressed(event);
+#endif
+
+    QWidget::keyPressEvent(event);
+}
+
+void Sahara::VulkanSceneWidget::keyReleaseEvent(QKeyEvent *event)
+{
+#ifdef Q_OS_LINUX
+    if (event->isAutoRepeat())
+        return;
+
+    if (!_window.flyThrough())
+        return;
+
+    switch (event->key()) {
+    case Qt::Key_W:
+        cameraControl().accelerateForward(false);
+        break;
+    case Qt::Key_A:
+        cameraControl().accelerateLeft(false);
+        break;
+    case Qt::Key_S:
+        cameraControl().accelerateBackward(false);
+        break;
+    case Qt::Key_D:
+        cameraControl().accelerateRight(false);
+        break;
+    }
+#endif
+
+    QWidget::keyReleaseEvent(event);
+}
+
 void Sahara::VulkanSceneWidget::setScene(Scene* scene)
 {
     Scene* s = _scene;
