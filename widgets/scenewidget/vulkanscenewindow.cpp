@@ -55,7 +55,7 @@ void Sahara::VulkanSceneWindow::mouseMoveEvent(QMouseEvent *event)
 
 void Sahara::VulkanSceneWindow::keyPressEvent(QKeyEvent* event)
 {
-#ifndef Q_OS_LINUX
+#ifdef Q_OS_WIN
     if (event->isAutoRepeat())
         return;
 
@@ -84,7 +84,7 @@ void Sahara::VulkanSceneWindow::keyPressEvent(QKeyEvent* event)
 
 void Sahara::VulkanSceneWindow::keyReleaseEvent(QKeyEvent* event)
 {
-#ifndef Q_OS_LINUX
+#ifdef Q_OS_WIN
     if (event->isAutoRepeat())
         return;
 

@@ -67,7 +67,7 @@ void Sahara::VulkanSceneWidget::updateCameraControl()
 
 void Sahara::VulkanSceneWidget::keyPressEvent(QKeyEvent *event)
 {
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
     if (event->isAutoRepeat())
         return;
 
@@ -96,7 +96,7 @@ void Sahara::VulkanSceneWidget::keyPressEvent(QKeyEvent *event)
 
 void Sahara::VulkanSceneWidget::keyReleaseEvent(QKeyEvent *event)
 {
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
     if (event->isAutoRepeat())
         return;
 
