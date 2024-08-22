@@ -3,6 +3,7 @@
 
 #include <QVulkanWindow>
 #include <QKeyEvent>
+#include <QWidget>
 
 #include "render/vulkanrenderer.h"
 #include "widgets/scenewidget/cameracontrol.h"
@@ -34,6 +35,8 @@ namespace Sahara {
     protected:
         void mousePressEvent(QMouseEvent* event);
         void mouseMoveEvent(QMouseEvent* event);
+        void keyPressEvent(QKeyEvent* event);
+        void keyReleaseEvent(QKeyEvent* event);
     };
 }
 

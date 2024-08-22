@@ -52,3 +52,56 @@ void Sahara::VulkanSceneWindow::mouseMoveEvent(QMouseEvent *event)
 
     emit mouseMoved(normalizedPos);
 }
+
+void Sahara::VulkanSceneWindow::keyPressEvent(QKeyEvent* event)
+{
+    if (event->isAutoRepeat())
+        return;
+
+    if (flyThrough()) {
+        switch (event->key()) {
+        case Qt::Key_W:
+            _cameraControl.accelerateForward(true);
+            break;
+        case Qt::Key_A:
+            _cameraControl.accelerateLeft(true);
+            break;
+        case Qt::Key_S:
+            _cameraControl.accelerateBackward(true);
+            break;
+        case Qt::Key_D:
+            _cameraControl.accelerateRight(true);
+            break;
+        }
+    }
+
+    emit keyPressed(event);
+
+    QWindow::keyPressEvent(event);
+}
+
+void Sahara::VulkanSceneWindow::keyReleaseEvent(QKeyEvent* event)
+{
+    if (event->isAutoRepeat())
+        return;
+
+    if (!flyThrough())
+        return;
+
+    switch (event->key()) {
+    case Qt::Key_W:
+        _cameraControl.accelerateForward(false);
+        break;
+    case Qt::Key_A:
+        _cameraControl.accelerateLeft(false);
+        break;
+    case Qt::Key_S:
+        _cameraControl.accelerateBackward(false);
+        break;
+    case Qt::Key_D:
+        _cameraControl.accelerateRight(false);
+        break;
+    }
+
+    QWindow::keyReleaseEvent(event);
+}
