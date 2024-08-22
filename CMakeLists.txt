@@ -15,6 +15,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories("../QCollada")
 include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
 
+set(CMAKE_OSX_ARCHITECTURES x86_64 arm64)
+
 add_library(Sahara SHARED
   Sahara_global.h
   sahara.cpp
