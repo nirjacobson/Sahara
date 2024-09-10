@@ -17,6 +17,62 @@ include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
 
 set(CMAKE_OSX_ARCHITECTURES x86_64 arm64)
 
+find_program(GLSLC NAMES glslc REQUIRED)
+
+set(SPIRV_SOURCES
+    programs/glsl/450/animated.vert.glsl
+    programs/glsl/450/display.frag.glsl
+    programs/glsl/450/display.vert.glsl
+    programs/glsl/450/grid.frag.glsl
+    programs/glsl/450/grid.vert.glsl
+    programs/glsl/450/panel.frag.glsl
+    programs/glsl/450/panel.vert.glsl
+    programs/glsl/450/scene.frag.glsl
+    programs/glsl/450/scene.vert.glsl
+)
+
+make_directory(${CMAKE_CURRENT_SOURCE_DIR}/programs/spir-v)
+set(SPIRV_BIN)
+
+foreach(SPIRV_SOURCE IN LISTS SPIRV_SOURCES)
+    cmake_path(GET SPIRV_SOURCE FILENAME SPIRV_NAME)
+    string(REGEX REPLACE "\\.[^.]*$" "" SPIRV_NAME ${SPIRV_NAME})
+    string(CONCAT SPIRV_NAME  ${SPIRV_NAME} ".spv")
+    set(SPIRV_OUT programs/spir-v/${SPIRV_NAME})
+    string(FIND ${SPIRV_NAME} "vert" SPIRV_NAME_VERT)
+    if(SPIRV_NAME_VERT GREATER_EQUAL 0)
+        set(SPIRV_STAGE "vert")
+    else()
+        set(SPIRV_STAGE "frag")
+    endif()
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${GLSLC}
+        ARGS
+            -fshader-stage=${SPIRV_STAGE}
+            -c ${SPIRV_SOURCE}
+            -o ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
+        VERBATIM
+        MAIN_DEPENDENCY ${SPIRV_SOURCE}
+    )
+    list(APPEND SPIRV_BIN ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT})
+endforeach()
+
+add_custom_target(
+    Sahara-SPIRV
+    DEPENDS ${SPIRV_BIN}
+)
+
+set(SHADERS_QRC   shaders.qrc)
+
+add_custom_target(
+    Sahara-Resource
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_QRC}
+)
+
+add_dependencies(Sahara-Resource Sahara-SPIRV)
+
 add_library(Sahara SHARED
   Sahara_global.h
   sahara.cpp
@@ -100,7 +156,6 @@ add_library(Sahara SHARED
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
-  shaders.qrc
   widgets/scenewidget/cameracontrol.cpp
   widgets/scenewidget/cameracontrol.h
   widgets/scenewidget/openglscenewidget.cpp
@@ -181,29 +236,32 @@ add_library(Sahara SHARED
   render/display/vulkandisplay.h
   render/display/vulkanpointlightdisplay.cpp
   render/display/vulkanpointlightdisplay.h
-  programs/spir-v/animated.vert.spv
-  programs/spir-v/display.frag.spv
-  programs/spir-v/display.vert.spv
-  programs/spir-v/grid.frag.spv
-  programs/spir-v/grid.vert.spv
-  programs/spir-v/panel.frag.spv
-  programs/spir-v/panel.vert.spv
-  programs/spir-v/scene.frag.spv
-  programs/spir-v/scene.vert.spv
-  programs/glsl/120/display.fsh
-  programs/glsl/120/display.vsh
-  programs/glsl/120/grid.fsh
-  programs/glsl/120/grid.vsh
-  programs/glsl/120/scene.fsh
-  programs/glsl/120/scene.vsh
-  programs/glsl/300/display.fsh
-  programs/glsl/300/display.vsh
-  programs/glsl/300/grid.fsh
-  programs/glsl/300/grid.vsh
-  programs/glsl/300/scene.fsh
-  programs/glsl/300/scene.vsh
+  programs/glsl/120/display.frag.glsl
+  programs/glsl/120/display.vert.glsl
+  programs/glsl/120/grid.frag.glsl
+  programs/glsl/120/grid.vert.glsl
+  programs/glsl/120/scene.frag.glsl
+  programs/glsl/120/scene.vert.glsl
+  programs/glsl/300/display.frag.glsl
+  programs/glsl/300/display.vert.glsl
+  programs/glsl/300/grid.frag.glsl
+  programs/glsl/300/grid.vert.glsl
+  programs/glsl/300/scene.frag.glsl
+  programs/glsl/300/scene.vert.glsl
+  programs/glsl/450/animated.vert.glsl
+  programs/glsl/450/display.frag.glsl
+  programs/glsl/450/display.vert.glsl
+  programs/glsl/450/grid.frag.glsl
+  programs/glsl/450/grid.vert.glsl
+  programs/glsl/450/panel.frag.glsl
+  programs/glsl/450/panel.vert.glsl
+  programs/glsl/450/scene.frag.glsl
+  programs/glsl/450/scene.vert.glsl
   programs/displayprogram.cpp
+  ${SHADERS_QRC}
 )
+
+add_dependencies(Sahara Sahara-Resource)
 
 if (LINUX)
     target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets)

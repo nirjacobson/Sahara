@@ -4,13 +4,13 @@ Sahara::SceneProgram::SceneProgram()
     : _pointLights(0)
 {
     _vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-    if (!_vertexShader->compileSourceFile(":/programs/glsl/300/scene.vsh")) {
-        _vertexShader->compileSourceFile(":/programs/glsl/120/scene.vsh");
+    if (!_vertexShader->compileSourceFile(":/programs/glsl/300/scene.vert.glsl")) {
+        _vertexShader->compileSourceFile(":/programs/glsl/120/scene.vert.glsl");
     }
 
     _fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
-    if (!_fragmentShader->compileSourceFile(":/programs/glsl/300/scene.fsh")) {
-        _fragmentShader->compileSourceFile(":/programs/glsl/120/scene.fsh");
+    if (!_fragmentShader->compileSourceFile(":/programs/glsl/300/scene.frag.glsl")) {
+        _fragmentShader->compileSourceFile(":/programs/glsl/120/scene.frag.glsl");
     }
 
     program().addShader(_vertexShader);
