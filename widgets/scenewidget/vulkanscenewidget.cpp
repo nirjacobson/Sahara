@@ -124,7 +124,7 @@ void Sahara::VulkanSceneWidget::keyReleaseEvent(QKeyEvent *event)
 
 void Sahara::VulkanSceneWidget::setScene(Scene* scene)
 {
-    Scene* s = _scene;
+    VulkanScene* s = _scene;
     _scene = (VulkanScene*)scene;
     _renderer->setScene(_scene);
 
