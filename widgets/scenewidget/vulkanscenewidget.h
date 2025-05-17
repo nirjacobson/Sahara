@@ -1,7 +1,7 @@
 #ifndef SAHARA_VULKAN_SCENEWIDGET_H
 #define SAHARA_VULKAN_SCENEWIDGET_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -11,8 +11,8 @@
 
 #include "vulkanscenewindow.h"
 #include "cameracontrol.h"
-#include "render/vulkanrenderer.h"
-#include "scene/vulkanscene.h"
+#include "../../render/vulkanrenderer.h"
+#include "../../scene/vulkanscene.h"
 #include "scenewidget.h"
 
 namespace Sahara {

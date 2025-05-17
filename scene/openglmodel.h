@@ -1,14 +1,15 @@
 #ifndef SAHARA_OPENGL_MODEL_H
 #define SAHARA_OPENGL_MODEL_H
 
-#include "Sahara_global.h"
+#include "../Sahara_global.h"
 
 #include <QStack>
 #include <QMatrix4x4>
 
+#include <QCollada/collada/collada.h>
+
 #include "model.h"
-#include "scene/asset/openglmaterial.h"
-#include "collada/collada.h"
+#include "../scene/asset/openglmaterial.h"
 
 namespace Sahara {
   class OpenGLRenderer;

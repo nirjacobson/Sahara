@@ -1,7 +1,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QColor>
 

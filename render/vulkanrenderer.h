@@ -16,12 +16,12 @@
 #include "grid/vulkangrid.h"
 #include "display/vulkanpointlightdisplay.h"
 #include "display/vulkancameradisplay.h"
-#include "scene/instance/instancemesh.h"
-#include "scene/instance/vulkaninstancecontroller.h"
-#include "scene/asset/light/pointlight.h"
-#include "vulkanutil.h"
-#include "panel/fpspanel.h"
-#include "scene/vulkanscene.h"
+#include "../scene/instance/instancemesh.h"
+#include "../scene/instance/vulkaninstancecontroller.h"
+#include "../scene/asset/light/pointlight.h"
+#include "../vulkanutil.h"
+#include "../panel/fpspanel.h"
+#include "../scene/vulkanscene.h"
 #include "renderer.h"
 
 namespace Sahara {

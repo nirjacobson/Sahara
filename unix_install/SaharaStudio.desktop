@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Icon=sahara-studio
+Exec=Sahara-Studio
+StartupWMClass=Sahara-Studio
+Terminal=false
+Categories=Graphics;3DGraphics;
+
+Name=Sahara Studio
+GenericName=COLLADA rendering environment
+Comment=COLLADA rendering environment

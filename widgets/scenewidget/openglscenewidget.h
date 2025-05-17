@@ -1,7 +1,7 @@
 #ifndef SAHARA_OPENGL_SCENEWIDGET_H
 #define SAHARA_OPENGL_SCENEWIDGET_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QObject>
 #include <QOpenGLWidget>
@@ -13,8 +13,8 @@
 #include <QTimer>
 #include <QPainter>
 
-#include "scene/openglscene.h"
-#include "render/openglrenderer.h"
+#include "../../scene/openglscene.h"
+#include "../../render/openglrenderer.h"
 #include "cameracontrol.h"
 #include "scenewidget.h"
 

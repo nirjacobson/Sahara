@@ -1,7 +1,7 @@
 #ifndef SURFACE_H
 #define SURFACE_H
 
-#include "Sahara_global.h"
+#include "../../../Sahara_global.h"
 
 #include "source.h"
 

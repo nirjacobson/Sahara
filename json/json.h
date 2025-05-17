@@ -1,32 +1,32 @@
 #ifndef SAHARA_JSON_H
 #define SAHARA_JSON_H
 
-#include "Sahara_global.h"
+#include "../Sahara_global.h"
 
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMatrix4x4>
 #include <QVulkanWindow>
 
-#include "common/transform.h"
-#include "common/volume.h"
-#include "scene/asset/joint.h"
-#include "scene/asset/animation.h"
-#include "scene/asset/animationclip.h"
-#include "scene/asset/armature.h"
-#include "scene/asset/camera.h"
-#include "scene/asset/controller.h"
-#include "scene/asset/light/pointlight.h"
-#include "scene/asset/mesh/source.h"
-#include "scene/instance/instancemesh.h"
-#include "scene/node/node.h"
-#include "scene/asset/image.h"
-#include "render/renderer.h"
-#include "scene/model.h"
-#include "scene/instance/instancecontroller.h"
-#include "scene/scene.h"
-#include "render/openglrenderer.h"
-#include "render/vulkanrenderer.h"
+#include "../common/transform.h"
+#include "../common/volume.h"
+#include "../scene/asset/joint.h"
+#include "../scene/asset/animation.h"
+#include "../scene/asset/animationclip.h"
+#include "../scene/asset/armature.h"
+#include "../scene/asset/camera.h"
+#include "../scene/asset/controller.h"
+#include "../scene/asset/light/pointlight.h"
+#include "../scene/asset/mesh/source.h"
+#include "../scene/instance/instancemesh.h"
+#include "../scene/node/node.h"
+#include "../scene/asset/image.h"
+#include "../render/renderer.h"
+#include "../scene/model.h"
+#include "../scene/instance/instancecontroller.h"
+#include "../scene/scene.h"
+#include "../render/openglrenderer.h"
+#include "../render/vulkanrenderer.h"
 
 namespace Sahara {
 

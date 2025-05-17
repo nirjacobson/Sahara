@@ -4,9 +4,8 @@
 #include <QVector2D>
 #include <QVector3D>
 
-#include "Sahara_global.h"
-
-#include "scene/node/node.h"
+#include "../../Sahara_global.h"
+#include "../../scene/node/node.h"
 
 namespace Sahara {
 

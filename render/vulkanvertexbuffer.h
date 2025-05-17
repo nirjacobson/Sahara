@@ -6,7 +6,7 @@
 #include <QtDebug>
 #include <QMap>
 
-#include "vulkanutil.h"
+#include "../vulkanutil.h"
 
 namespace Sahara
 {

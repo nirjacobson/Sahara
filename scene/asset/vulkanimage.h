@@ -1,7 +1,7 @@
 #ifndef SAHARA_VULKAN_IMAGE_H
 #define SAHARA_VULKAN_IMAGE_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QImage>
 

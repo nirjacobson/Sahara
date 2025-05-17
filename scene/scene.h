@@ -1,7 +1,7 @@
 #ifndef SAHARA_SCENE_H
 #define SAHARA_SCENE_H
 
-#include "Sahara_global.h"
+#include "../Sahara_global.h"
 
 #include "asset/camera.h"
 #include "asset/light/light.h"

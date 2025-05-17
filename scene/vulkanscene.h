@@ -7,9 +7,9 @@
 #include "asset/light/light.h"
 #include "asset/light/ambientlight.h"
 #include "node/node.h"
-#include "vulkanutil.h"
+#include "../vulkanutil.h"
 #include "../render/vulkanwithuniform.h"
-#include "scene/vulkanmodel.h"
+#include "vulkanmodel.h"
 #include "scene.h"
 
 namespace Sahara {

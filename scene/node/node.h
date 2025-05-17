@@ -1,7 +1,7 @@
 #ifndef SAHARA_NODE_H
 #define SAHARA_NODE_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QList>
 #include <QMatrix4x4>

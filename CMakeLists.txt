@@ -13,8 +13,10 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGL
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories("../QCollada")
-include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
+
+if (APPLE)
+  include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
+endif()
 
 set(CMAKE_OSX_ARCHITECTURES x86_64 arm64)
 
@@ -281,3 +283,17 @@ elseif (APPLE)
 endif()
 
 target_compile_definitions(Sahara PRIVATE SAHARA_LIBRARY)
+
+if (LINUX)
+  include(GNUInstallDirs)
+  install(TARGETS Sahara
+      BUNDLE DESTINATION .
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+  install(DIRECTORY "" DESTINATION /usr/include/Sahara
+    FILES_MATCHING PATTERN "*.h"
+    PATTERN ".git" EXCLUDE
+    PATTERN "build" EXCLUDE
+  )
+endif()

@@ -5,11 +5,11 @@
 #include <QOpenGLShaderProgram>
 
 #include "program.h"
-#include "scene/asset/light/ambientlight.h"
-#include "scene/asset/light/pointlight.h"
-#include "scene/asset/openglmaterial.h"
-#include "scene/asset/mesh/openglsurface.h"
-#include "common/transform.h"
+#include "../scene/asset/light/ambientlight.h"
+#include "../scene/asset/light/pointlight.h"
+#include "../scene/asset/openglmaterial.h"
+#include "../scene/asset/mesh/openglsurface.h"
+#include "../common/transform.h"
 
 namespace Sahara
 {

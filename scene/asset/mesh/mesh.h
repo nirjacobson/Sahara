@@ -1,7 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Sahara_global.h"
+#include "../../../Sahara_global.h"
 
 #include "../asset.h"
 #include "surface.h"

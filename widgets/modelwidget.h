@@ -1,7 +1,7 @@
 #ifndef SAHARA_MODELWIDGET_H
 #define SAHARA_MODELWIDGET_H
 
-#include "Sahara_global.h"
+#include "../Sahara_global.h"
 
 #include <QWidget>
 #include <QFileDialog>

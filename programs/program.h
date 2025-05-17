@@ -4,7 +4,6 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 
-
 #include "../render/openglwithvertexbuffers.h"
 
 namespace Sahara

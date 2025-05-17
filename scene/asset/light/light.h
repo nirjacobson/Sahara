@@ -1,7 +1,7 @@
 #ifndef SAHARALIGHT_H
 #define SAHARALIGHT_H
 
-#include "Sahara_global.h"
+#include "../../../Sahara_global.h"
 
 #include <QColor>
 

@@ -1,13 +1,13 @@
 #ifndef SAHARA_SCENEWIDGET_H
 #define SAHARA_SCENEWIDGET_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QKeyEvent>
 
-#include "scene/scene.h"
+#include "../../scene/scene.h"
+#include "../../render/renderer.h"
 #include "cameracontrol.h"
-#include "render/renderer.h"
 
 namespace Sahara {
     class SAHARA_EXPORT SceneWidget

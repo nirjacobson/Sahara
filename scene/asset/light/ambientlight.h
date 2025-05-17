@@ -1,7 +1,7 @@
 #ifndef SAHARA_AMBIENTLIGHT_H
 #define SAHARA_AMBIENTLIGHT_H
 
-#include "Sahara_global.h"
+#include "../../../Sahara_global.h"
 
 #include "light.h"
 

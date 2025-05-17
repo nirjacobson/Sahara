@@ -2,7 +2,7 @@
 #define SAHARA_VULKAN_WITHVERTEXBUFFERS_H
 
 #include "vulkanvertexbuffer.h"
-#include "pipelines/pipeline.h"
+#include "../pipelines/pipeline.h"
 
 namespace Sahara {
     class VulkanWithVertexBuffers

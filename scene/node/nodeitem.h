@@ -1,9 +1,9 @@
 #ifndef SAHARA_NODEITEM_H
 #define SAHARA_NODEITEM_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
-#include "common/volume.h"
+#include "../../common/volume.h"
 
 namespace Sahara
 {

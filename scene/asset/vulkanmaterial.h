@@ -1,14 +1,14 @@
 #ifndef SAHARA_MATERIAL_H
 #define SAHARA_MATERIAL_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QColor>
 #include <optional>
 
 #include "material.h"
 #include "vulkanimage.h"
-#include "vulkanutil.h"
+#include "../../vulkanutil.h"
 #include "../../render/vulkanwithuniform.h"
 
 namespace Sahara

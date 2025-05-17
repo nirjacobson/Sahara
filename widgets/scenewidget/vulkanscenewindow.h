@@ -5,8 +5,8 @@
 #include <QKeyEvent>
 #include <QWidget>
 
-#include "render/vulkanrenderer.h"
-#include "widgets/scenewidget/cameracontrol.h"
+#include "../../render/vulkanrenderer.h"
+#include "cameracontrol.h"
 
 namespace Sahara {
     class VulkanSceneWindow : public QVulkanWindow

@@ -2,7 +2,7 @@
 #define ANIMATEDPIPELINE_H
 
 #include "pipeline.h"
-#include "vulkanutil.h"
+#include "../vulkanutil.h"
 
 class AnimatedPipeline : public Pipeline
 {

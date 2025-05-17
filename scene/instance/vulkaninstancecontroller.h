@@ -2,7 +2,7 @@
 #define SAHARA_VULKAN_INSTANCECONTROLLER_H
 
 #include "instancecontroller.h"
-#include "vulkanutil.h"
+#include "../../vulkanutil.h"
 #include "../../render/vulkanwithuniform.h"
 
 namespace Sahara

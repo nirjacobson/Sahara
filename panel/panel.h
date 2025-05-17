@@ -3,8 +3,8 @@
 
 #include <QPainter>
 
-#include "render/vulkanwithvertexbuffers.h"
-#include "render/vulkanwithuniform.h"
+#include "../render/vulkanwithvertexbuffers.h"
+#include "../render/vulkanwithuniform.h"
 
 namespace Sahara {
 

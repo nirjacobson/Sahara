@@ -1,7 +1,7 @@
 #ifndef SAHARA_CAMERA_H
 #define SAHARA_CAMERA_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include <QMatrix4x4>
 #include <QtMath>

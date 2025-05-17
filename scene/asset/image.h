@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "Sahara_global.h"
+#include "../../Sahara_global.h"
 
 #include "asset.h"
 

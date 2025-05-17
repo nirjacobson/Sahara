@@ -1,25 +1,26 @@
 #ifndef SAHARA_VULKAN_MODEL_H
 #define SAHARA_VULKAN_MODEL_H
 
-#include "Sahara_global.h"
+#include "../Sahara_global.h"
 
 #include <QFileInfo>
 #include <QDir>
 #include <QStack>
 #include <QMatrix4x4>
 
-#include "scene/asset/mesh/vulkanmesh.h"
-#include "scene/asset/controller.h"
-#include "scene/asset/vulkanmaterial.h"
-#include "scene/asset/armature.h"
-#include "scene/asset/animation.h"
-#include "scene/asset/animationclip.h"
-#include "scene/instance/instance.h"
-#include "scene/model.h"
-#include "scene/asset/vulkanimage.h"
-#include "collada/collada.h"
-#include "common/volume.h"
-#include "scene/instance/vulkaninstancecontroller.h"
+#include <QCollada/collada/collada.h>
+
+#include "../scene/asset/mesh/vulkanmesh.h"
+#include "../scene/asset/controller.h"
+#include "../scene/asset/vulkanmaterial.h"
+#include "../scene/asset/armature.h"
+#include "../scene/asset/animation.h"
+#include "../scene/asset/animationclip.h"
+#include "../scene/instance/instance.h"
+#include "../scene/model.h"
+#include "../scene/asset/vulkanimage.h"
+#include "../common/volume.h"
+#include "../scene/instance/vulkaninstancecontroller.h"
 
 namespace Sahara {
 
