@@ -10,19 +10,22 @@ Sahara::ModelWidget::ModelWidget(QWidget *parent, bool vulkan) :
 {
     ui->setupUi(this);
 
-    if (vulkan) {
-        VulkanSceneWidget* widget = new VulkanSceneWidget(this);
-        _sceneWidget = widget;
-        layout()->replaceWidget(ui->sceneWidget, widget);
-        connect(widget, SIGNAL(initialized(void)), this, SLOT(sceneWidgetInitialized(void)));
-        connect(widget, SIGNAL(initialized(void)), this, SIGNAL(initialized(void)));
-    } else {
+    if (!vulkan) {
         OpenGLSceneWidget* widget = new OpenGLSceneWidget(this);
         _sceneWidget = widget;
         layout()->replaceWidget(ui->sceneWidget, widget);
         connect(widget, &OpenGLSceneWidget::initialized, this, &ModelWidget::sceneWidgetInitialized);
         connect(widget, &OpenGLSceneWidget::initialized, this, &ModelWidget::initialized);
     }
+#ifdef VULKAN
+    else {
+        VulkanSceneWidget* widget = new VulkanSceneWidget(this);
+        _sceneWidget = widget;
+        layout()->replaceWidget(ui->sceneWidget, widget);
+        connect(widget, SIGNAL(initialized(void)), this, SLOT(sceneWidgetInitialized(void)));
+        connect(widget, SIGNAL(initialized(void)), this, SIGNAL(initialized(void)));
+    }
+#endif
 
     connect(ui->animationComboBox, &QComboBox::currentTextChanged, this, &ModelWidget::animationComboBoxCurrentTextChanged);
     connect(ui->scaleDial, &QDial::valueChanged, this, &ModelWidget::dialValueChanged);
