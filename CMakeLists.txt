@@ -190,10 +190,6 @@ set(PROJECT_SOURCES
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
-  panel/fpspanel.cpp
-  panel/fpspanel.h
-  panel/panel.cpp
-  panel/panel.h
   scene/asset/mesh/mesh.h
   scene/asset/mesh/mesh.cpp
   scene/asset/mesh/surface.h
@@ -231,6 +227,10 @@ set(PROJECT_SOURCES
 if (VULKAN_ENABLED)
   set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
+    panel/fpspanel.cpp
+    panel/fpspanel.h
+    panel/panel.cpp
+    panel/panel.h
     pipelines/animatedpipeline.cpp
     pipelines/animatedpipeline.h
     pipelines/displaypipeline.cpp

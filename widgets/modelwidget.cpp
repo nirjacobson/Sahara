@@ -47,11 +47,14 @@ void Sahara::ModelWidget::setModel(const QString& path)
         delete _modelNode;
     }
 
-    if (_vulkan) {
-        _model = VulkanModel::fromCollada(dynamic_cast<VulkanRenderer*>(_sceneWidget->renderer()), path);
-    } else {
+    if (!_vulkan) {
         _model = OpenGLModel::fromCollada(path);
     }
+#ifdef VULKAN
+    else {
+        _model = VulkanModel::fromCollada(dynamic_cast<VulkanRenderer*>(_sceneWidget->renderer()), path);
+    }
+#endif
 
     float scale = static_cast<float>(ui->scaleDial->value()) / ui->scaleDial->maximum();
     _modelNode = new Node(QFileInfo(path).baseName(), _model, QMatrix4x4(QMatrix3x3() * scale));
