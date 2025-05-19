@@ -8,6 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(WIN32_ARM OFF)
+set(VULKAN_ENABLED OFF)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
@@ -20,53 +21,6 @@ endif()
 
 set(CMAKE_OSX_ARCHITECTURES x86_64 arm64)
 
-find_program(GLSLC NAMES glslc REQUIRED)
-
-set(SPIRV_SOURCES
-    programs/glsl/450/animated.vert.glsl
-    programs/glsl/450/display.frag.glsl
-    programs/glsl/450/display.vert.glsl
-    programs/glsl/450/grid.frag.glsl
-    programs/glsl/450/grid.vert.glsl
-    programs/glsl/450/panel.frag.glsl
-    programs/glsl/450/panel.vert.glsl
-    programs/glsl/450/scene.frag.glsl
-    programs/glsl/450/scene.vert.glsl
-)
-
-make_directory(${CMAKE_CURRENT_SOURCE_DIR}/programs/spir-v)
-set(SPIRV_BIN)
-
-foreach(SPIRV_SOURCE IN LISTS SPIRV_SOURCES)
-    cmake_path(GET SPIRV_SOURCE FILENAME SPIRV_NAME)
-    string(REGEX REPLACE "\\.[^.]*$" "" SPIRV_NAME ${SPIRV_NAME})
-    string(CONCAT SPIRV_NAME  ${SPIRV_NAME} ".spv")
-    set(SPIRV_OUT programs/spir-v/${SPIRV_NAME})
-    string(FIND ${SPIRV_NAME} "vert" SPIRV_NAME_VERT)
-    if(SPIRV_NAME_VERT GREATER_EQUAL 0)
-        set(SPIRV_STAGE "vert")
-    else()
-        set(SPIRV_STAGE "frag")
-    endif()
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND ${GLSLC}
-        ARGS
-            -fshader-stage=${SPIRV_STAGE}
-            -c ${SPIRV_SOURCE}
-            -o ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
-        VERBATIM
-        MAIN_DEPENDENCY ${SPIRV_SOURCE}
-    )
-    list(APPEND SPIRV_BIN ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT})
-endforeach()
-
-add_custom_target(
-    Sahara-SPIRV
-    DEPENDS ${SPIRV_BIN}
-)
-
 set(SHADERS_QRC   shaders.qrc)
 
 add_custom_target(
@@ -74,9 +28,58 @@ add_custom_target(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_QRC}
 )
 
-add_dependencies(Sahara-Resource Sahara-SPIRV)
+if (VULKAN_ENABLED)
+  find_program(GLSLC NAMES glslc REQUIRED)
 
-add_library(Sahara SHARED
+  set(SPIRV_SOURCES
+      programs/glsl/450/animated.vert.glsl
+      programs/glsl/450/display.frag.glsl
+      programs/glsl/450/display.vert.glsl
+      programs/glsl/450/grid.frag.glsl
+      programs/glsl/450/grid.vert.glsl
+      programs/glsl/450/panel.frag.glsl
+      programs/glsl/450/panel.vert.glsl
+      programs/glsl/450/scene.frag.glsl
+      programs/glsl/450/scene.vert.glsl
+  )
+
+  make_directory(${CMAKE_CURRENT_SOURCE_DIR}/programs/spir-v)
+  set(SPIRV_BIN)
+
+  foreach(SPIRV_SOURCE IN LISTS SPIRV_SOURCES)
+      cmake_path(GET SPIRV_SOURCE FILENAME SPIRV_NAME)
+      string(REGEX REPLACE "\\.[^.]*$" "" SPIRV_NAME ${SPIRV_NAME})
+      string(CONCAT SPIRV_NAME  ${SPIRV_NAME} ".spv")
+      set(SPIRV_OUT programs/spir-v/${SPIRV_NAME})
+      string(FIND ${SPIRV_NAME} "vert" SPIRV_NAME_VERT)
+      if(SPIRV_NAME_VERT GREATER_EQUAL 0)
+          set(SPIRV_STAGE "vert")
+      else()
+          set(SPIRV_STAGE "frag")
+      endif()
+      add_custom_command(
+          OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+          COMMAND ${GLSLC}
+          ARGS
+              -fshader-stage=${SPIRV_STAGE}
+              -c ${SPIRV_SOURCE}
+              -o ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT}
+          VERBATIM
+          MAIN_DEPENDENCY ${SPIRV_SOURCE}
+      )
+      list(APPEND SPIRV_BIN ${CMAKE_CURRENT_SOURCE_DIR}/${SPIRV_OUT})
+  endforeach()
+
+  add_custom_target(
+      Sahara-SPIRV
+      DEPENDS ${SPIRV_BIN}
+  )
+
+  add_dependencies(Sahara-Resource Sahara-SPIRV)
+endif()
+
+set(PROJECT_SOURCES
   Sahara_global.h
   sahara.cpp
   sahara.h
@@ -169,49 +172,10 @@ add_library(Sahara SHARED
   widgets/modelwidget.cpp
   widgets/modelwidget.h
   widgets/modelwidget.ui
-  pipelines/animatedpipeline.cpp
-  pipelines/animatedpipeline.h
-  pipelines/displaypipeline.cpp
-  pipelines/displaypipeline.h
-  pipelines/gridpipeline.cpp
-  pipelines/gridpipeline.h
-  pipelines/panelpipeline.cpp
-  pipelines/panelpipeline.h
-  pipelines/pipeline.cpp
-  pipelines/pipeline.h
-  pipelines/scenepipeline.cpp
-  pipelines/scenepipeline.h
-  vulkanutil.cpp vulkanutil.h
-  render/vulkanvertexbuffer.cpp
-  render/vulkanvertexbuffer.h
-  render/vulkanwithvertexbuffers.cpp
-  render/vulkanwithvertexbuffers.h
-  render/vulkanrenderer.cpp
-  render/vulkanrenderer.h
   panel/fpspanel.cpp
   panel/fpspanel.h
   panel/panel.cpp
   panel/panel.h
-  scene/asset/vulkanimage.cpp
-  scene/asset/vulkanimage.h
-  render/vulkanwithuniform.cpp
-  render/vulkanwithuniform.h
-  scene/asset/vulkanmaterial.cpp
-  scene/asset/vulkanmaterial.h
-  scene/instance/vulkaninstancecontroller.cpp
-  scene/instance/vulkaninstancecontroller.h
-  scene/vulkanscene.cpp
-  scene/vulkanscene.h
-  widgets/scenewidget/vulkanscenewidget.cpp
-  widgets/scenewidget/vulkanscenewidget.h
-  widgets/scenewidget/vulkanscenewindow.cpp
-  widgets/scenewidget/vulkanscenewindow.h
-  scene/vulkanmodel.cpp
-  scene/vulkanmodel.h
-  scene/asset/mesh/vulkanmesh.cpp
-  scene/asset/mesh/vulkanmesh.h
-  scene/asset/mesh/vulkansurface.cpp
-  scene/asset/mesh/vulkansurface.h
   scene/asset/mesh/mesh.h
   scene/asset/mesh/mesh.cpp
   scene/asset/mesh/surface.h
@@ -230,15 +194,6 @@ add_library(Sahara SHARED
   widgets/scenewidget/scenewidget.cpp
   render/renderer.h
   render/renderer.cpp
-  render/grid/vulkanaxis.cpp
-  render/grid/vulkanaxis.h
-  render/grid/vulkangrid.cpp
-  render/grid/vulkangrid.h
-  render/display/vulkancameradisplay.cpp
-  render/display/vulkancameradisplay.h
-  render/display/vulkandisplay.h
-  render/display/vulkanpointlightdisplay.cpp
-  render/display/vulkanpointlightdisplay.h
   programs/glsl/120/display.frag.glsl
   programs/glsl/120/display.vert.glsl
   programs/glsl/120/grid.frag.glsl
@@ -251,17 +206,75 @@ add_library(Sahara SHARED
   programs/glsl/300/grid.vert.glsl
   programs/glsl/300/scene.frag.glsl
   programs/glsl/300/scene.vert.glsl
-  programs/glsl/450/animated.vert.glsl
-  programs/glsl/450/display.frag.glsl
-  programs/glsl/450/display.vert.glsl
-  programs/glsl/450/grid.frag.glsl
-  programs/glsl/450/grid.vert.glsl
-  programs/glsl/450/panel.frag.glsl
-  programs/glsl/450/panel.vert.glsl
-  programs/glsl/450/scene.frag.glsl
-  programs/glsl/450/scene.vert.glsl
   programs/displayprogram.cpp
   ${SHADERS_QRC}
+)
+
+if (VULKAN_ENABLED)
+  set(PROJECT_SOURCES
+    ${PROJECT_SOURCES}
+    pipelines/animatedpipeline.cpp
+    pipelines/animatedpipeline.h
+    pipelines/displaypipeline.cpp
+    pipelines/displaypipeline.h
+    pipelines/gridpipeline.cpp
+    pipelines/gridpipeline.h
+    pipelines/panelpipeline.cpp
+    pipelines/panelpipeline.h
+    pipelines/pipeline.cpp
+    pipelines/pipeline.h
+    pipelines/scenepipeline.cpp
+    pipelines/scenepipeline.h
+    vulkanutil.cpp vulkanutil.h
+    render/vulkanvertexbuffer.cpp
+    render/vulkanvertexbuffer.h
+    render/vulkanwithvertexbuffers.cpp
+    render/vulkanwithvertexbuffers.h
+    render/vulkanrenderer.cpp
+    render/vulkanrenderer.h
+    scene/asset/vulkanimage.cpp
+    scene/asset/vulkanimage.h
+    render/vulkanwithuniform.cpp
+    render/vulkanwithuniform.h
+    scene/asset/vulkanmaterial.cpp
+    scene/asset/vulkanmaterial.h
+    scene/instance/vulkaninstancecontroller.cpp
+    scene/instance/vulkaninstancecontroller.h
+    scene/vulkanscene.cpp
+    scene/vulkanscene.h
+    widgets/scenewidget/vulkanscenewidget.cpp
+    widgets/scenewidget/vulkanscenewidget.h
+    widgets/scenewidget/vulkanscenewindow.cpp
+    widgets/scenewidget/vulkanscenewindow.h
+    scene/vulkanmodel.cpp
+    scene/vulkanmodel.h
+    scene/asset/mesh/vulkanmesh.cpp
+    scene/asset/mesh/vulkanmesh.h
+    scene/asset/mesh/vulkansurface.cpp
+    scene/asset/mesh/vulkansurface.h
+    render/grid/vulkanaxis.cpp
+    render/grid/vulkanaxis.h
+    render/grid/vulkangrid.cpp
+    render/grid/vulkangrid.h
+    render/display/vulkancameradisplay.cpp
+    render/display/vulkancameradisplay.h
+    render/display/vulkandisplay.h
+    render/display/vulkanpointlightdisplay.cpp
+    render/display/vulkanpointlightdisplay.h
+    programs/glsl/450/animated.vert.glsl
+    programs/glsl/450/display.frag.glsl
+    programs/glsl/450/display.vert.glsl
+    programs/glsl/450/grid.frag.glsl
+    programs/glsl/450/grid.vert.glsl
+    programs/glsl/450/panel.frag.glsl
+    programs/glsl/450/panel.vert.glsl
+    programs/glsl/450/scene.frag.glsl
+    programs/glsl/450/scene.vert.glsl
+  )
+endif()
+
+add_library(Sahara SHARED
+  ${PROJECT_SOURCES}
 )
 
 add_dependencies(Sahara Sahara-Resource)
