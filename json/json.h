@@ -6,7 +6,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMatrix4x4>
-#include <QVulkanWindow>
 
 #include "../common/transform.h"
 #include "../common/volume.h"
