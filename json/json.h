@@ -25,7 +25,11 @@
 #include "../scene/instance/instancecontroller.h"
 #include "../scene/scene.h"
 #include "../render/openglrenderer.h"
+
+#ifdef VULKAN
+#include <QVulkanWindow>
 #include "../render/vulkanrenderer.h"
+#endif
 
 namespace Sahara {
 
@@ -84,10 +88,17 @@ namespace Sahara {
             static Surface::Input toSurfaceInput(const QJsonObject& object);
 
             static QJsonObject fromSurface(const Surface* surface);
+#ifdef VULKAN
             static Surface* toSurface(QVulkanWindow* window, const QJsonObject& object, const Mesh& mesh);
-
+#else
+            static Surface* toSurface(const QJsonObject& object, const Mesh& mesh);
+#endif
             static QJsonObject fromMesh(const Mesh* mesh);
+#ifdef VULKAN
             static Mesh* toMesh(QVulkanWindow* window, const QJsonObject& object);
+#else
+            static Mesh* toMesh(const QJsonObject& object);
+#endif
 
             static QJsonObject fromInstanceMesh(const InstanceMesh* instanceMesh);
             static InstanceMesh* toInstanceMesh(const QJsonObject& object, const Model& model);
