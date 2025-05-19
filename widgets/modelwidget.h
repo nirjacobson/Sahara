@@ -10,7 +10,10 @@
 #include "scene/node/node.h"
 #include "widgets/scenewidget/scenewidget.h"
 #include "widgets/scenewidget/openglscenewidget.h"
+
+#ifdef VULKAN
 #include "widgets/scenewidget/vulkanscenewidget.h"
+#endif
 
 namespace Ui {
     class ModelWidget;
