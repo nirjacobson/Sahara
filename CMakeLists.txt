@@ -24,12 +24,23 @@ endif()
 
 set(CMAKE_OSX_ARCHITECTURES x86_64 arm64)
 
-set(SHADERS_QRC   shaders.qrc)
+set(SHADERS_QRC         shaders.qrc)
+set(SHADERS_SPIRV_QRC   shaders-spirv.qrc)
 
-add_custom_target(
-    Sahara-Resource
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_QRC}
-)
+if (VULKAN_ENABLED)
+  add_custom_target(
+      Sahara-Resource
+      DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_QRC}
+        ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_SPIRV_QRC}
+  )
+else()
+  add_custom_target(
+      Sahara-Resource
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_QRC}
+  )
+
+endif()
 
 if (VULKAN_ENABLED)
   find_program(GLSLC NAMES glslc REQUIRED)
@@ -276,9 +287,18 @@ if (VULKAN_ENABLED)
   )
 endif()
 
-add_library(Sahara SHARED
-  ${PROJECT_SOURCES}
-)
+if (VULKAN_ENABLED)
+  add_library(Sahara SHARED
+    ${PROJECT_SOURCES}
+    ${SHADERS_QRC}
+    ${SHADERS_SPIRV_QRC}
+  )
+else()
+  add_library(Sahara SHARED
+    ${PROJECT_SOURCES}
+    ${SHADERS_QRC}
+  )
+endif()
 
 add_dependencies(Sahara Sahara-Resource)
 

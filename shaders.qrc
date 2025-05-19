@@ -12,14 +12,5 @@
         <file>programs/glsl/300/grid.vert.glsl</file>
         <file>programs/glsl/300/scene.frag.glsl</file>
         <file>programs/glsl/300/scene.vert.glsl</file>
-        <file>programs/spir-v/animated.vert.spv</file>
-        <file>programs/spir-v/display.frag.spv</file>
-        <file>programs/spir-v/display.vert.spv</file>
-        <file>programs/spir-v/grid.frag.spv</file>
-        <file>programs/spir-v/grid.vert.spv</file>
-        <file>programs/spir-v/panel.frag.spv</file>
-        <file>programs/spir-v/panel.vert.spv</file>
-        <file>programs/spir-v/scene.frag.spv</file>
-        <file>programs/spir-v/scene.vert.spv</file>
     </qresource>
 </RCC>
