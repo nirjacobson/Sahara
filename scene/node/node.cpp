@@ -8,6 +8,7 @@ Sahara::Node::Node(const QString& name, NodeItem* const nodeItem, const QMatrix4
     , _transform(transform)
     , _hasFocus(false)
     , _scale({1, 1, 1})
+    , _index(0)
 {
 
 }
