@@ -77,6 +77,32 @@ void Sahara::VulkanSceneWindow::keyPressEvent(QKeyEvent* event)
     }
 
     emit keyPressed(event);
+#else
+    QString platform = QGuiApplication::platformName();
+
+    if (platform == "xcb") {
+        if (event->isAutoRepeat())
+            return;
+
+        if (_flyThrough) {
+            switch (event->key()) {
+            case Qt::Key_W:
+                _cameraControl.accelerateForward(true);
+                break;
+            case Qt::Key_A:
+                _cameraControl.accelerateLeft(true);
+                break;
+            case Qt::Key_S:
+                _cameraControl.accelerateBackward(true);
+                break;
+            case Qt::Key_D:
+                _cameraControl.accelerateRight(true);
+                break;
+            }
+        }
+
+        emit keyPressed(event);
+    }
 #endif
 
     QVulkanWindow::keyPressEvent(event);
@@ -105,7 +131,31 @@ void Sahara::VulkanSceneWindow::keyReleaseEvent(QKeyEvent* event)
         _cameraControl.accelerateRight(false);
         break;
     }
+#else
+    QString platform = QGuiApplication::platformName();
 
+    if (platform == "xcb") {
+        if (event->isAutoRepeat())
+            return;
+
+        if (!_flyThrough)
+            return;
+
+        switch (event->key()) {
+        case Qt::Key_W:
+            _cameraControl.accelerateForward(false);
+            break;
+        case Qt::Key_A:
+            _cameraControl.accelerateLeft(false);
+            break;
+        case Qt::Key_S:
+            _cameraControl.accelerateBackward(false);
+            break;
+        case Qt::Key_D:
+            _cameraControl.accelerateRight(false);
+            break;
+        }
+    }
 #endif
 
     QVulkanWindow::keyReleaseEvent(event);
