@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(WIN32_ARM OFF)
+set(WIN32_ARM ON)
 
 if (NOT DEFINED VULKAN_ENABLED)
   set(VULKAN_ENABLED ON)
@@ -21,6 +21,10 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGL
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+if (WIN32)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+endif()
 
 if (APPLE)
   include_directories("/Users/nir/MoltenVK/Package/Release/MoltenVK/include")
