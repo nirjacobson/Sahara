@@ -50,7 +50,7 @@ void main() {
             d = uMaterial.diffuse;
         }
 
-        vec3 outputColor = uLighting.ambientLight.strength * uLighting.ambientLight.color * uMaterial.ambient.rgb;
+        vec3 outputColor = uLighting.ambientLight.strength * uLighting.ambientLight.color * (uMaterial.ambient.rgb + d.rgb);
         outputColor += uMaterial.emission.rgb;
 
         for (int i = 0; i < 6; i++) {

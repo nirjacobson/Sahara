@@ -2,7 +2,7 @@
 #include <QUrl>
 Sahara::OpenGLImage::OpenGLImage(const QString& id, const QString& uri)
     : Image(id, uri)
-    , _texture(QOpenGLTexture(QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored()))
+    , _texture(QOpenGLTexture(QImage(QUrl::fromPercentEncoding(uri.toLatin1())).flipped()))
 {
 
 }

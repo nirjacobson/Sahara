@@ -277,9 +277,11 @@ QList<Sahara::Instance*> Sahara::OpenGLModel::parseColladaVisualScene(const QCol
         instances.append(controllerInstance);
       }
 
-      transformStack.pop();
-
       return false;
+    },
+    [&](const QCollada::Node& node) {
+        transformStack.pop();
+        return false;
     });
   }
 

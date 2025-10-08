@@ -53,7 +53,7 @@ void main() {
             d = uMaterial.diffuse;
         }
 
-        vec3 outputColor = uLighting.ambientLight.strength * uLighting.ambientLight.color * uMaterial.ambient.rgb;
+        vec3 outputColor = uLighting.ambientLight.strength * uLighting.ambientLight.color * (uMaterial.ambient.rgb + d.rgb);
         outputColor += uMaterial.emission.rgb;
 
         for (int i = 0; i < 6; i++) {
@@ -77,7 +77,7 @@ void main() {
             float distancetoLight = length(toLight);
             float attenuation = 1.0 / (uLighting.pointLights[i].constantAttenuation + (uLighting.pointLights[i].linearAttenuation + (uLighting.pointLights[i].quadraticAttenuation * distancetoLight)) * distancetoLight);
 
-            outputColor += (attenuation * (diffuse + specular)) * uLighting.pointLights[i].color;;
+            outputColor += (attenuation * (diffuse + specular)) * uLighting.pointLights[i].color;
         }
 
         vec3 gamma = vec3(1.0/2.2);

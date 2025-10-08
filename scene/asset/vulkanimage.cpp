@@ -8,7 +8,7 @@ Sahara::VulkanImage::VulkanImage(VulkanRenderer *renderer, const QString &id, co
 {
     QImage image = (uri.isEmpty()
                        ? QImage(1, 1, QImage::Format_RGBA8888)
-                        : QImage(QUrl::fromPercentEncoding(uri.toLatin1())).mirrored())
+                        : QImage(QUrl::fromPercentEncoding(uri.toLatin1())).flipped())
                     .convertToFormat(QImage::Format::Format_RGBA8888);
 
     _renderer->createImage(image.width(), image.height(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, _image, _imageMemory);
