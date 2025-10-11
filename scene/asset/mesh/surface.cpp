@@ -80,6 +80,11 @@ const QString& Sahara::Surface::material() const
     return _material;
 }
 
+void Sahara::Surface::setMaterial(const QString &name)
+{
+    _material = name;
+}
+
 QList<Sahara::Surface::Input::Semantic> Sahara::Surface::inputs() const
 {
     return _inputs.keys();
@@ -114,4 +119,70 @@ int Sahara::Surface::triangles() const
         }
     }
     return _elements.size() / (maxOffset + 1) / 3;
+}
+
+bool Sahara::Surface::intersects(const QVector3D &point) const
+{
+    return _volume.intersects(point);
+}
+
+void Sahara::Surface::calculateVolume()
+{
+    const Source* source = _sources[_inputs[Surface::Input::POSITION].source()];
+
+    int maxOffset = 0;
+    for (Input i : _inputs) {
+        if (i.offset() > maxOffset) {
+            maxOffset = i.offset();
+        }
+    }
+
+    QVector3D lowVertex(1000, 1000, 1000);
+    QVector3D highVertex(-1000, -1000, -1000);
+
+    for (int i = _inputs[Surface::Input::POSITION].offset(); i < _elements.size(); i += maxOffset + 1) {
+        int index = _elements.at(i);
+        QList<float> element = source->at(index);
+        float x, y, z;
+        for (int j = 0; j < element.size(); j++) {
+            switch (j) {
+                case 0:
+                    x = element.at(j);
+                    if (x < lowVertex.x()) {
+                        lowVertex.setX(x);
+                    }
+                    if (x > highVertex.x()) {
+                        highVertex.setX(x);
+                    }
+                    break;
+                case 1:
+                    y = element.at(j);
+                    if (y < lowVertex.y()) {
+                        lowVertex.setY(y);
+                    }
+                    if (y > highVertex.y()) {
+                        highVertex.setY(y);
+                    }
+                    break;
+                case 2:
+                    z = element.at(j);
+                    if (z < lowVertex.z()) {
+                        lowVertex.setZ(z);
+                    }
+                    if (z > highVertex.z()) {
+                        highVertex.setZ(z);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    _volume = Volume(lowVertex, highVertex);
+}
+
+const Sahara::Volume &Sahara::Surface::volume() const
+{
+    return _volume;
 }

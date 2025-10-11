@@ -4,6 +4,7 @@
 #include "../../../Sahara_global.h"
 
 #include "source.h"
+#include "../../../common/volume.h"
 
 namespace Sahara {
     class SAHARA_EXPORT Surface
@@ -44,6 +45,7 @@ namespace Sahara {
         int count() const;
 
         const QString& material() const;
+        void setMaterial(const QString& name);
 
         QList<Input::Semantic> inputs() const;
         void setInput(const Input::Semantic semantic, const QString& source, const int offset);
@@ -55,6 +57,12 @@ namespace Sahara {
 
         int triangles() const;
 
+        void calculateVolume();
+
+        const Volume& volume() const;
+
+        bool intersects(const QVector3D& point) const;
+
         virtual void generateVertexBuffer(const Input::Semantic input) = 0;
 
     protected:
@@ -62,6 +70,7 @@ namespace Sahara {
         QString _material;
         QMap<Input::Semantic, Input> _inputs;
         QList<int> _elements;
+        Volume _volume;
     };
 }
 

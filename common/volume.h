@@ -15,9 +15,10 @@ namespace Sahara {
 
             const QVector3D& lowerVertex() const;
             const QVector3D& upperVertex() const;
-            float width();
-            float height();
-            float length();
+            float width() const;
+            float height() const;
+            float length() const;
+            float volume() const;
 
             bool intersects(const QVector3D& point) const;
 

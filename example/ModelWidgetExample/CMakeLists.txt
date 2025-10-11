@@ -54,8 +54,8 @@ if (LINUX)
                                                      Qt${QT_VERSION_MAJOR}::Widgets
                                                      Qt${QT_VERSION_MAJOR}::OpenGL
                                                      Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/libQCollada.so
-                                                     ${CMAKE_CURRENT_SOURCE_DIR}/../../build/Desktop-${CMAKE_BUILD_TYPE}/libSahara.so )
+                                                     QCollada
+                                                     Sahara)
 elseif (WIN32)
     target_link_libraries(ModelWidgetExample PRIVATE Qt${QT_VERSION_MAJOR}::Xml
                                                      Qt${QT_VERSION_MAJOR}::Widgets

@@ -98,7 +98,7 @@ void Sahara::ModelWidget::showAnimationsUI(const bool visible)
 void Sahara::ModelWidget::sceneWidgetInitialized()
 {
     QMatrix4x4 cameraTransform;
-    cameraTransform.translate({0, 0, 16});
+    cameraTransform.translate({0, 0, 8});
     _sceneWidget->scene().cameraNode().setTransform(cameraTransform);
 
     PointLight* pointLight = new PointLight("Point Light", QColor(255, 255, 255), 1, 0, 0);

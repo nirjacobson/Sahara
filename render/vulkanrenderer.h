@@ -114,7 +114,7 @@ namespace Sahara {
             void recordPointLight(VulkanScene& scene, const QMatrix4x4 &modelView, const bool focus);
             void recordCamera(VulkanScene& scene, const QMatrix4x4 &modelView, const bool focus);
             void recordScene(VulkanScene& scene, const float time);
-            void recordSurface(Pipeline *pipeline, Sahara::VulkanSurface& surface, Instance& instance, const bool focus);
+            void recordSurface(const bool animated, const QMatrix4x4 &modelView, Sahara::VulkanSurface& surface, Instance& instance, const bool focus);
             void recordModel(Sahara::VulkanModel& model, QStack<QMatrix4x4>& transformStack, const bool focus, const float time);
             void recordPanel(Panel& panel);
 

@@ -46,6 +46,8 @@ namespace Sahara {
         const AnimationClipDict& animationClips() const;
         const Armature& armature() const;
 
+        void addMaterial(const QString& name, Material* material);
+
         QStringList animationClipNames() const;
         void setAnimationClip(const QString& name);
         QString animationClip() const;

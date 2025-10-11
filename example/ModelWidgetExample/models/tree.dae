@@ -179,7 +179,7 @@
 			<instance_camera url="#id-camera-3"/>
 		</node>
 		<node id="Tree_lp_11" name="Tree_lp_11" type="NODE">
-			<matrix sid="transform"> 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0  </matrix>
+			<matrix sid="transform"> 0.33 0 0 0 0 0.33 0 0 0 0 0.33 0 0 0 0 1 </matrix>
 			<instance_geometry url="#id-mesh-8">
 				<bind_material>
 					<technique_common>

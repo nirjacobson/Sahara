@@ -186,7 +186,13 @@ void Sahara::OpenGLRenderer::renderModel(Sahara::OpenGLModel& model, QStack<QMat
             _sceneProgram.setArticulated(false);
 
             for (int i = 0; i < meshInstance->mesh().count(); i++) {
-                renderSurface(dynamic_cast<OpenGLSurface&>(meshInstance->mesh().surface(i)), *meshInstance, focus);
+                _sceneProgram.setFocus(false);
+                renderSurface(dynamic_cast<OpenGLSurface&>(meshInstance->mesh().surface(i)), *meshInstance, false);
+
+                if (focus || meshInstance->focusSurface() == i) {
+                    _sceneProgram.setFocus(true);
+                    renderSurface(dynamic_cast<OpenGLSurface&>(meshInstance->mesh().surface(i)), *meshInstance, true);
+                }
             }
         } else if ((controllerInstance = dynamic_cast<OpenGLInstanceController*>(instance))) {
             _sceneProgram.setArticulated(true);
@@ -194,7 +200,13 @@ void Sahara::OpenGLRenderer::renderModel(Sahara::OpenGLModel& model, QStack<QMat
             processControllerInstanceArmature(*controllerInstance);
 
             for (int i = 0; i < controllerInstance->controller().mesh().count(); i++) {
-                renderSurface(dynamic_cast<OpenGLSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, focus);
+                _sceneProgram.setFocus(false);
+                renderSurface(dynamic_cast<OpenGLSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, false);
+
+                if (focus || controllerInstance->focusSurface() == i) {
+                    _sceneProgram.setFocus(true);
+                    renderSurface(dynamic_cast<OpenGLSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, true);
+                }
             }
         }
 

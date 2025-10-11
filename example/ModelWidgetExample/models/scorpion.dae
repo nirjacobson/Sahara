@@ -8025,7 +8025,7 @@
  <library_visual_scenes>
   <visual_scene id="Scene" name="Scene">
    <node id="Armature" name="Armature" type="NODE">
-    <matrix sid="transform">0.01 0 0 0 0 -1.62921e-9 -0.01 0 0 0.01 -1.62921e-9 0 0 0 0 1</matrix>
+    <matrix sid="transform"> 0.33 0 0 0 0 0.33 0 0 0 0 0.33 0 0 0 0 1 </matrix>
     <node id="Armature_Dummy_root" name="Dummy_root" sid="Dummy_root" type="JOINT">
      <matrix sid="transform">1 -4.01339e-7 8.74228e-8 0 -8.74227e-8 8.74228e-8 1 0 -4.01339e-7 -1 1.19209e-7 0 0 0 0 1</matrix>
      <node id="Armature_bone_00" name="bone_00" sid="bone_00" type="JOINT">
@@ -8520,11 +8520,7 @@
     </node>
    </node>
    <node id="Scorpion_LowPolyArt" name="Scorpion_LowPolyArt" type="NODE">
-    <translate sid="location">0 0 0</translate>
-    <rotate sid="rotationZ">0 0 1 0</rotate>
-    <rotate sid="rotationY">0 1 0 0</rotate>
-    <rotate sid="rotationX">1 0 0 0</rotate>
-    <scale sid="scale">1 1 1</scale>
+    <matrix sid="transform"> 0.33 0 0 0 0 0.33 0 0 0 0 0.33 0 0 0 0 1 </matrix>
     <instance_controller url="#Armature_Scorpion_LowPolyArt-skin">
      <skeleton>#Armature_Dummy_root</skeleton>
      <bind_material>

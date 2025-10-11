@@ -10141,7 +10141,7 @@
  <library_visual_scenes>
   <visual_scene id="Scene" name="Scene">
    <node type="NODE" id="rig" name="rig">
-    <matrix sid="transform">0.01 0 0 0 0 -1.62921e-9 -0.01 0 0 0.01 -1.62921e-9 0 0 0 0 1</matrix>
+    <matrix sid="transform">0.33 0 0 0 0 0.33 0 0 0 0 0.33 0 0 0 0 1</matrix>
     <node type="NODE" id="jnt_org" name="jnt_org">
      <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
      <node type="NODE" id="spine_C0_jnt_org" name="spine_C0_jnt_org">

@@ -19,9 +19,12 @@ namespace Sahara {
 
         const Armature& armature() const;
 
+        Volume volume() const override;
+
     protected:
         const Armature* _armature;
         Controller* _controller;
+
     };
 }
 

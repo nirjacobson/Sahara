@@ -294,8 +294,62 @@ void Sahara::VulkanRenderer::recordScene(VulkanScene &scene, const float time)
      });
 }
 
-void Sahara::VulkanRenderer::recordSurface(Pipeline* pipeline, VulkanSurface &surface, Instance &instance, const bool focus)
+void Sahara::VulkanRenderer::recordSurface(const bool animated, const QMatrix4x4& modelView, VulkanSurface &surface, Instance &instance, const bool focus)
 {
+    float modelViewF[16];
+    modelView.transposed().copyDataTo(modelViewF);
+
+    Pipeline* pipeline;
+
+    if (animated) {
+        pipeline = focus ? _animatedPipelineWire : _animatedPipeline;
+
+        _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline());
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersAnimated.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
+
+        VkDescriptorSet descriptorSet = _scene->descriptorSets()[_vulkanWindow->currentFrame()];
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 1, 1, &descriptorSet, 0, nullptr);
+
+        float cp[3] = {
+            _scene->cameraNode().globalPosition().x(),
+            _scene->cameraNode().globalPosition().y(),
+            _scene->cameraNode().globalPosition().z(),
+        };
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, cameraPosition), sizeof(cp), cp);
+
+        int f = focus;
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, focus), sizeof(f), &f);
+
+        VulkanInstanceController& controllerInstance = dynamic_cast<VulkanInstanceController&>(instance);
+        controllerInstance.updateUniform(_vulkanWindow->currentFrame());
+
+        descriptorSet = controllerInstance.descriptorSets()[_vulkanWindow->currentFrame()];
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 4, 1, &descriptorSet, 0, nullptr);
+    } else {
+        pipeline = focus ? _scenePipelineWire : _scenePipeline;
+
+        _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline());
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersScene.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
+
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
+
+        VkDescriptorSet descriptorSet = _scene->descriptorSets()[_vulkanWindow->currentFrame()];
+        _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 1, 1, &descriptorSet, 0, nullptr);
+
+        float cp[3] = {
+            _scene->cameraNode().globalPosition().x(),
+            _scene->cameraNode().globalPosition().y(),
+            _scene->cameraNode().globalPosition().z(),
+        };
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, cameraPosition), sizeof(cp), cp);
+
+        int f = focus;
+        _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, focus), sizeof(f), &f);
+
+    }
+
     VulkanMaterial& material = dynamic_cast<VulkanMaterial&>(instance.getMaterial(surface.material()));
 
     material.updateUniform(_vulkanWindow->currentFrame());
@@ -337,63 +391,21 @@ void Sahara::VulkanRenderer::recordModel(VulkanModel &model, QStack<QMatrix4x4> 
     for (Instance* instance : model.instances()) {
         transformStack.push(transformStack.top() * instance->transform());
 
-        float modelViewF[16];
-        transformStack.top().transposed().copyDataTo(modelViewF);
-
         InstanceMesh* meshInstance;
         VulkanInstanceController* controllerInstance;
         if ((meshInstance = dynamic_cast<InstanceMesh*>(instance))) {
-            Pipeline* pipeline = focus ? _scenePipelineWire : _scenePipeline;
-
-            _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline());
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersScene.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
-
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
-
-            VkDescriptorSet descriptorSet = _scene->descriptorSets()[_vulkanWindow->currentFrame()];
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 1, 1, &descriptorSet, 0, nullptr);
-
-            float cp[3] = {
-                _scene->cameraNode().globalPosition().x(),
-                _scene->cameraNode().globalPosition().y(),
-                _scene->cameraNode().globalPosition().z(),
-            };
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, cameraPosition), sizeof(cp), cp);
-
-            int f = focus;
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(ScenePipeline::PushConstants, focus), sizeof(f), &f);
-
             for (int i = 0; i < meshInstance->mesh().count(); i++) {
-                recordSurface(pipeline, dynamic_cast<VulkanSurface&>(meshInstance->mesh().surface(i)), *meshInstance, focus);
+                recordSurface(false, transformStack.top(), dynamic_cast<VulkanSurface&>(meshInstance->mesh().surface(i)), *meshInstance, false);
+                if (focus || meshInstance->focusSurface() == i) {
+                    recordSurface(false, transformStack.top(), dynamic_cast<VulkanSurface&>(meshInstance->mesh().surface(i)), *meshInstance, true);
+                }
             }
         } else if ((controllerInstance = dynamic_cast<VulkanInstanceController*>(instance))) {
-            Pipeline* pipeline = focus ? _animatedPipelineWire : _animatedPipeline;
-
-            _deviceFunctions->vkCmdBindPipeline(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline());
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 0, 1, &_renderUniformBuffersAnimated.bufferDescriptorSets[_vulkanWindow->currentFrame()], 0, nullptr);
-
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, modelView), sizeof(modelViewF), modelViewF);
-
-            VkDescriptorSet descriptorSet = _scene->descriptorSets()[_vulkanWindow->currentFrame()];
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 1, 1, &descriptorSet, 0, nullptr);
-
-            float cp[3] = {
-                _scene->cameraNode().globalPosition().x(),
-                _scene->cameraNode().globalPosition().y(),
-                _scene->cameraNode().globalPosition().z(),
-            };
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, cameraPosition), sizeof(cp), cp);
-
-            int f = focus;
-            _deviceFunctions->vkCmdPushConstants(_vulkanWindow->currentCommandBuffer(), pipeline->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offsetof(AnimatedPipeline::PushConstants, focus), sizeof(f), &f);
-
-            controllerInstance->updateUniform(_vulkanWindow->currentFrame());
-
-            descriptorSet = controllerInstance->descriptorSets()[_vulkanWindow->currentFrame()];
-            _deviceFunctions->vkCmdBindDescriptorSets(_vulkanWindow->currentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout(), 4, 1, &descriptorSet, 0, nullptr);
-
             for (int i = 0; i < controllerInstance->controller().mesh().count(); i++) {
-                recordSurface(pipeline, dynamic_cast<VulkanSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, focus);
+                recordSurface(true, transformStack.top(), dynamic_cast<VulkanSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, false);
+                if (focus || controllerInstance->focusSurface() == i) {
+                    recordSurface(true, transformStack.top(), dynamic_cast<VulkanSurface&>(controllerInstance->controller().mesh().surface(i)), *controllerInstance, true);
+                }
             }
         }
 

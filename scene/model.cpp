@@ -25,6 +25,11 @@ Sahara::Model::~Model()
     }
 }
 
+void Sahara::Model::addMaterial(const QString &name, Material *material)
+{
+    _materials.insert(name, material);
+}
+
 Sahara::Volume Sahara::Model::volume() const
 {
     return _volume;

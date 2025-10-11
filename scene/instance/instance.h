@@ -5,6 +5,7 @@
 #include <QMatrix4x4>
 
 #include "../asset/material.h"
+#include "../../common/volume.h"
 
 namespace Sahara
 {
@@ -22,12 +23,20 @@ namespace Sahara
 
             QStringList materials() const;
             Material& getMaterial(const QString& name);
+            void addMaterial(const QString& name, Material* material);
 
             const QMatrix4x4& transform() const;
+
+            int focusSurface() const;
+            void setFocusSurface(const int idx);
+
+            virtual Volume volume() const = 0;
 
         private:
             MaterialDict _materials;
             QMatrix4x4 _transform;
+
+            int _focusSurface;
     };
 
 }

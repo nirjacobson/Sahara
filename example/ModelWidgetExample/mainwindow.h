@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QMessageBox>
+#include <QVulkanInstance>
 
 #include "widgets/modelwidget.h"
 

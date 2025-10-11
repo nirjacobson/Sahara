@@ -21,10 +21,10 @@ Sahara::VulkanModel* Sahara::VulkanModel::fromCollada(VulkanRenderer* renderer, 
 
   ImageDict images = parseColladaModelImages(renderer, collada, QFileInfo(path).dir().path());
   MaterialDict materials = parseColladaModelMaterials(renderer, collada, images);
-  MeshDict meshes = parseColladaModelGeometries(renderer->window(), collada, model->_volume);
+  MeshDict meshes = parseColladaModelGeometries(renderer->window(), collada);
   ControllerDict controllers = parseColladaModelControllers(collada, meshes);
   Armature* armature;
-  QList<Sahara::Instance*> instances = parseColladaVisualScene(renderer, collada, materials, meshes, controllers, &armature);
+  QList<Sahara::Instance*> instances = parseColladaVisualScene(renderer, collada, materials, meshes, controllers, model->_volume, &armature);
   Sahara::AnimationDict animations = parseColladaModelAnimations(collada, *armature);
   Sahara::AnimationClipDict animationClips = parseColladaModelAnimationClips(collada, animations);
 
@@ -125,12 +125,9 @@ Sahara::MaterialDict Sahara::VulkanModel::parseColladaModelMaterials(VulkanRende
   return materials;
 }
 
-Sahara::MeshDict Sahara::VulkanModel::parseColladaModelGeometries(QVulkanWindow* window, const QCollada::Collada& collada, Volume& volume)
+Sahara::MeshDict Sahara::VulkanModel::parseColladaModelGeometries(QVulkanWindow* window, const QCollada::Collada& collada)
 {
   MeshDict meshes;
-
-  QVector3D lowerVertex;
-  QVector3D upperVertex;
 
   for (auto it = collada.geometries().begin(); it != collada.geometries().end(); it++) {
     QString id = it.key();
@@ -153,28 +150,6 @@ Sahara::MeshDict Sahara::VulkanModel::parseColladaModelGeometries(QVulkanWindow*
 
             Sahara::Source* meshSource = new Sahara::Source(floatSource.data(), floatSource.accessor().stride());
             modelMesh->add(sourceName, meshSource);
-
-            if (semantic == QCollada::Triangles::Semantic::VERTEX) {
-                for (int i = 0; i < floatSource.accessor().count(); i++) {
-                    float x = floatSource.data().at(i * floatSource.accessor().stride() + 0);
-                    float y = floatSource.data().at(i * floatSource.accessor().stride() + 1);
-                    float z = floatSource.data().at(i * floatSource.accessor().stride() + 2);
-
-                    if (x < lowerVertex.x())
-                        lowerVertex.setX(x);
-                    if (y < lowerVertex.y())
-                        lowerVertex.setY(y);
-                    if (z < lowerVertex.z())
-                        lowerVertex.setZ(z);
-
-                    if (x > upperVertex.x())
-                        upperVertex.setX(x);
-                    if (y > upperVertex.y())
-                        upperVertex.setY(y);
-                    if (z > upperVertex.z())
-                        upperVertex.setZ(z);
-                }
-            }
         }
 
         Sahara::Surface::Input::Semantic surfaceSemantic;
@@ -196,6 +171,7 @@ Sahara::MeshDict Sahara::VulkanModel::parseColladaModelGeometries(QVulkanWindow*
         meshSurface.setInput(surfaceSemantic, sourceName, offset);
       }
       meshSurface.setElements(triangles.p());
+      meshSurface.calculateVolume();
 
       for (const Sahara::Surface::Input::Semantic input : meshSurface.inputs()) {
           meshSurface.generateVertexBuffer(input);
@@ -204,8 +180,6 @@ Sahara::MeshDict Sahara::VulkanModel::parseColladaModelGeometries(QVulkanWindow*
 
     meshes.insert(id, modelMesh);
   }
-
-  volume = Volume(lowerVertex, upperVertex);
 
   return meshes;
 }
@@ -264,7 +238,7 @@ Sahara::ControllerDict Sahara::VulkanModel::parseColladaModelControllers(const Q
   return controllers;
 }
 
-QList<Sahara::Instance*> Sahara::VulkanModel::parseColladaVisualScene(VulkanRenderer* renderer, const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Armature** const armaturePtr)
+QList<Sahara::Instance*> Sahara::VulkanModel::parseColladaVisualScene(VulkanRenderer* renderer, const QCollada::Collada& collada, const MaterialDict& materials, const MeshDict& meshes, const ControllerDict& controllers, Volume& volume, Armature** const armaturePtr)
 {
   QList<Instance*> instances;
   Sahara::Armature* armature = nullptr;
@@ -303,10 +277,57 @@ QList<Sahara::Instance*> Sahara::VulkanModel::parseColladaVisualScene(VulkanRend
         instances.append(controllerInstance);
       }
 
-      transformStack.pop();
-
       return false;
+    },
+    [&](const QCollada::Node& node) {
+        transformStack.pop();
+        return false;
     });
+
+    QVector3D lowerVertex(1000, 1000, 1000);
+    QVector3D upperVertex(-1000, -1000, -1000);
+    for (Sahara::Instance* inst : instances) {
+        QVector3D lowerVertexInst = inst->transform().map(inst->volume().lowerVertex());
+        QVector3D upperVertexInst = inst->transform().map(inst->volume().upperVertex());
+
+        if (upperVertexInst.x() < lowerVertexInst.x()) {
+            float x = upperVertexInst.x();
+            upperVertexInst.setX(lowerVertexInst.x());
+            lowerVertexInst.setX(x);
+        }
+        if (upperVertexInst.y() < lowerVertexInst.y()) {
+            float y = upperVertexInst.y();
+            upperVertexInst.setY(lowerVertexInst.y());
+            lowerVertexInst.setY(y);
+        }
+        if (upperVertexInst.z() < lowerVertexInst.z()) {
+            float z = upperVertexInst.z();
+            upperVertexInst.setZ(lowerVertexInst.z());
+            lowerVertexInst.setZ(z);
+        }
+
+        if (lowerVertexInst.x() < lowerVertex.x()) {
+            lowerVertex.setX(lowerVertexInst.x());
+        }
+        if (lowerVertexInst.y() < lowerVertex.y()) {
+            lowerVertex.setY(lowerVertexInst.y());
+        }
+        if (lowerVertexInst.z() < lowerVertex.z()) {
+            lowerVertex.setZ(lowerVertexInst.z());
+        }
+
+        if (upperVertexInst.x() > upperVertex.x()) {
+            upperVertex.setX(upperVertexInst.x());
+        }
+        if (upperVertexInst.y() > upperVertex.y()) {
+            upperVertex.setY(upperVertexInst.y());
+        }
+        if (upperVertexInst.z() > upperVertex.z()) {
+            upperVertex.setZ(upperVertexInst.z());
+        }
+    }
+
+    volume = Volume(lowerVertex, upperVertex);
   }
 
   *armaturePtr = armature;

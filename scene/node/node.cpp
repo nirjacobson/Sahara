@@ -175,23 +175,6 @@ bool Sahara::Node::hasFocus() const
 void Sahara::Node::setFocus(const bool focus)
 {
     _hasFocus = focus;
-
-    if ((_parent || !_children.isEmpty()) && focus) {
-        Node* root = this;
-        for (; root->_parent; root = root->_parent) ;
-
-        root->depthFirst([&](Node& node) {
-            if (&node == this)
-                return false;
-
-            if (node._hasFocus) {
-                node._hasFocus = false;
-                return true;
-            }
-
-            return false;
-        });
-    }
 }
 
 void Sahara::Node::remove()
@@ -210,31 +193,7 @@ bool Sahara::Node::intersects(const QVector3D& point) const
     if (!_item)
         return false;
 
-    QMatrix4x4 transform = globalTransform();
-    QVector3D globalVolumeLowerVertex = transform.map(_item->volume().lowerVertex());
-    QVector3D globalVolumeUpperVertex = transform.map(_item->volume().upperVertex());
-
-    if (globalVolumeLowerVertex.x() > globalVolumeUpperVertex.x()) {
-        float x = globalVolumeLowerVertex.x();
-        globalVolumeLowerVertex.setX(globalVolumeUpperVertex.x());
-        globalVolumeUpperVertex.setX(x);
-    }
-
-    if (globalVolumeLowerVertex.y() > globalVolumeUpperVertex.y()) {
-        float y = globalVolumeLowerVertex.y();
-        globalVolumeLowerVertex.setY(globalVolumeUpperVertex.y());
-        globalVolumeUpperVertex.setY(y);
-    }
-
-    if (globalVolumeLowerVertex.z() > globalVolumeUpperVertex.z()) {
-        float z = globalVolumeLowerVertex.z();
-        globalVolumeLowerVertex.setZ(globalVolumeUpperVertex.z());
-        globalVolumeUpperVertex.setZ(z);
-    }
-
-    Volume globalVolume(globalVolumeLowerVertex, globalVolumeUpperVertex);
-
-    return globalVolume.intersects(point);
+    return _item->volume().intersects(point);
 }
 
 bool Sahara::Node::depthFirst(const Sahara::Node::NodeVisitor& visitor)

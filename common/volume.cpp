@@ -22,19 +22,24 @@ const QVector3D& Sahara::Volume::upperVertex() const
     return _upperVertex;
 }
 
-float Sahara::Volume::width()
+float Sahara::Volume::width() const
 {
     return _upperVertex.x() - _lowerVertex.x();
 }
 
-float Sahara::Volume::height()
+float Sahara::Volume::height() const
 {
     return _upperVertex.y() - _lowerVertex.y();
 }
 
-float Sahara::Volume::length()
+float Sahara::Volume::length() const
 {
     return _upperVertex.z() - _lowerVertex.z();
+}
+
+float Sahara::Volume::volume() const
+{
+    return width() * height() * length();
 }
 
 bool Sahara::Volume::intersects(const QVector3D& point) const {

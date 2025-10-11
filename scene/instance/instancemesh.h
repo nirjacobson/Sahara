@@ -17,6 +17,8 @@ namespace Sahara
             const Mesh& mesh() const;
             Mesh& mesh();
 
+            Volume volume() const override;
+
         private:
             Mesh* _mesh;
     };
