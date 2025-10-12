@@ -315,14 +315,14 @@ if (LINUX)
 elseif (WIN32)
     if (WIN32_ARM)
         target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-            "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/QCollada.lib")
+            "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop/QCollada.lib")
     else()
         target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-            "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop_x64-${CMAKE_BUILD_TYPE}/QCollada.lib")
+            "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop_x64/QCollada.lib")
     endif()
 elseif (APPLE)
     target_link_libraries(Sahara PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-        "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/Desktop-${CMAKE_BUILD_TYPE}/libQCollada.dylib")
+        "${CMAKE_CURRENT_SOURCE_DIR}/../QCollada/build/libQCollada.dylib")
 
 endif()
 
