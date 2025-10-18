@@ -1,13 +1,15 @@
 #ifndef SAHARA_INSTANCEMESH_H
 #define SAHARA_INSTANCEMESH_H
 
+#include "../../Sahara_global.h"
+
 #include "instance.h"
 #include "../asset/mesh/openglmesh.h"
 
 namespace Sahara
 {
 
-    class InstanceMesh : public Instance
+    class SAHARA_EXPORT InstanceMesh : public Instance
     {
         friend class JSON;
 

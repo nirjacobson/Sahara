@@ -3,13 +3,15 @@
 
 #include <QMatrix4x4>
 
+#include "../../Sahara_global.h"
+
 #include "asset.h"
 #include "mesh/mesh.h"
 
 namespace Sahara
 {
 
-    class Controller : public Asset
+    class SAHARA_EXPORT Controller : public Asset
     {
         friend class JSON;
 

@@ -1,12 +1,14 @@
 #ifndef INSTANCECONTROLLER_H
 #define INSTANCECONTROLLER_H
 
+#include "../../Sahara_global.h"
+
 #include "instance.h"
 #include "../asset/controller.h"
 #include "../asset/armature.h"
 
 namespace Sahara {
-    class InstanceController : public Instance
+    class SAHARA_EXPORT InstanceController : public Instance
     {
         friend class JSON;
 

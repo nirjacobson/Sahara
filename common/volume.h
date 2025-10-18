@@ -1,11 +1,13 @@
 #ifndef SAHARA_VOLUME_H
 #define SAHARA_VOLUME_H
 
+#include "../Sahara_global.h"
+
 #include <QVector3D>
 
 namespace Sahara {
 
-    class Volume
+    class SAHARA_EXPORT Volume
     {
         friend class JSON;
 

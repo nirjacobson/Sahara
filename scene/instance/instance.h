@@ -4,6 +4,8 @@
 #include <QMap>
 #include <QMatrix4x4>
 
+#include "../../Sahara_global.h"
+
 #include "../asset/material.h"
 #include "../../common/volume.h"
 
@@ -11,7 +13,7 @@ namespace Sahara
 {
     typedef QMap<QString, Material*> MaterialDict;
 
-    class Instance
+    class SAHARA_EXPORT Instance
     {
         friend class JSON;
 
