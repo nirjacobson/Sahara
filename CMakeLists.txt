@@ -17,6 +17,10 @@ if (VULKAN_ENABLED)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVULKAN")
 endif()
 
+if (WIN32)
+    set(CMAKE_PREFIX_PATH "C:/Qt-6.12.0" ${CMAKE_PREFIX_PATH})
+endif()
+
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Gui Widgets OpenGL OpenGLWidgets)
 
